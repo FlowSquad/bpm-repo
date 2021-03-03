@@ -1,0 +1,62 @@
+plugins {
+    id 'org.springframework.boot' version '2.4.0'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'java'
+}
+
+group 'io.bpmnrepo'
+version '0.0.1-SNAPSHOT'
+
+ext.flywayVersion = '6.5.1'
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    // REST-Resource related Dependencies
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation "javax.validation:validation-api:2.0.1.Final"
+
+    // Security, out for testing purpose
+    implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation "org.springframework.security:spring-security-oauth2-resource-server"
+    implementation "org.springframework.security:spring-security-oauth2-jose"
+    implementation "org.springframework.security:spring-security-config"
+    //compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+
+    //Mapping
+    implementation 'org.mapstruct:mapstruct:1.4.2.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
+
+    // Database related Dependencies
+    runtimeOnly 'com.h2database:h2'
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    //new
+    implementation('org.springframework.boot:spring-boot-starter-web')
+
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "org.flywaydb:flyway-core:${flywayVersion}"
+    runtimeOnly "mysql:mysql-connector-java:8.0.18"
+    //runtimeOnly "org.postgresql:postgresql"
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.1.0"
+
+    // Swagger Dependencies
+    compile group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.5.0'
+
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+
+}
+
+test {
+    useJUnitPlatform()
+}
