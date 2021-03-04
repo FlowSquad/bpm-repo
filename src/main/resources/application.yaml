@@ -4,12 +4,11 @@
  #     email_claim: https://flowsquad.io/email
 
 # Logging Configurations
-#jetzt raus
-#logging:
- # level:
-  #  io:
-   #   flowrepo:
-    #    backend: DEBUG
+logging:
+  level:
+    io:
+      bpmnrepo:
+        backend: DEBUG
 
 # Show message error messages in console/response
 server:

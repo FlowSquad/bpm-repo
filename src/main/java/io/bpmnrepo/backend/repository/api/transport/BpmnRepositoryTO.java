@@ -8,7 +8,6 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class BpmnRepositoryTO {
 
@@ -21,7 +20,5 @@ public class BpmnRepositoryTO {
     @NotNull
     private String bpmnRepositoryDescription;
 
-/*    @Nullable
-    private RoleEnum roleEnum;*/
 
 }

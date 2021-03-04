@@ -28,38 +28,32 @@ public class BpmnRepositoryService {
 
 
     private final RepositoryMapper mapper;
-    private final UserService userService;
-    private final BpmnDiagramService bpmnDiagramService;
-    private final AssignmentService assignmentService;
     private final AuthService authService;
     private final BpmnRepoJpa bpmnRepoJpa;
-    private final AssignmentJpa assignmentJpa;
-    private final BpmnDiagramJpa bpmnDiagramJpa;
 
 
 
 
-    public void createRepository(BpmnRepositoryTO bpmnRepositoryTO){
+
+    public String createRepository(BpmnRepositoryTO bpmnRepositoryTO){
         BpmnRepository bpmnRepository = new BpmnRepository(bpmnRepositoryTO);
         BpmnRepositoryEntity bpmnRepositoryEntity = this.mapper.toEntity(bpmnRepository);
+        System.out.println(bpmnRepositoryEntity.getBpmnRepositoryId() + "id");
+        System.out.println(bpmnRepositoryEntity.getBpmnRepositoryDescription() + "desc");
+        System.out.println(bpmnRepositoryEntity.getCreatedDate() + "date");
+
         this.saveToDb(bpmnRepositoryEntity);
         System.out.println(bpmnRepositoryEntity.getBpmnRepositoryId());
-        this.assignmentService.createInitialAssignment(bpmnRepositoryEntity.getBpmnRepositoryId());
+        return bpmnRepositoryEntity.getBpmnRepositoryId();
     }
 
 
-    public List<BpmnRepositoryTO> getAllRepositories() {
-        final String userId = this.userService.getUserIdOfCurrentUser();
-
-        //1. start a query carrying userId to receive all AssignmentEntities related to the user
-        //2. for all AssignmentEntities: get the RepositoryIds
-        //3. for every RepositoryId: start a query to get the RepositoryEntities
-        return this.assignmentJpa.findAssignmentEntitiesByAssignmentId_UserIdEquals(userId).stream()
-                .map(element -> element.getAssignmentId().getBpmnRepositoryId())
-                .map(this.bpmnRepoJpa::findByBpmnRepositoryId)
-                .map(this.mapper::toTO)
-                .collect(Collectors.toList());
-    }
+/*
+    public List<BpmnRepositoryTO> getAllRepositories(List<String> bpmnRepositoryIds) {
+        return this.bpmnRepoJpa.findAllByBpmnRepositoryId(bpmnRepositoryIds).stream()
+                    .map(this.mapper::toTO)
+                    .collect(Collectors.toList());
+    }*/
 
 
     public BpmnRepositoryTO getSingleRepository(String repositoryId){
@@ -67,50 +61,36 @@ public class BpmnRepositoryService {
             return this.mapper.toTO(this.bpmnRepoJpa.findByBpmnRepositoryId(repositoryId));
         }
         else{
-            return null;
+            throw new AccessRightException("You are not allowed to view this repository");
         }
     }
+
 
     public void updateRepository(BpmnRepositoryTO bpmnRepositoryTO){
-        if(bpmnRepositoryTO.getBpmnRepositoryId() == null){
-            log.debug("No Repository ID provided");
+        if(this.authService.checkIfOperationIsAllowed(bpmnRepositoryTO.getBpmnRepositoryId(), RoleEnum.ADMIN)) {
+            BpmnRepositoryEntity bpmnRepositoryEntity = this.bpmnRepoJpa.getOne(bpmnRepositoryTO.getBpmnRepositoryId());
+            BpmnRepository bpmnRepository = new BpmnRepository(bpmnRepositoryTO);
+
+            if(bpmnRepository.getBpmnRepositoryName() != null && !bpmnRepository.getBpmnRepositoryName().isEmpty()){
+                bpmnRepositoryEntity.setBpmnRepositoryName(bpmnRepositoryTO.getBpmnRepositoryName());
+            }
+
+            if(bpmnRepository.getBpmnRepositoryDescription() != null && !bpmnRepository.getBpmnRepositoryDescription().isEmpty()){
+                bpmnRepositoryEntity.setBpmnRepositoryDescription(bpmnRepository.getBpmnRepositoryDescription());
+            }
+
+            bpmnRepositoryEntity.setUpdatedDate(bpmnRepository.getUpdatedDate());
+            this.saveToDb(bpmnRepositoryEntity);
         }
         else{
-            if(this.authService.checkIfOperationIsAllowed(bpmnRepositoryTO.getBpmnRepositoryId(), RoleEnum.ADMIN)) {
-                BpmnRepositoryEntity bpmnRepositoryEntity = this.bpmnRepoJpa.getOne(bpmnRepositoryTO.getBpmnRepositoryId());
-                BpmnRepository bpmnRepository = new BpmnRepository(bpmnRepositoryTO);
-                if(bpmnRepository.getBpmnRepositoryName() != null && !bpmnRepository.getBpmnRepositoryName().isEmpty()){
-                    bpmnRepositoryEntity.setBpmnRepositoryName(bpmnRepositoryTO.getBpmnRepositoryName());
-                }
-                if(bpmnRepository.getBpmnRepositoryDescription() != null && !bpmnRepository.getBpmnRepositoryDescription().isEmpty()){
-                    bpmnRepositoryEntity.setBpmnRepositoryDescription(bpmnRepository.getBpmnRepositoryDescription());
-                }
-                bpmnRepositoryEntity.setUpdatedDate(bpmnRepository.getUpdatedDate());
-                this.saveToDb(bpmnRepositoryEntity);
-            }
-            else{
-                throw new AccessRightException("Only Admins and Owners are allowed to change the repository parameters");
-            }
+            throw new AccessRightException("Only Admins and Owners are allowed to change the repository parameters");
         }
     }
 
 
-    public void deleteRepository(String repositoryId){
-        if(this.authService.checkIfOperationIsAllowed(repositoryId, RoleEnum.OWNER)){
-            List<BpmnDiagramEntity> bpmnDiagramEntityList = this.bpmnDiagramJpa.findBpmnDiagramEntitiesByBpmnDiagramRepository_BpmnRepositoryIdEquals(repositoryId);
-            Integer diagramsCount = bpmnDiagramEntityList.size();      //Nur zum Debuggen
 
-            //1. Delete diagrams and the corresponding versions - deleteDiagram method contains the cascade logic that also deletes the child-diagram-versions
-            bpmnDiagramEntityList.forEach(bpmnDiagramEntity -> this.bpmnDiagramService.deleteDiagram(bpmnDiagramEntity.getBpmnDiagramId()));
-            //2. Delete Repository
-            this.bpmnRepoJpa.deleteBpmnRepositoryEntityByBpmnRepositoryId(repositoryId);
-            //3. Delete all related assignments
-            this.assignmentJpa.deleteAssignmentEntitiesByAssignmentId_BpmnRepositoryId(repositoryId);
-            System.out.println("Deleted Repository including " + diagramsCount.toString() + " diagrams");
-        }
-        else{
-            throw new AccessRightException("Only the owner is allowed to delete the repository");
-        }
+    public void deleteRepository(String bpmnRepositoryId){
+        this.bpmnRepoJpa.deleteBpmnRepositoryEntityByBpmnRepositoryId(bpmnRepositoryId);
     }
 
 

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -22,11 +23,6 @@ public class BpmnDiagramController {
     private final BpmnDiagramService bpmnDiagramService;
 
 
-    @GetMapping("/test")
-    public ResponseEntity<String> testEndpoint(){
-        return ResponseEntity.ok().body("okay");
-    }
-
     //create new Diagram, parent RepositoryID has to be passed
     @PostMapping()
     public ResponseEntity<Void> createDiagram(@RequestBody @Validated final BpmnDiagramTO bpmnDiagramTO){
@@ -36,7 +32,7 @@ public class BpmnDiagramController {
     }
 
     @GetMapping("/all/{repositoryId}")
-    public ResponseEntity<List<BpmnDiagramTO>> getDiagramsFromRepo(@PathVariable @NotNull String repositoryId){
+    public ResponseEntity<List<BpmnDiagramTO>> getDiagramsFromRepo(@PathVariable @NotBlank String repositoryId){
         //Exceptionhandling for n.a. repositoryId
         System.out.println(String.format("Returning diagrams from repository %s", repositoryId));
         return ResponseEntity.ok().body(this.bpmnDiagramService.getDiagramsFromRepo(repositoryId));
@@ -44,18 +40,19 @@ public class BpmnDiagramController {
     }
 
     //URL muss mit {RepositoryId}/{DiagramId} enden// Oder nur Kosmetik? :D
-    @GetMapping("/{bpmnDiagramId}")
-    public ResponseEntity<BpmnDiagramTO> getSingleDiagram(@PathVariable @NotNull String bpmnDiagramId){
+    @GetMapping("/{bpmnRepositoryId}/{bpmnDiagramId}")
+    public ResponseEntity<BpmnDiagramTO> getSingleDiagram(@PathVariable @NotBlank String bpmnRepositoryId,
+                                                          @PathVariable @NotBlank String bpmnDiagramId){
         System.out.println("Returning single diagram with id" + bpmnDiagramId);
-
-        return ResponseEntity.ok().body(this.bpmnDiagramService.getSingleDiagram(bpmnDiagramId));
+        return ResponseEntity.ok().body(this.bpmnDiagramService.getSingleDiagram(bpmnRepositoryId, bpmnDiagramId));
     }
 
-    @DeleteMapping("/{bpmnDiagramId}")
+    @DeleteMapping("{bpmnRepositoryId}/{bpmnDiagramId}")
     @Operation(summary = "Delete one Diagram and all of its versions")
-    public ResponseEntity<Void> deleteDiagram(@PathVariable @NotNull String bpmnDiagramId){
+    public ResponseEntity<Void> deleteDiagram(@PathVariable @NotBlank String bpmnRepositoryId,
+                                              @PathVariable @NotBlank String bpmnDiagramId){
         System.out.println("Deleting Diagram with ID " + bpmnDiagramId);
-        this.bpmnDiagramService.deleteDiagram(bpmnDiagramId);
+        this.bpmnDiagramService.deleteDiagram(bpmnRepositoryId, bpmnDiagramId);
         return ResponseEntity.ok().build();
     }
 }

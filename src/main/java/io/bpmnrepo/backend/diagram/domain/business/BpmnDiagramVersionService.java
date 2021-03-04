@@ -33,21 +33,16 @@ public class BpmnDiagramVersionService {
 
 
 
-    public void createNewVersion(BpmnDiagramVersionTO bpmnDiagramVersionTO){
-        if(authService.checkIfOperationIsAllowed(getRepositoryIdByDiagramId(bpmnDiagramVersionTO.getBpmnDiagramId()), RoleEnum.MEMBER)) {
-            BpmnDiagramVersionEntity bpmnDiagramVersionEntity = this.bpmnDiagramVersionJpa.findFirstByBpmnDiagramEntity_BpmnDiagramIdOrderByBpmnDiagramVersionNumberDesc(bpmnDiagramVersionTO.getBpmnDiagramId());
+    public void createOrUpdateVersion(BpmnDiagramVersionTO bpmnDiagramVersionTO){
+        if(authService.checkIfOperationIsAllowed(bpmnDiagramVersionTO.getBpmnRepositoryId(), RoleEnum.MEMBER)) {
+            System.out.println(bpmnDiagramVersionTO.getBpmnRepositoryId());
+            //1: check for initial creation or update
+            BpmnDiagramVersionEntity bpmnDiagramVersionEntity = this.bpmnDiagramVersionJpa.findFirstByBpmnDiagramIdOrderByBpmnDiagramVersionNumberDesc(bpmnDiagramVersionTO.getBpmnDiagramId());
             if (bpmnDiagramVersionEntity == null) {
-                BpmnDiagramVersion bpmnDiagramVersion = new BpmnDiagramVersion(bpmnDiagramVersionTO);
-                this.saveToDb(this.mapper.toEntity(bpmnDiagramVersion, this.getBpmnDiagramEntityById(bpmnDiagramVersionTO.getBpmnDiagramId())));
+                createInitialVersion(bpmnDiagramVersionTO);
             }
-            //else clause handles update of version fetches versionnumber (and name, if not provided) from old version and persists a new version
             else {
-                if (bpmnDiagramVersionTO.getBpmnDiagramVersionName() == null || bpmnDiagramVersionTO.getBpmnDiagramVersionName().isEmpty()) {
-                    bpmnDiagramVersionTO.setBpmnDiagramVersionName(bpmnDiagramVersionEntity.getBpmnDiagramVersionName());
-                }
-                bpmnDiagramVersionTO.setBpmnDiagramVersionNumber(bpmnDiagramVersionEntity.getBpmnDiagramVersionNumber());
-                BpmnDiagramVersion bpmnDiagramVersion = new BpmnDiagramVersion((bpmnDiagramVersionTO));
-                this.saveToDb(this.mapper.toEntity(bpmnDiagramVersion, this.getBpmnDiagramEntityById(bpmnDiagramVersionTO.getBpmnDiagramId())));
+                updateExistingVersion(bpmnDiagramVersionEntity, bpmnDiagramVersionTO);
             }
         }
         else{
@@ -55,40 +50,62 @@ public class BpmnDiagramVersionService {
         }
     }
 
-    public List<BpmnDiagramVersionTO> getAllVersions(String bpmndiagramId){
-        if(authService.checkIfOperationIsAllowed(getRepositoryIdByDiagramId(bpmndiagramId), RoleEnum.VIEWER)) {
+    private void createInitialVersion(BpmnDiagramVersionTO bpmnDiagramVersionTO){
+        BpmnDiagramVersion bpmnDiagramVersion = new BpmnDiagramVersion(bpmnDiagramVersionTO);
+        System.out.println(bpmnDiagramVersion.getBpmnRepositoryId() + "repoid");
+        this.saveToDb(this.mapper.toEntity(bpmnDiagramVersion));
+    }
+
+    private void updateExistingVersion(BpmnDiagramVersionEntity bpmnDiagramVersionEntity, BpmnDiagramVersionTO bpmnDiagramVersionTO){
+        //use the old name if no new name is provided
+        if (bpmnDiagramVersionTO.getBpmnDiagramVersionName() == null || bpmnDiagramVersionTO.getBpmnDiagramVersionName().isEmpty()) {
+            bpmnDiagramVersionTO.setBpmnDiagramVersionName(bpmnDiagramVersionEntity.getBpmnDiagramVersionName());
+        }
+        bpmnDiagramVersionTO.setBpmnDiagramVersionNumber(bpmnDiagramVersionEntity.getBpmnDiagramVersionNumber());
+        BpmnDiagramVersion bpmnDiagramVersion = new BpmnDiagramVersion((bpmnDiagramVersionTO));
+        this.saveToDb(this.mapper.toEntity(bpmnDiagramVersion));
+    }
+
+    public List<BpmnDiagramVersionTO> getAllVersions(String bpmnRepositoryId, String bpmnDiagramId){
+        verifyDiagramIsInSpecifiedRepository(bpmnRepositoryId, bpmnDiagramId);
+        if(authService.checkIfOperationIsAllowed(bpmnRepositoryId, RoleEnum.VIEWER)) {
             //1. Query all Versions by providing the diagram id
             //2. for all versions: map them to a TO
-            return this.bpmnDiagramVersionJpa.findAllByBpmnDiagramEntity_BpmnDiagramId(bpmndiagramId).stream()
+            return this.bpmnDiagramVersionJpa.findAllByBpmnDiagramId(bpmnDiagramId).stream()
                     .map(this.mapper::toTO)
                     .collect(Collectors.toList());
         }
         else{
-            return null;
+            throw new AccessRightException("You are not allowed to view the versions of this diagram");
         }
     }
 
-    public BpmnDiagramVersionTO getLatestVersion(String bpmnDiagramId){
-        if(authService.checkIfOperationIsAllowed(getRepositoryIdByDiagramId(bpmnDiagramId), RoleEnum.VIEWER));
-        BpmnDiagramVersionEntity bpmnDiagramVersionEntity = this.bpmnDiagramVersionJpa.findFirstByBpmnDiagramEntity_BpmnDiagramIdOrderByBpmnDiagramVersionNumberDesc(bpmnDiagramId);
-        return this.mapper.toTO(bpmnDiagramVersionEntity);
+    public BpmnDiagramVersionTO getLatestVersion(String bpmnRepositoryId, String bpmnDiagramId){
+        verifyDiagramIsInSpecifiedRepository(bpmnRepositoryId, bpmnDiagramId);
+        if(authService.checkIfOperationIsAllowed(bpmnRepositoryId, RoleEnum.VIEWER)) {
+            BpmnDiagramVersionEntity bpmnDiagramVersionEntity = this.bpmnDiagramVersionJpa.findFirstByBpmnDiagramIdOrderByBpmnDiagramVersionNumberDesc(bpmnDiagramId);
+            return this.mapper.toTO(bpmnDiagramVersionEntity);
+        }
+        else{
+            throw new AccessRightException("You are not allowed to view the latest version of this diagram");
+        }
     }
 
-    public BpmnDiagramVersionTO getSingleVersion(String bpmnDiagramVersionId){
-        if(authService.checkIfOperationIsAllowed(getRepositoryIdByVersionId(bpmnDiagramVersionId), RoleEnum.VIEWER)) {
+    public BpmnDiagramVersionTO getSingleVersion(String bpmnRepositoryId, String bpmnDiagramId, String bpmnDiagramVersionId){
+        verifyDiagramIsInSpecifiedRepository(bpmnRepositoryId, bpmnDiagramId);
+        verifyVersionIsFromSpecifiedDiagram(bpmnDiagramId, bpmnDiagramVersionId);
+        if(authService.checkIfOperationIsAllowed(bpmnRepositoryId, RoleEnum.VIEWER)) {
             return this.mapper.toTO(bpmnDiagramVersionJpa.findAllByBpmnDiagramVersionIdEquals(bpmnDiagramVersionId));
         }
         else{
-            return null;
+            throw new AccessRightException("You are not allowed to view the version of this diagram");
         }
     }
 
-    public void saveToDb(BpmnDiagramVersionEntity entity){
+    private void saveToDb(BpmnDiagramVersionEntity bpmnDiagramVersionEntity){
         //check if user is allowed to (minimum role: MEMBER)
-        System.out.println("Diagram version id:");
-        System.out.println(entity.getBpmnDiagramVersionId());
-        if(authService.checkIfOperationIsAllowed(getRepositoryIdByDiagramId(entity.getBpmnDiagramEntity().getBpmnDiagramId()), RoleEnum.MEMBER)) {
-            bpmnDiagramVersionJpa.save(entity);
+        if(authService.checkIfOperationIsAllowed(bpmnDiagramVersionEntity.getBpmnRepositoryId(), RoleEnum.MEMBER)) {
+            bpmnDiagramVersionJpa.save(bpmnDiagramVersionEntity);
             System.out.println("Created Version");
         }
         else{
@@ -97,23 +114,28 @@ public class BpmnDiagramVersionService {
     }
 
 
+    public void deleteAllByRepositoryId(String bpmnRepositoryId){
+            //Auth check in Facade
+            int deletedVersions = this.bpmnDiagramVersionJpa.deleteAllByBpmnRepositoryId(bpmnRepositoryId);
+            log.debug(String.format("Deleted %s versions", deletedVersions));
+            return;
 
+    }
 
     //______________________ Helper ___________________________
 
-    //get the corresponding BpmnDiagramEntity
-    public BpmnDiagramEntity getBpmnDiagramEntityById(String bpmnDiagramId) {
-        return bpmnDiagramJpa.findBpmnDiagramEntityByBpmnDiagramIdEquals(bpmnDiagramId);
+    //move to Facade
+    public void verifyDiagramIsInSpecifiedRepository(String bpmnRepositoryId, String bpmnDiagramId){
+        BpmnDiagramEntity bpmnDiagramEntity = bpmnDiagramJpa.findBpmnDiagramEntityByBpmnDiagramIdEquals(bpmnDiagramId);
+        if(!bpmnDiagramEntity.getBpmnRepositoryId().equals(bpmnRepositoryId)){
+            throw new AccessRightException("Initiating self destruction");
+        }
     }
 
-    public String getRepositoryIdByVersionId(String versionId){
-        System.out.println(bpmnDiagramVersionJpa.findAllByBpmnDiagramVersionIdEquals(versionId));
-        return getRepositoryIdByDiagramId(bpmnDiagramVersionJpa.findAllByBpmnDiagramVersionIdEquals(versionId).getBpmnDiagramEntity().getBpmnDiagramId());
+    public void verifyVersionIsFromSpecifiedDiagram(String bpmnDiagramId, String bpmnDiagramVersionId){
+        BpmnDiagramVersionEntity bpmnDiagramVersionEntity = bpmnDiagramVersionJpa.findAllByBpmnDiagramVersionIdEquals(bpmnDiagramVersionId);
+        if(!bpmnDiagramVersionEntity.getBpmnDiagramId().equals(bpmnDiagramId)){
+            throw new AccessRightException("This version does not belong to the specified Diagram");
+        }
     }
-
-    public String getRepositoryIdByDiagramId(String diagramId){
-        return bpmnDiagramJpa.findBpmnDiagramEntityByBpmnDiagramIdEquals(diagramId).getBpmnDiagramRepository().getBpmnRepositoryId();
-    }
-
-
 }

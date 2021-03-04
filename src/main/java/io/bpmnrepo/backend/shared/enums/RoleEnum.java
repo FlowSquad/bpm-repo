@@ -6,24 +6,25 @@ public enum RoleEnum {
      * The owner is allowed to delete a repository
      * (and additionally has the privileges of an ADMIN, MEMBER, VIEWER)
      */
-    OWNER,
+    OWNER(),
 
     /**
      * An admin is allowed to add/remove members and viewers
      * (and additionally has the privileges of an MEMBER, VIEWER)
      */
-    ADMIN,
+    ADMIN(),
 
     /**
      * A member is allowed to add/remove repository-objects
      * (and additionally has the privileges of a VIEWER)
      */
-    MEMBER,
+    MEMBER(),
 
     /**
      * A viewer is allowed to read repositories and repository-objects
      */
-    VIEWER;
+    VIEWER();
+
 
     /**
      * A user is allowed to add or remove an user,

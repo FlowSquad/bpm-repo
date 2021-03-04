@@ -1,5 +1,6 @@
 package io.bpmnrepo.backend.repository.domain.business;
 
+import io.bpmnrepo.backend.repository.domain.mapper.AssignmentMapper;
 import io.bpmnrepo.backend.repository.domain.model.Assignment;
 import io.bpmnrepo.backend.shared.AuthService;
 import io.bpmnrepo.backend.shared.mapper.Mapper;
@@ -13,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -21,7 +25,7 @@ public class AssignmentService {
     private final AssignmentJpa assignmentJpa;
     private final AuthService authService;
     private final UserService userService;
-    private final Mapper mapper;
+    private final AssignmentMapper mapper;
     //method that checks if an Assignment has to be updated or created
 
     public void createAssignment(AssignmentTO assignmentTO) {
@@ -57,6 +61,14 @@ public class AssignmentService {
         this.assignmentJpa.save(assignmentEntity);
     }
 
+    //receive all AssignmentEntities related to the user
+    public List<String> getAllAssignedRepositoryIds(String userId){
+        return this.assignmentJpa.findAssignmentEntitiesByAssignmentId_UserIdEquals(userId).stream()
+                .map(assignmentEntity -> assignmentEntity.getAssignmentId().getBpmnRepositoryId())
+                .collect(Collectors.toList());
+    }
+
+
     public AssignmentEntity getAssignmentEntity(String bpmnRepositoryId, String userId){
         return this.assignmentJpa.findByAssignmentId_BpmnRepositoryIdAndAssignmentId_UserId(bpmnRepositoryId, userId);
     }
@@ -75,5 +87,11 @@ public class AssignmentService {
         else{
             System.out.println("");
         }
+    }
+
+    public void deleteAllByRepositoryId(String bpmnRepositoryId){
+        //Auth check in Facade
+        int deletedAssignments = this.assignmentJpa.deleteAllByAssignmentId_BpmnRepositoryId(bpmnRepositoryId);
+        log.debug(String.format("Deleted Assignments for all %s users", deletedAssignments));
     }
 }

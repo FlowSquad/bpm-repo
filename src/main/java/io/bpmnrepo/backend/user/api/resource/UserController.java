@@ -19,10 +19,9 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<Void> createUser (@RequestBody @Validated final UserTO userTO){
+    public ResponseEntity<Void> createUser(@RequestBody @Validated final UserTO userTO){
         System.out.println("Creating new user " + userTO.getUserName());
-        val user = this.mapper.toEntity(userTO);
-        this.userService.saveToDb(user);
+        this.userService.createUser(userTO);
         return ResponseEntity.ok().build();
     }
 }

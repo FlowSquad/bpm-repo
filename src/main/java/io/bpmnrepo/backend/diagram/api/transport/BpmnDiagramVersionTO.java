@@ -17,9 +17,6 @@ public class BpmnDiagramVersionTO {
     @Nullable
     private String bpmnDiagramVersionName;
 
-    @NotNull
-    private String bpmnDiagramId;
-
     @Nullable
     private Long bpmnDiagramVersionNumber;
 
@@ -27,6 +24,9 @@ public class BpmnDiagramVersionTO {
     @Nullable
     private byte bpmnDiagramVersionFile;
 
-    //Version number automatically generated
+    @NotNull
+    private String bpmnDiagramId;
 
+    @NotNull
+    private String bpmnRepositoryId;
 }

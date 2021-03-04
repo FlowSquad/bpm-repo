@@ -24,9 +24,8 @@ public class BpmnDiagramEntity {
     @Column(name = "bpmn_diagram_id", unique = true, nullable = false, updatable = false, length = 36)
     private String bpmnDiagramId;
 
-    @ManyToOne
-    @JoinColumn(name = "bpmn_diagram_repository")
-    private BpmnRepositoryEntity bpmnDiagramRepository;
+    @Column(name = "bpmn_repository_id")
+    private String bpmnRepositoryId;
 
     @Column(name = "bpmn_diagram_name")
     private String bpmnDiagramName;
@@ -34,9 +33,4 @@ public class BpmnDiagramEntity {
     @Column(name = "bpmd_diagram_description")
     private String bpmnDiagramDescription;
 
-    //This one causes JPA to crash, don't know why yet
-
-/*    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "bpmn_diagram_version_id", nullable = true, updatable = true)
-    private BpmnDiagramVersionEntity bpmnDiagramVersionId;*/
 }

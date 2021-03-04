@@ -31,9 +31,9 @@ public class BpmnDiagramService {
 
 
     public void createDiagram(BpmnDiagramTO bpmnDiagramTO){
-        if(this.authService.checkIfOperationIsAllowed(bpmnDiagramTO.getBpmnDiagramRepositoryId(), RoleEnum.MEMBER)) {
+        if(this.authService.checkIfOperationIsAllowed(bpmnDiagramTO.getBpmnRepositoryId(), RoleEnum.MEMBER)) {
             BpmnDiagram bpmnDiagram = new BpmnDiagram(bpmnDiagramTO);
-            saveToDb(this.mapper.toEntity(bpmnDiagram, getBpmnRepositoryById(bpmnDiagramTO.getBpmnDiagramRepositoryId())));
+            saveToDb(this.mapper.toEntity(bpmnDiagram));
         }
         else{
             throw new AccessRightException("Only Members, Admins and Owners are allowed to create diagrams in this repository");
@@ -43,59 +43,52 @@ public class BpmnDiagramService {
 
     public List<BpmnDiagramTO> getDiagramsFromRepo(String repositoryId){
         if(this.authService.checkIfOperationIsAllowed(repositoryId, RoleEnum.VIEWER)) {
-            return this.bpmnDiagramJpa.findBpmnDiagramEntitiesByBpmnDiagramRepository_BpmnRepositoryIdEquals(repositoryId).stream()
+            return this.bpmnDiagramJpa.findBpmnDiagramEntitiesByBpmnRepositoryId(repositoryId).stream()
                     .map(this.mapper::toTO)
                     .collect(Collectors.toList());
         }
-        else{ return null; }
+        else{
+            throw new AccessRightException("You are not allowed to view diagrams from this repository");
+        }
     }
 
 
-    public BpmnDiagramTO getSingleDiagram(String bpmnDiagramId){
-        if(this.authService.checkIfOperationIsAllowed(getRepositoryIdByDiagramId(bpmnDiagramId), RoleEnum.VIEWER)){
+    public BpmnDiagramTO getSingleDiagram(String bpmnRepositoryId, String bpmnDiagramId){
+        if(this.authService.checkIfOperationIsAllowed(bpmnRepositoryId, RoleEnum.VIEWER)){
             return this.mapper.toTO(this.bpmnDiagramJpa.findBpmnDiagramEntityByBpmnDiagramIdEquals(bpmnDiagramId));
         }
         else{
-            return null;
+            throw new AccessRightException("You are not allowed to delete this diagram");
         }
     }
 
 
-    public void deleteDiagram(String bpmnDiagramId){
+    public void deleteDiagram(String bpmnRepositoryId, String bpmnDiagramId){
         System.out.println("Deleting diagram " + bpmnDiagramId);
-        if(this.authService.checkIfOperationIsAllowed(getRepositoryIdByDiagramId(bpmnDiagramId), RoleEnum.OWNER)) {
-            int affectedRows = this.bpmnDiagramVersionJpa.deleteBpmnDiagramVersionEntitiesByBpmnDiagramEntity_BpmnDiagramId(bpmnDiagramId);
-            this.bpmnDiagramJpa.deleteBpmnDiagramEntitiyByBpmnDiagramId(bpmnDiagramId);
-            System.out.println("Deleted Diagram including " + affectedRows + " child versions");
+        if(this.authService.checkIfOperationIsAllowed(bpmnRepositoryId, RoleEnum.ADMIN)) {
+            int deletedDiagrams = this.bpmnDiagramJpa.deleteBpmnDiagramEntitiyByBpmnDiagramId(bpmnDiagramId);
+            log.info(String.format("Deleted %s Diagram ?including child versions?", deletedDiagrams));
         }
         else{
-            System.out.println("Deleting Diagram failed");
+            log.debug("Deleting Diagram failed");
         }
-
     }
 
-    public void saveToDb(BpmnDiagramEntity bpmnDiagramEntity){
-        //check if user is allowed to
-        if(authService.checkIfOperationIsAllowed(bpmnDiagramEntity.getBpmnDiagramRepository().getBpmnRepositoryId(), RoleEnum.MEMBER)){
+    private void saveToDb(BpmnDiagramEntity bpmnDiagramEntity){
+        if(authService.checkIfOperationIsAllowed(bpmnDiagramEntity.getBpmnRepositoryId(), RoleEnum.MEMBER)){
             bpmnDiagramJpa.save(bpmnDiagramEntity);
-            System.out.println("Created Diagram");
+            log.debug("Created Diagram");
         }
         else{
-            System.out.println("Creating Diagram failed");
+            log.debug("Creating Diagram failed");
         }
     }
 
 
-    //___________________________ Helper ______________________
+    public void deleteAllByRepositoryId(String bpmnRepositoryId){
+            //Auth check performed in Facade
+            int deletedDiagrams = this.bpmnDiagramJpa.deleteAllByBpmnRepositoryId(bpmnRepositoryId);
+            log.debug(String.format("Deleted %s diagrams", deletedDiagrams));
 
-    public String getRepositoryIdByDiagramId(String bpmnDiagramId){
-        return this.bpmnDiagramJpa.findBpmnDiagramEntityByBpmnDiagramIdEquals(bpmnDiagramId).getBpmnDiagramRepository().getBpmnRepositoryId();
-    }
-
-    public BpmnRepositoryEntity getBpmnRepositoryById(String repositoryId){
-        if(this.authService.checkIfOperationIsAllowed(repositoryId, RoleEnum.VIEWER)){
-            return bpmnRepoJpa.findByBpmnRepositoryId(repositoryId);
-        }
-        else{ return null; }
     }
 }

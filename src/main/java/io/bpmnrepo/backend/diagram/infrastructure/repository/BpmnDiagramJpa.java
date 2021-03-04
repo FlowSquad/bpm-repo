@@ -9,10 +9,12 @@ import java.util.List;
 public interface BpmnDiagramJpa extends JpaRepository<BpmnDiagramEntity, String> {
 
     // underscore in methodname to refer to child prop
-    List<BpmnDiagramEntity> findBpmnDiagramEntitiesByBpmnDiagramRepository_BpmnRepositoryIdEquals(String bpmnDiagramRepositoryId);
+    List<BpmnDiagramEntity> findBpmnDiagramEntitiesByBpmnRepositoryId(String bpmnDiagramRepositoryId);
     BpmnDiagramEntity findBpmnDiagramEntityByBpmnDiagramIdEquals(String bpmnDiagramId);
 
     @Transactional
-    void deleteBpmnDiagramEntitiyByBpmnDiagramId(String bpmnDiagramId);
+    int deleteBpmnDiagramEntitiyByBpmnDiagramId(String bpmnDiagramId);
 
+    @Transactional
+    int deleteAllByBpmnRepositoryId(String bpmnRepositoryId);
 }

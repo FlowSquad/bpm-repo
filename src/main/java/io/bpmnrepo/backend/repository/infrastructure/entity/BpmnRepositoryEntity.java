@@ -34,8 +34,4 @@ public class BpmnRepositoryEntity {
     @Column(name = "updated_date", nullable = false)
     private LocalDateTime updatedDate;
 
-    @ManyToOne
-    @JoinColumn(name = "bpmn_diagram_id")
-    private BpmnDiagramEntity bpmnDiagram;
-
 }

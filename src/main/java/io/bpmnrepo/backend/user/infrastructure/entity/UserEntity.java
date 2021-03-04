@@ -22,7 +22,7 @@ public class UserEntity {
     @Column(name = "user_id", unique = true, updatable = false, nullable = false, length = 36)
     private String userId;
 
-    @Column(name = "username")
-    private String username;
+    @Column(name = "user_name")
+    private String userName;
 
 }

@@ -8,6 +8,7 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface RepositoryMapper {
-    public BpmnRepositoryTO toTO(final BpmnRepositoryEntity entity);
-    public BpmnRepositoryEntity toEntity(final BpmnRepository model);
+    BpmnRepositoryTO toTO(final BpmnRepositoryEntity entity);
+
+    BpmnRepositoryEntity toEntity(final BpmnRepository model);
 }

@@ -19,7 +19,9 @@ public class BpmnRepository {
     private LocalDateTime updatedDate;
 
     public BpmnRepository(final BpmnRepositoryTO bpmnRepositoryTO){
-        this.bpmnRepositoryId = bpmnRepositoryTO.getBpmnRepositoryId();
+        this.bpmnRepositoryId = bpmnRepositoryTO.getBpmnRepositoryId() == null || bpmnRepositoryTO.getBpmnRepositoryId().isBlank()
+                                ? null
+                                : bpmnRepositoryTO.getBpmnRepositoryId();
         this.bpmnRepositoryName = bpmnRepositoryTO.getBpmnRepositoryName();
         this.bpmnRepositoryDescription = bpmnRepositoryTO.getBpmnRepositoryDescription();
         this.createdDate = LocalDateTime.now();

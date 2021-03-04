@@ -3,6 +3,7 @@ package io.bpmnrepo.backend.diagram.api.resource;
 
 import com.sun.istack.NotNull;
 import io.bpmnrepo.backend.diagram.api.transport.BpmnDiagramVersionTO;
+import io.bpmnrepo.backend.diagram.domain.mapper.VersionMapper;
 import io.bpmnrepo.backend.shared.mapper.Mapper;
 import io.bpmnrepo.backend.diagram.domain.business.BpmnDiagramVersionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @RestController
@@ -19,36 +21,40 @@ import java.util.List;
 public class BpmnDiagramVersionController {
 
     private final BpmnDiagramVersionService bpmnDiagramVersionService;
-    private final Mapper mapper;
-
 
     @PostMapping
-    @Operation(summary = "Create a new Version of a Diagram")
-    public ResponseEntity<Void> createNewVersion(@RequestBody @Validated final BpmnDiagramVersionTO bpmnDiagramVersionTO){
+    @Operation(summary = "Create new Version of a Diagram")
+    public ResponseEntity<Void> createOrUpdateVersion(@RequestBody @Validated final BpmnDiagramVersionTO bpmnDiagramVersionTO){
         System.out.println("Creating a new version");
-        this.bpmnDiagramVersionService.createNewVersion(bpmnDiagramVersionTO);
+        this.bpmnDiagramVersionService.createOrUpdateVersion(bpmnDiagramVersionTO);
         return ResponseEntity.ok().build();
     }
 
     //get the latest version of a diagram
-    @GetMapping("{bpmnDiagramId}")
+    @GetMapping("/{bpmnRepositoryId}/{bpmnDiagramId}")
     @Operation(summary = "Return the latest version of the requested diagram")
-    public ResponseEntity<BpmnDiagramVersionTO> getLatestVersion(@PathVariable @NotNull final String bpmnDiagramId){
+    public ResponseEntity<BpmnDiagramVersionTO> getLatestVersion(@PathVariable @NotBlank final String bpmnRepositoryId,
+                                                                 @PathVariable @NotBlank final String bpmnDiagramId){
+        System.out.println(bpmnRepositoryId);
         System.out.println("Returning latest version of Diagram " + bpmnDiagramId);
-        return ResponseEntity.ok().body(this.bpmnDiagramVersionService.getLatestVersion(bpmnDiagramId));
+        return ResponseEntity.ok().body(this.bpmnDiagramVersionService.getLatestVersion(bpmnRepositoryId, bpmnDiagramId));
     }
 
     //get all versions by providing the corresponding parent diagram id
-    @GetMapping("/all/{bpmnDiagramId}")
-    public ResponseEntity<List<BpmnDiagramVersionTO>> getAllVersions(@PathVariable @NotNull final String bpmnDiagramId){
+    @GetMapping("/all/{bpmnRepositoryId}/{bpmnDiagramId}")
+    public ResponseEntity<List<BpmnDiagramVersionTO>> getAllVersions(@PathVariable @NotBlank final String bpmnRepositoryId,
+                                                                     @PathVariable @NotBlank final String bpmnDiagramId){
         System.out.println("Returning all Versions of Diagram " + bpmnDiagramId);
-        return ResponseEntity.ok().body(this.bpmnDiagramVersionService.getAllVersions(bpmnDiagramId));
+        return ResponseEntity.ok().body(this.bpmnDiagramVersionService.getAllVersions(bpmnRepositoryId, bpmnDiagramId));
     }
 
     //get one specific version by providing version id
-    @GetMapping("/single/{bpmnDiagramVersionId}")
-    public ResponseEntity<BpmnDiagramVersionTO> getSingleVersion(@PathVariable @NotNull final String bpmnDiagramVersionId){
+    //diagramID act. not neccessary
+    @GetMapping("/{bpmnRepositoryId}/{bpmnDiagramId}/{bpmnDiagramVersionId}")
+    public ResponseEntity<BpmnDiagramVersionTO> getSingleVersion(@PathVariable @NotBlank final String bpmnRepositoryId,
+                                                                 @PathVariable @NotBlank final String bpmnDiagramId,
+                                                                 @PathVariable @NotBlank final String bpmnDiagramVersionId){
         System.out.println("Returning single Version");
-        return ResponseEntity.ok().body(this.bpmnDiagramVersionService.getSingleVersion(bpmnDiagramVersionId));
+        return ResponseEntity.ok().body(this.bpmnDiagramVersionService.getSingleVersion(bpmnRepositoryId, bpmnDiagramId, bpmnDiagramVersionId));
     }
 }

@@ -9,11 +9,9 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface DiagramMapper {
-    public BpmnDiagram toModel(final BpmnDiagramTO to);
+    BpmnDiagram toModel(final BpmnDiagramTO to);
 
-    @Mapping(source = "entity", target = "bpmnDiagramRepository")
-    public BpmnDiagramEntity toEntity(final BpmnDiagram model, final BpmnRepositoryEntity entity);
+    BpmnDiagramEntity toEntity(final BpmnDiagram model);
 
-    @Mapping(source = "bpmnDiagramRepository.bpmnRepositoryId", target = "bpmnDiagramRepositoryId")
-    public BpmnDiagramTO toTO(final BpmnDiagramEntity entity);
+    BpmnDiagramTO toTO(final BpmnDiagramEntity entity);
 }

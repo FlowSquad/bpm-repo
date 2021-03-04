@@ -8,13 +8,12 @@ import java.util.List;
 
 public interface BpmnDiagramVersionJpa extends JpaRepository<BpmnDiagramVersionEntity, String> {
 
-    List<BpmnDiagramVersionEntity> findAllByBpmnDiagramEntity_BpmnDiagramId(String bpmnDiagramId);
+    List<BpmnDiagramVersionEntity> findAllByBpmnDiagramId(String bpmnDiagramId);
 
     BpmnDiagramVersionEntity findAllByBpmnDiagramVersionIdEquals(String bpmnDiagramVersionId);
 
-    BpmnDiagramVersionEntity findFirstByBpmnDiagramEntity_BpmnDiagramIdOrderByBpmnDiagramVersionNumberDesc(String bpmnDiagramId);
+    BpmnDiagramVersionEntity findFirstByBpmnDiagramIdOrderByBpmnDiagramVersionNumberDesc(String bpmnDiagramId);
 
     @Transactional
-    int deleteBpmnDiagramVersionEntitiesByBpmnDiagramEntity_BpmnDiagramId(String bpmnDiagramId);
-
+    int deleteAllByBpmnRepositoryId(String bpmnRepositoryId);
 }

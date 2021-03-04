@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserJpa extends JpaRepository<UserEntity, String> {
 
-    UserEntity findByUsernameEquals(String userName);
+    UserEntity findByUserNameEquals(String userName);
+    Boolean existsUserEntityByUserName(String userName);
 
 }

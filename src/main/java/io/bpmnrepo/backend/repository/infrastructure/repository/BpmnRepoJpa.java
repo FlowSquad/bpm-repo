@@ -11,12 +11,11 @@ import java.util.List;
 public interface BpmnRepoJpa extends JpaRepository<BpmnRepositoryEntity, String>{
     List<BpmnRepositoryEntity> findAllByBpmnRepositoryNameIsNot(String bpmnRepositoryName);
 
-    List<BpmnRepositoryEntity> findAllByBpmnRepositoryIdIn(List<String> bpmnRepositoryIds);
+    List<BpmnRepositoryEntity> findAllByBpmnRepositoryId(String bpmnRepositoryId);
+
 
     @Transactional
     void deleteBpmnRepositoryEntityByBpmnRepositoryId(String bpmnRepositoryId);
 
     BpmnRepositoryEntity findByBpmnRepositoryId(String bpmnRepositoryId);
-    //assigned repoIds mitgeben
-    //List<BpmnRepositoryEntity> findAllByBpmnRepositoryIdIn
 }

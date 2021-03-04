@@ -22,17 +22,16 @@ public class BpmnDiagramVersionEntity {
     @Column(name = "bpmn_diagram_version_name", nullable = false)
     private String bpmnDiagramVersionName;
 
-
-    //Counting versions automatically is not done like that (maybe also not wanted to be set automatically)
-    @Version
-    @Column(name = "bpmn_diagram_version_number", columnDefinition = "integer DEFAULT 0")
+    @Column(name = "bpmn_diagram_version_number")
     private Long bpmnDiagramVersionNumber;
 
     //must not be nullable
     @Column(name = "bpmn_diagram_version_file")
     private byte bpmnDiagramVersionFile;
 
-    @ManyToOne
-    @JoinColumn(name = "bpmn_diagram_id", nullable = false)
-    private BpmnDiagramEntity bpmnDiagramEntity;
+    @Column(name = "bpmn_diagram_id", nullable = false)
+    private String bpmnDiagramId;
+
+    @Column(name = "bpmn_repository_id", nullable = false)
+    private String bpmnRepositoryId;
 }

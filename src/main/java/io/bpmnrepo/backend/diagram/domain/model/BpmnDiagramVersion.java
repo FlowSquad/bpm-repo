@@ -12,6 +12,7 @@ public class BpmnDiagramVersion {
     private String bpmnDiagramVersionId;
     private String bpmnDiagramVersionName;
     private String bpmnDiagramId;
+    private String bpmnRepositoryId;
     private Long bpmnDiagramVersionNumber;
     private byte bpmnDiagramVersionFile;
 
@@ -20,11 +21,14 @@ public class BpmnDiagramVersion {
     public BpmnDiagramVersion(final BpmnDiagramVersionTO bpmnDiagramVersionTO){
         this.bpmnDiagramVersionId = bpmnDiagramVersionTO.getBpmnDiagramVersionId();
         this.bpmnDiagramVersionName = bpmnDiagramVersionTO.getBpmnDiagramVersionName();
-        this.bpmnDiagramId = bpmnDiagramVersionTO.getBpmnDiagramId();
         this.bpmnDiagramVersionNumber = bpmnDiagramVersionTO.getBpmnDiagramVersionNumber() == null
+                                        || bpmnDiagramVersionTO.getBpmnDiagramVersionName().isEmpty()
+                                        || bpmnDiagramVersionTO.getBpmnDiagramVersionNumber() == 0L
                                             ? 1L
                                             : this.increaseVersionNumber(bpmnDiagramVersionTO.getBpmnDiagramVersionNumber());
         this.bpmnDiagramVersionFile = bpmnDiagramVersionTO.getBpmnDiagramVersionFile();
+        this.bpmnDiagramId = bpmnDiagramVersionTO.getBpmnDiagramId();
+        this.bpmnRepositoryId = bpmnDiagramVersionTO.getBpmnRepositoryId();
     }
 
     public Long increaseVersionNumber(Long currentVersion){

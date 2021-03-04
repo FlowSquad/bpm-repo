@@ -16,7 +16,7 @@ public class BpmnDiagramTO {
     private String bpmnDiagramId;
 
     @NotNull
-    private String bpmnDiagramRepositoryId;
+    private String bpmnRepositoryId;
 
     @NotNull
     private String bpmnDiagramName;
