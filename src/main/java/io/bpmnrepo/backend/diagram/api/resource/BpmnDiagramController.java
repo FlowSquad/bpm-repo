@@ -1,6 +1,7 @@
 package io.bpmnrepo.backend.diagram.api.resource;
 
 
+import io.bpmnrepo.backend.diagram.BpmnDiagramFacade;
 import io.bpmnrepo.backend.diagram.api.transport.BpmnDiagramTO;
 import io.bpmnrepo.backend.shared.mapper.Mapper;
 import io.bpmnrepo.backend.diagram.domain.business.BpmnDiagramService;
@@ -19,15 +20,14 @@ import java.util.List;
 @RequestMapping("/api/diagram")
 public class BpmnDiagramController {
 
-    private final Mapper mapper;
-    private final BpmnDiagramService bpmnDiagramService;
+    private final BpmnDiagramFacade bpmnDiagramFacade;
 
 
     //create new Diagram, parent RepositoryID has to be passed
     @PostMapping()
     public ResponseEntity<Void> createDiagram(@RequestBody @Validated final BpmnDiagramTO bpmnDiagramTO){
         System.out.println("creating new Diagram: \"" + bpmnDiagramTO.getBpmnDiagramName() + "\"");
-        this.bpmnDiagramService.createDiagram(bpmnDiagramTO);
+        this.bpmnDiagramFacade.createDiagram(bpmnDiagramTO);
         return ResponseEntity.ok().build();
     }
 
@@ -35,16 +35,16 @@ public class BpmnDiagramController {
     public ResponseEntity<List<BpmnDiagramTO>> getDiagramsFromRepo(@PathVariable @NotBlank String repositoryId){
         //Exceptionhandling for n.a. repositoryId
         System.out.println(String.format("Returning diagrams from repository %s", repositoryId));
-        return ResponseEntity.ok().body(this.bpmnDiagramService.getDiagramsFromRepo(repositoryId));
+        return ResponseEntity.ok().body(this.bpmnDiagramFacade.getDiagramsFromRepo(repositoryId));
 
     }
 
-    //URL muss mit {RepositoryId}/{DiagramId} enden// Oder nur Kosmetik? :D
+
     @GetMapping("/{bpmnRepositoryId}/{bpmnDiagramId}")
     public ResponseEntity<BpmnDiagramTO> getSingleDiagram(@PathVariable @NotBlank String bpmnRepositoryId,
                                                           @PathVariable @NotBlank String bpmnDiagramId){
-        System.out.println("Returning single diagram with id" + bpmnDiagramId);
-        return ResponseEntity.ok().body(this.bpmnDiagramService.getSingleDiagram(bpmnRepositoryId, bpmnDiagramId));
+        System.out.println("Returning diagram with id" + bpmnDiagramId);
+        return ResponseEntity.ok().body(this.bpmnDiagramFacade.getSingleDiagram(bpmnRepositoryId, bpmnDiagramId));
     }
 
     @DeleteMapping("{bpmnRepositoryId}/{bpmnDiagramId}")
@@ -52,7 +52,7 @@ public class BpmnDiagramController {
     public ResponseEntity<Void> deleteDiagram(@PathVariable @NotBlank String bpmnRepositoryId,
                                               @PathVariable @NotBlank String bpmnDiagramId){
         System.out.println("Deleting Diagram with ID " + bpmnDiagramId);
-        this.bpmnDiagramService.deleteDiagram(bpmnRepositoryId, bpmnDiagramId);
+        this.bpmnDiagramFacade.deleteDiagram(bpmnRepositoryId, bpmnDiagramId);
         return ResponseEntity.ok().build();
     }
 }

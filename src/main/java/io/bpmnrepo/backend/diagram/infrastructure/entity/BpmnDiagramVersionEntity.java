@@ -3,6 +3,7 @@ package io.bpmnrepo.backend.diagram.infrastructure.entity;
 
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 
@@ -27,7 +28,7 @@ public class BpmnDiagramVersionEntity {
 
     //must not be nullable
     @Column(name = "bpmn_diagram_version_file")
-    private byte bpmnDiagramVersionFile;
+    private byte[] bpmnDiagramVersionFile;
 
     @Column(name = "bpmn_diagram_id", nullable = false)
     private String bpmnDiagramId;

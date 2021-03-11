@@ -26,68 +26,33 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BpmnRepositoryService {
 
-
     private final RepositoryMapper mapper;
-    private final AuthService authService;
     private final BpmnRepoJpa bpmnRepoJpa;
-
-
-
-
 
     public String createRepository(BpmnRepositoryTO bpmnRepositoryTO){
         BpmnRepository bpmnRepository = new BpmnRepository(bpmnRepositoryTO);
         BpmnRepositoryEntity bpmnRepositoryEntity = this.mapper.toEntity(bpmnRepository);
-        System.out.println(bpmnRepositoryEntity.getBpmnRepositoryId() + "id");
-        System.out.println(bpmnRepositoryEntity.getBpmnRepositoryDescription() + "desc");
-        System.out.println(bpmnRepositoryEntity.getCreatedDate() + "date");
-
         this.saveToDb(bpmnRepositoryEntity);
-        System.out.println(bpmnRepositoryEntity.getBpmnRepositoryId());
         return bpmnRepositoryEntity.getBpmnRepositoryId();
     }
 
 
-/*
-    public List<BpmnRepositoryTO> getAllRepositories(List<String> bpmnRepositoryIds) {
-        return this.bpmnRepoJpa.findAllByBpmnRepositoryId(bpmnRepositoryIds).stream()
-                    .map(this.mapper::toTO)
-                    .collect(Collectors.toList());
-    }*/
-
+    public void updateRepository(BpmnRepositoryTO bpmnRepositoryTO){
+        BpmnRepositoryEntity bpmnRepositoryEntity = this.bpmnRepoJpa.getOne(bpmnRepositoryTO.getBpmnRepositoryId());
+        BpmnRepository bpmnRepository = new BpmnRepository(bpmnRepositoryTO);
+        if(bpmnRepository.getBpmnRepositoryName() != null && !bpmnRepository.getBpmnRepositoryName().isEmpty()){
+            bpmnRepositoryEntity.setBpmnRepositoryName(bpmnRepositoryTO.getBpmnRepositoryName());
+        }
+        if(bpmnRepository.getBpmnRepositoryDescription() != null && !bpmnRepository.getBpmnRepositoryDescription().isEmpty()){
+            bpmnRepositoryEntity.setBpmnRepositoryDescription(bpmnRepository.getBpmnRepositoryDescription());
+        }
+        bpmnRepositoryEntity.setUpdatedDate(bpmnRepository.getUpdatedDate());
+        this.saveToDb(bpmnRepositoryEntity);
+    }
 
     public BpmnRepositoryTO getSingleRepository(String repositoryId){
-        if(this.authService.checkIfOperationIsAllowed(repositoryId, RoleEnum.VIEWER)){
-            return this.mapper.toTO(this.bpmnRepoJpa.findByBpmnRepositoryId(repositoryId));
-        }
-        else{
-            throw new AccessRightException("You are not allowed to view this repository");
-        }
+        return this.mapper.toTO(this.bpmnRepoJpa.findByBpmnRepositoryId(repositoryId));
     }
-
-
-    public void updateRepository(BpmnRepositoryTO bpmnRepositoryTO){
-        if(this.authService.checkIfOperationIsAllowed(bpmnRepositoryTO.getBpmnRepositoryId(), RoleEnum.ADMIN)) {
-            BpmnRepositoryEntity bpmnRepositoryEntity = this.bpmnRepoJpa.getOne(bpmnRepositoryTO.getBpmnRepositoryId());
-            BpmnRepository bpmnRepository = new BpmnRepository(bpmnRepositoryTO);
-
-            if(bpmnRepository.getBpmnRepositoryName() != null && !bpmnRepository.getBpmnRepositoryName().isEmpty()){
-                bpmnRepositoryEntity.setBpmnRepositoryName(bpmnRepositoryTO.getBpmnRepositoryName());
-            }
-
-            if(bpmnRepository.getBpmnRepositoryDescription() != null && !bpmnRepository.getBpmnRepositoryDescription().isEmpty()){
-                bpmnRepositoryEntity.setBpmnRepositoryDescription(bpmnRepository.getBpmnRepositoryDescription());
-            }
-
-            bpmnRepositoryEntity.setUpdatedDate(bpmnRepository.getUpdatedDate());
-            this.saveToDb(bpmnRepositoryEntity);
-        }
-        else{
-            throw new AccessRightException("Only Admins and Owners are allowed to change the repository parameters");
-        }
-    }
-
-
 
     public void deleteRepository(String bpmnRepositoryId){
         this.bpmnRepoJpa.deleteBpmnRepositoryEntityByBpmnRepositoryId(bpmnRepositoryId);

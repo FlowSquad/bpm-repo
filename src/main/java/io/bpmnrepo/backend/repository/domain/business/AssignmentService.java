@@ -3,7 +3,6 @@ package io.bpmnrepo.backend.repository.domain.business;
 import io.bpmnrepo.backend.repository.domain.mapper.AssignmentMapper;
 import io.bpmnrepo.backend.repository.domain.model.Assignment;
 import io.bpmnrepo.backend.shared.AuthService;
-import io.bpmnrepo.backend.shared.mapper.Mapper;
 import io.bpmnrepo.backend.repository.infrastructure.entity.AssignmentEntity;
 import io.bpmnrepo.backend.shared.enums.RoleEnum;
 import io.bpmnrepo.backend.shared.exception.AccessRightException;
@@ -31,26 +30,23 @@ public class AssignmentService {
     public void createAssignment(AssignmentTO assignmentTO) {
         //Assign the creator as Owner of the new repo
         String userId = this.userService.getUserIdByUserName(assignmentTO.getUserName());
-        if(this.authService.checkIfOperationIsAllowed(assignmentTO.getBpmnRepositoryId(), RoleEnum.ADMIN)) {
-            //Exception if the user tries to change its own rights
-            if (userId == this.userService.getUserIdOfCurrentUser()) {
-                throw new AccessRightException("You can't change your own role");
-            }
-            //Exception if the user tries to change the role of someone with higher permissions (if an admin tries to change the role of an owner)
-            if(this.getUserRole(assignmentTO.getBpmnRepositoryId(), userId).ordinal() < this.getUserRole(assignmentTO.getBpmnRepositoryId(), this.userService.getUserIdOfCurrentUser()).ordinal()){
-                throw new AccessRightException("You cant change the role of " + this.getUserRole(assignmentTO.getBpmnRepositoryId(), userId) + " because your role provides less rights (You are an " + this.getUserRole(assignmentTO.getBpmnRepositoryId(), this.userService.getUserIdOfCurrentUser()) + ")");
-            }
-            //Exception if the user tries to give someone a role that is higher than its own
-            if(this.getUserRole(assignmentTO.getBpmnRepositoryId(), this.userService.getUserIdOfCurrentUser()).ordinal() > assignmentTO.getRoleEnum().ordinal()){
-                throw new AccessRightException("You can't assign roles with higher permissions than your own");
-            }
-            Assignment assignment = new Assignment(userId, assignmentTO.getBpmnRepositoryId(), assignmentTO.getRoleEnum());
-            AssignmentEntity assignmentEntity = this.mapper.toEntity(assignment, this.mapper.toEmbeddable(assignment.getUserId(), assignment.getBpmnRepositoryId()));
-            this.saveToDb(assignmentEntity);
+        this.authService.checkIfOperationIsAllowed(assignmentTO.getBpmnRepositoryId(), RoleEnum.ADMIN);
+
+        //Exception if the user tries to change its own rights
+        if (userId == this.userService.getUserIdOfCurrentUser()) {
+            throw new AccessRightException("You can't change your own role");
         }
-        else{
-            throw new AccessRightException("Admin rights required to create new assignments");
+        //Exception if the user tries to change the role of someone with higher permissions (if an admin tries to change the role of an owner)
+        if(this.getUserRole(assignmentTO.getBpmnRepositoryId(), userId).ordinal() < this.getUserRole(assignmentTO.getBpmnRepositoryId(), this.userService.getUserIdOfCurrentUser()).ordinal()){
+            throw new AccessRightException("You cant change the role of " + this.getUserRole(assignmentTO.getBpmnRepositoryId(), userId) + " because your role provides less rights (You are an " + this.getUserRole(assignmentTO.getBpmnRepositoryId(), this.userService.getUserIdOfCurrentUser()) + ")");
         }
+        //Exception if the user tries to give someone a role that is higher than its own
+        if(this.getUserRole(assignmentTO.getBpmnRepositoryId(), this.userService.getUserIdOfCurrentUser()).ordinal() > assignmentTO.getRoleEnum().ordinal()){
+            throw new AccessRightException("You can't assign roles with higher permissions than your own");
+        }
+        Assignment assignment = new Assignment(userId, assignmentTO.getBpmnRepositoryId(), assignmentTO.getRoleEnum());
+        AssignmentEntity assignmentEntity = this.mapper.toEntity(assignment, this.mapper.toEmbeddable(assignment.getUserId(), assignment.getBpmnRepositoryId()));
+        this.saveToDb(assignmentEntity);
     }
 
 
@@ -80,13 +76,9 @@ public class AssignmentService {
 
 
     public void saveToDb(AssignmentEntity assignmentEntity){
-        if(authService.checkIfOperationIsAllowed(assignmentEntity.getAssignmentId().getBpmnRepositoryId(), RoleEnum.ADMIN)){
-            assignmentJpa.save(assignmentEntity);
-            log.debug("Created Assignment");
-        }
-        else{
-            System.out.println("");
-        }
+        authService.checkIfOperationIsAllowed(assignmentEntity.getAssignmentId().getBpmnRepositoryId(), RoleEnum.ADMIN);
+        assignmentJpa.save(assignmentEntity);
+        log.debug("Created Assignment");
     }
 
     public void deleteAllByRepositoryId(String bpmnRepositoryId){

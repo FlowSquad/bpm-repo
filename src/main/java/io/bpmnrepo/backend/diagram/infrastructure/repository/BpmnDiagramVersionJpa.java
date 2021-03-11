@@ -16,4 +16,7 @@ public interface BpmnDiagramVersionJpa extends JpaRepository<BpmnDiagramVersionE
 
     @Transactional
     int deleteAllByBpmnRepositoryId(String bpmnRepositoryId);
+
+    @Transactional
+    int deleteAllByBpmnDiagramId(String bpmnDiagramId);
 }

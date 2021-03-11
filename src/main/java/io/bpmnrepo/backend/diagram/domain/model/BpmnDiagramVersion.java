@@ -2,6 +2,7 @@ package io.bpmnrepo.backend.diagram.domain.model;
 
 import io.bpmnrepo.backend.diagram.api.transport.BpmnDiagramVersionTO;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Builder
@@ -14,7 +15,7 @@ public class BpmnDiagramVersion {
     private String bpmnDiagramId;
     private String bpmnRepositoryId;
     private Long bpmnDiagramVersionNumber;
-    private byte bpmnDiagramVersionFile;
+    private byte[] bpmnDiagramVersionFile;
 
 
     //TODO: Version counter

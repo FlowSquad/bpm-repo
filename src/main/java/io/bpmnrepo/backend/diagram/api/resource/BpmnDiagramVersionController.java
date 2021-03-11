@@ -1,10 +1,8 @@
 package io.bpmnrepo.backend.diagram.api.resource;
 
 
-import com.sun.istack.NotNull;
 import io.bpmnrepo.backend.diagram.api.transport.BpmnDiagramVersionTO;
-import io.bpmnrepo.backend.diagram.domain.mapper.VersionMapper;
-import io.bpmnrepo.backend.shared.mapper.Mapper;
+import io.bpmnrepo.backend.diagram.BpmnDiagramVersionFacade;
 import io.bpmnrepo.backend.diagram.domain.business.BpmnDiagramVersionService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +18,13 @@ import java.util.List;
 @RequestMapping("api/version")
 public class BpmnDiagramVersionController {
 
-    private final BpmnDiagramVersionService bpmnDiagramVersionService;
+    private final BpmnDiagramVersionFacade bpmnDiagramVersionFacade;
 
     @PostMapping
     @Operation(summary = "Create new Version of a Diagram")
     public ResponseEntity<Void> createOrUpdateVersion(@RequestBody @Validated final BpmnDiagramVersionTO bpmnDiagramVersionTO){
         System.out.println("Creating a new version");
-        this.bpmnDiagramVersionService.createOrUpdateVersion(bpmnDiagramVersionTO);
+        this.bpmnDiagramVersionFacade.createOrUpdateVersion(bpmnDiagramVersionTO);
         return ResponseEntity.ok().build();
     }
 
@@ -35,17 +33,16 @@ public class BpmnDiagramVersionController {
     @Operation(summary = "Return the latest version of the requested diagram")
     public ResponseEntity<BpmnDiagramVersionTO> getLatestVersion(@PathVariable @NotBlank final String bpmnRepositoryId,
                                                                  @PathVariable @NotBlank final String bpmnDiagramId){
-        System.out.println(bpmnRepositoryId);
-        System.out.println("Returning latest version of Diagram " + bpmnDiagramId);
-        return ResponseEntity.ok().body(this.bpmnDiagramVersionService.getLatestVersion(bpmnRepositoryId, bpmnDiagramId));
+        System.out.println("Returning latest version");
+        return ResponseEntity.ok().body(this.bpmnDiagramVersionFacade.getLatestVersion(bpmnRepositoryId, bpmnDiagramId));
     }
 
     //get all versions by providing the corresponding parent diagram id
     @GetMapping("/all/{bpmnRepositoryId}/{bpmnDiagramId}")
     public ResponseEntity<List<BpmnDiagramVersionTO>> getAllVersions(@PathVariable @NotBlank final String bpmnRepositoryId,
                                                                      @PathVariable @NotBlank final String bpmnDiagramId){
-        System.out.println("Returning all Versions of Diagram " + bpmnDiagramId);
-        return ResponseEntity.ok().body(this.bpmnDiagramVersionService.getAllVersions(bpmnRepositoryId, bpmnDiagramId));
+        System.out.println("Returning all Versions");
+        return ResponseEntity.ok().body(this.bpmnDiagramVersionFacade.getAllVersions(bpmnRepositoryId, bpmnDiagramId));
     }
 
     //get one specific version by providing version id
@@ -55,6 +52,6 @@ public class BpmnDiagramVersionController {
                                                                  @PathVariable @NotBlank final String bpmnDiagramId,
                                                                  @PathVariable @NotBlank final String bpmnDiagramVersionId){
         System.out.println("Returning single Version");
-        return ResponseEntity.ok().body(this.bpmnDiagramVersionService.getSingleVersion(bpmnRepositoryId, bpmnDiagramId, bpmnDiagramVersionId));
+        return ResponseEntity.ok().body(this.bpmnDiagramVersionFacade.getSingleVersion(bpmnRepositoryId, bpmnDiagramId, bpmnDiagramVersionId));
     }
 }

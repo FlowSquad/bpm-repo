@@ -17,7 +17,7 @@ public class AuthService {
     private final UserService userService;
     private final AssignmentJpa assignmentJpa;
 
-    public boolean checkIfOperationIsAllowed(String bpmnRepositoryId, RoleEnum minimumRequiredRole){
+    public void checkIfOperationIsAllowed(String bpmnRepositoryId, RoleEnum minimumRequiredRole){
         final String userId = this.userService.getUserIdOfCurrentUser();
 
         AssignmentEntity assignmentEntity = this.assignmentJpa.findByAssignmentId_BpmnRepositoryIdAndAssignmentId_UserId(bpmnRepositoryId, userId);
@@ -30,11 +30,9 @@ public class AuthService {
             //0: OWNER - 1: ADMIN 2: MEMBER 3: VIEWER
             if(minimumRequiredRole.ordinal() >= roleEnum.ordinal()){
                 log.debug("PERMISSION GRANTED");
-                return true;
             }
             else{
-                log.debug("PERMISSION DENIED: Required role for this operation: \"" + minimumRequiredRole + "\" - Your role is: \"" + roleEnum.toString() + "\"");
-                return false;
+                throw new AccessRightException(" Required role for this operation: \"" + minimumRequiredRole + "\" - Your role is: \"" + roleEnum.toString() + "\"");
             }
 
         }
