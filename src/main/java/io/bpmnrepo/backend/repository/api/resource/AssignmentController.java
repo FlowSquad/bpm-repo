@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/assignment")
 public class AssignmentController {
 
-    private final Mapper mapper;
     private final AssignmentService assignmentService;
-    private final UserService userService;
 
     @PostMapping
     public ResponseEntity<Void> createUserAssignment(@RequestBody @Validated AssignmentTO assignmentTO){

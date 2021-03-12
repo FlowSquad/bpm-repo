@@ -32,7 +32,7 @@ public class AuthService {
                 log.debug("PERMISSION GRANTED");
             }
             else{
-                throw new AccessRightException(" Required role for this operation: \"" + minimumRequiredRole + "\" - Your role is: \"" + roleEnum.toString() + "\"");
+                throw new AccessRightException("Required role for this operation: \"" + minimumRequiredRole + "\" - Your role is: \"" + roleEnum.toString() + "\"");
             }
 
         }

@@ -25,26 +25,28 @@ public class AssignmentService {
     private final AuthService authService;
     private final UserService userService;
     private final AssignmentMapper mapper;
-    //method that checks if an Assignment has to be updated or created
 
+
+    //0: Owner, 1: Admin, 2: Member, 3: Viewer
     public void createAssignment(AssignmentTO assignmentTO) {
-        //Assign the creator as Owner of the new repo
-        String userId = this.userService.getUserIdByUserName(assignmentTO.getUserName());
+        //Assignments can be managed by Admins and Owners
+        String assignmentUserId = this.userService.getUserIdByUserName(assignmentTO.getUserName());
+        String currentUserId = this.userService.getUserIdOfCurrentUser();
         this.authService.checkIfOperationIsAllowed(assignmentTO.getBpmnRepositoryId(), RoleEnum.ADMIN);
 
         //Exception if the user tries to change its own rights
-        if (userId == this.userService.getUserIdOfCurrentUser()) {
+        if (assignmentUserId == currentUserId) {
             throw new AccessRightException("You can't change your own role");
         }
         //Exception if the user tries to change the role of someone with higher permissions (if an admin tries to change the role of an owner)
-        if(this.getUserRole(assignmentTO.getBpmnRepositoryId(), userId).ordinal() < this.getUserRole(assignmentTO.getBpmnRepositoryId(), this.userService.getUserIdOfCurrentUser()).ordinal()){
-            throw new AccessRightException("You cant change the role of " + this.getUserRole(assignmentTO.getBpmnRepositoryId(), userId) + " because your role provides less rights (You are an " + this.getUserRole(assignmentTO.getBpmnRepositoryId(), this.userService.getUserIdOfCurrentUser()) + ")");
+        if(this.getUserRole(assignmentTO.getBpmnRepositoryId(), assignmentUserId).ordinal() < this.getUserRole(assignmentTO.getBpmnRepositoryId(), currentUserId).ordinal()){
+            throw new AccessRightException("You cant change the role of " + this.getUserRole(assignmentTO.getBpmnRepositoryId(), assignmentUserId) + " because your role provides less rights (You are an " + this.getUserRole(assignmentTO.getBpmnRepositoryId(), this.userService.getUserIdOfCurrentUser()) + ")");
         }
         //Exception if the user tries to give someone a role that is higher than its own
-        if(this.getUserRole(assignmentTO.getBpmnRepositoryId(), this.userService.getUserIdOfCurrentUser()).ordinal() > assignmentTO.getRoleEnum().ordinal()){
+        if(this.getUserRole(assignmentTO.getBpmnRepositoryId(), currentUserId).ordinal() > assignmentTO.getRoleEnum().ordinal()){
             throw new AccessRightException("You can't assign roles with higher permissions than your own");
         }
-        Assignment assignment = new Assignment(userId, assignmentTO.getBpmnRepositoryId(), assignmentTO.getRoleEnum());
+        Assignment assignment = new Assignment(assignmentUserId, assignmentTO.getBpmnRepositoryId(), assignmentTO.getRoleEnum());
         AssignmentEntity assignmentEntity = this.mapper.toEntity(assignment, this.mapper.toEmbeddable(assignment.getUserId(), assignment.getBpmnRepositoryId()));
         this.saveToDb(assignmentEntity);
     }
