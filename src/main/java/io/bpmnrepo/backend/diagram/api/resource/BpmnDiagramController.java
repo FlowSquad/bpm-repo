@@ -3,8 +3,6 @@ package io.bpmnrepo.backend.diagram.api.resource;
 
 import io.bpmnrepo.backend.diagram.BpmnDiagramFacade;
 import io.bpmnrepo.backend.diagram.api.transport.BpmnDiagramTO;
-import io.bpmnrepo.backend.shared.mapper.Mapper;
-import io.bpmnrepo.backend.diagram.domain.business.BpmnDiagramService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +10,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @RestController
@@ -25,9 +22,9 @@ public class BpmnDiagramController {
 
     //create new Diagram, parent RepositoryID has to be passed
     @PostMapping()
-    public ResponseEntity<Void> createDiagram(@RequestBody @Validated final BpmnDiagramTO bpmnDiagramTO){
+    public ResponseEntity<Void> createOrUpdateDiagram(@RequestBody @Validated final BpmnDiagramTO bpmnDiagramTO){
         System.out.println("creating new Diagram: \"" + bpmnDiagramTO.getBpmnDiagramName() + "\"");
-        this.bpmnDiagramFacade.createDiagram(bpmnDiagramTO);
+        this.bpmnDiagramFacade.createOrUpdateDiagram(bpmnDiagramTO);
         return ResponseEntity.ok().build();
     }
 

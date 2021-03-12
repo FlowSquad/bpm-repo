@@ -7,11 +7,13 @@ import io.bpmnrepo.backend.diagram.infrastructure.entity.BpmnDiagramVersionEntit
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+
 @Mapper(componentModel = "spring")
 public interface VersionMapper {
 
     BpmnDiagramVersionEntity toEntity(final BpmnDiagramVersion model);
 
+    @Mapping(target = "bpmnAsXML", expression = "java(new String(entity.getBpmnDiagramVersionFile()))")
     BpmnDiagramVersionTO toTO(final BpmnDiagramVersionEntity entity);
 
 }

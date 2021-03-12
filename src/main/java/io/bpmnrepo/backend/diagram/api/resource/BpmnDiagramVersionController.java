@@ -3,14 +3,14 @@ package io.bpmnrepo.backend.diagram.api.resource;
 
 import io.bpmnrepo.backend.diagram.api.transport.BpmnDiagramVersionTO;
 import io.bpmnrepo.backend.diagram.BpmnDiagramVersionFacade;
-import io.bpmnrepo.backend.diagram.domain.business.BpmnDiagramVersionService;
+import io.bpmnrepo.backend.diagram.api.transport.BpmnDiagramVersionUploadTO;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotBlank;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -20,11 +20,24 @@ public class BpmnDiagramVersionController {
 
     private final BpmnDiagramVersionFacade bpmnDiagramVersionFacade;
 
-    @PostMapping
-    @Operation(summary = "Create new Version of a Diagram")
-    public ResponseEntity<Void> createOrUpdateVersion(@RequestBody @Validated final BpmnDiagramVersionTO bpmnDiagramVersionTO){
-        System.out.println("Creating a new version");
-        this.bpmnDiagramVersionFacade.createOrUpdateVersion(bpmnDiagramVersionTO);
+
+    @PostMapping("/{bpmnRepositoryId}/{bpmnDiagramId}")
+    public ResponseEntity<Void> createInitialVersion(@PathVariable @NotBlank String bpmnRepositoryId,
+                                              @PathVariable @NotBlank String bpmnDiagramId,
+                                              @RequestBody BpmnDiagramVersionUploadTO bpmnDiagramVersionUploadTO){
+        bpmnDiagramVersionFacade.createInitialVersion(bpmnRepositoryId, bpmnDiagramId, bpmnDiagramVersionUploadTO);
+        return ResponseEntity.ok().build();
+    }
+
+
+    @PostMapping("/update/{bpmnRepositoryId}/{bpmnDiagramId}")
+    public ResponseEntity<Void> updateVersion(@PathVariable @NotBlank String bpmnRepositoryId,
+                                        @PathVariable @NotBlank String bpmnDiagramId,
+                                        @RequestBody BpmnDiagramVersionTO bpmnDiagramVersionTO) {
+        System.out.println("Creating a new version - body accepted");
+        System.out.println(bpmnDiagramVersionTO.getClass());
+        System.out.println(bpmnDiagramVersionTO.getBpmnAsXML());
+        this.bpmnDiagramVersionFacade.updateVersion(bpmnRepositoryId, bpmnDiagramId, bpmnDiagramVersionTO);
         return ResponseEntity.ok().build();
     }
 

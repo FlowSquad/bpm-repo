@@ -3,9 +3,11 @@ package io.bpmnrepo.backend.diagram.infrastructure.entity;
 
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.web.multipart.MultipartFile;
+
 
 import javax.persistence.*;
+import javax.sql.rowset.serial.SerialBlob;
+import java.sql.Blob;
 
 @Getter
 @Builder
@@ -20,13 +22,13 @@ public class BpmnDiagramVersionEntity {
     @Column(name = "bpmn_diagram_version_id", unique = true, nullable = false, updatable = false, length = 36)
     private String bpmnDiagramVersionId;
 
-    @Column(name = "bpmn_diagram_version_name", nullable = false)
-    private String bpmnDiagramVersionName;
+    @Column(name = "bpmn_diagram_version_comment")
+    private String bpmnDiagramVersionComment;
 
     @Column(name = "bpmn_diagram_version_number")
     private Long bpmnDiagramVersionNumber;
 
-    //must not be nullable
+    @Lob
     @Column(name = "bpmn_diagram_version_file")
     private byte[] bpmnDiagramVersionFile;
 

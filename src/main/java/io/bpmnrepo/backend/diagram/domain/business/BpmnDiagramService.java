@@ -29,6 +29,17 @@ public class BpmnDiagramService {
         saveToDb(this.mapper.toEntity(bpmnDiagram));
     }
 
+    public void updateDiagram(BpmnDiagramTO bpmnDiagramTO){
+        BpmnDiagramEntity bpmnDiagramEntity = this.bpmnDiagramJpa.findBpmnDiagramEntityByBpmnDiagramIdEquals(bpmnDiagramTO.getBpmnDiagramId());
+        if(bpmnDiagramTO.getBpmnDiagramName() != null || !bpmnDiagramTO.getBpmnDiagramName().isEmpty()){
+            bpmnDiagramEntity.setBpmnDiagramName(bpmnDiagramTO.getBpmnDiagramName());
+        }
+        if(bpmnDiagramTO.getBpmnDiagramDescription() != null || !bpmnDiagramTO.getBpmnDiagramDescription().isEmpty()){
+            bpmnDiagramEntity.setBpmnDiagramDescription(bpmnDiagramTO.getBpmnDiagramDescription());
+        }
+        saveToDb(bpmnDiagramEntity);
+    }
+
 
     public List<BpmnDiagramTO> getDiagramsFromRepo(String repositoryId){
         return this.bpmnDiagramJpa.findBpmnDiagramEntitiesByBpmnRepositoryId(repositoryId).stream()

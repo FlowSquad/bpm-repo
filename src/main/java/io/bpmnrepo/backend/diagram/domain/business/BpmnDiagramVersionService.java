@@ -1,8 +1,10 @@
 package io.bpmnrepo.backend.diagram.domain.business;
 
 
+import io.bpmnrepo.backend.diagram.api.transport.BpmnDiagramVersionUploadTO;
 import io.bpmnrepo.backend.diagram.domain.model.BpmnDiagramVersion;
 import io.bpmnrepo.backend.diagram.domain.mapper.VersionMapper;
+import io.bpmnrepo.backend.diagram.domain.model.BpmnDiagramVersionUpload;
 import io.bpmnrepo.backend.shared.AuthService;
 import io.bpmnrepo.backend.diagram.infrastructure.entity.BpmnDiagramVersionEntity;
 import io.bpmnrepo.backend.shared.enums.RoleEnum;
@@ -24,34 +26,41 @@ public class BpmnDiagramVersionService {
     private final AuthService authService;
     private final VersionMapper mapper;
 
-
-
-    public void createOrUpdateVersion(BpmnDiagramVersionTO bpmnDiagramVersionTO){
+    public void updateVersion(BpmnDiagramVersionTO bpmnDiagramVersionTO) {
         BpmnDiagramVersionEntity bpmnDiagramVersionEntity = this.bpmnDiagramVersionJpa.findFirstByBpmnDiagramIdOrderByBpmnDiagramVersionNumberDesc(bpmnDiagramVersionTO.getBpmnDiagramId());
-        if (bpmnDiagramVersionEntity == null) {
-            createInitialVersion(bpmnDiagramVersionTO);
-        }
-        else {
-            updateExistingVersion(bpmnDiagramVersionEntity, bpmnDiagramVersionTO);
-        }
-    }
-
-
-    private void createInitialVersion(BpmnDiagramVersionTO bpmnDiagramVersionTO){
-        BpmnDiagramVersion bpmnDiagramVersion = new BpmnDiagramVersion(bpmnDiagramVersionTO);
-        this.saveToDb(this.mapper.toEntity(bpmnDiagramVersion));
-    }
-
-    private void updateExistingVersion(BpmnDiagramVersionEntity bpmnDiagramVersionEntity, BpmnDiagramVersionTO bpmnDiagramVersionTO){
-        //use the old name if no new name is provided
-        if (bpmnDiagramVersionTO.getBpmnDiagramVersionName() == null || bpmnDiagramVersionTO.getBpmnDiagramVersionName().isEmpty()) {
-            bpmnDiagramVersionTO.setBpmnDiagramVersionName(bpmnDiagramVersionEntity.getBpmnDiagramVersionName());
+        //use the old comment if no new name is provided
+        if (bpmnDiagramVersionTO.getBpmnDiagramVersionComment() == null || bpmnDiagramVersionTO.getBpmnDiagramVersionComment().isEmpty()) {
+            bpmnDiagramVersionTO.setBpmnDiagramVersionComment(bpmnDiagramVersionEntity.getBpmnDiagramVersionComment());
         }
         bpmnDiagramVersionTO.setBpmnDiagramVersionNumber(bpmnDiagramVersionEntity.getBpmnDiagramVersionNumber());
         BpmnDiagramVersion bpmnDiagramVersion = new BpmnDiagramVersion((bpmnDiagramVersionTO));
         this.saveToDb(this.mapper.toEntity(bpmnDiagramVersion));
+
     }
 
+
+    public void createInitialVersion(BpmnDiagramVersionUploadTO bpmnDiagramVersionUploadTO){
+        //element that contains repoid, digramId and file as bytearray
+        BpmnDiagramVersionUpload bpmnDiagramVersionUpload = new BpmnDiagramVersionUpload(bpmnDiagramVersionUploadTO);
+        BpmnDiagramVersion bpmnDiagramVersion = new BpmnDiagramVersion(bpmnDiagramVersionUpload);
+        this.saveToDb(this.mapper.toEntity(bpmnDiagramVersion));
+
+    }
+
+    private void updateExistingVersion(BpmnDiagramVersionEntity bpmnDiagramVersionEntity, BpmnDiagramVersionTO bpmnDiagramVersionTO) {
+        //use the old name if no new name is provided
+        if (bpmnDiagramVersionTO.getBpmnDiagramVersionComment() == null || bpmnDiagramVersionTO.getBpmnDiagramVersionComment().isEmpty()) {
+            bpmnDiagramVersionTO.setBpmnDiagramVersionComment(bpmnDiagramVersionEntity.getBpmnDiagramVersionComment());
+        }
+        bpmnDiagramVersionTO.setBpmnDiagramVersionNumber(bpmnDiagramVersionEntity.getBpmnDiagramVersionNumber());
+        BpmnDiagramVersion bpmnDiagramVersion = new BpmnDiagramVersion((bpmnDiagramVersionTO));
+        try {
+            this.saveToDb(this.mapper.toEntity(bpmnDiagramVersion));
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
     public List<BpmnDiagramVersionTO> getAllVersions(String bpmnDiagramId){
         //1. Query all Versions by providing the diagram id
         //2. for all versions: map them to a TO
@@ -72,7 +81,7 @@ public class BpmnDiagramVersionService {
     private void saveToDb(BpmnDiagramVersionEntity bpmnDiagramVersionEntity){
         authService.checkIfOperationIsAllowed(bpmnDiagramVersionEntity.getBpmnRepositoryId(), RoleEnum.MEMBER);
         bpmnDiagramVersionJpa.save(bpmnDiagramVersionEntity);
-        System.out.println("Created Version");
+        log.debug("Saving successful");
     }
 
 

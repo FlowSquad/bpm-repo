@@ -58,6 +58,6 @@ public class BpmnRepositoryFacade {
         this.bpmnDiagramService.deleteAllByRepositoryId(bpmnRepositoryId);
         this.bpmnRepositoryService.deleteRepository(bpmnRepositoryId);
         this.assignmentService.deleteAllByRepositoryId(bpmnRepositoryId);
-        log.debug("Wiped out the parent with all its children");
+        log.debug("Deleted repository including related diagrams and assignments");
     }
 }

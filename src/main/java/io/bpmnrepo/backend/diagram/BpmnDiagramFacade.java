@@ -24,9 +24,15 @@ public class BpmnDiagramFacade {
     private final BpmnDiagramVersionService bpmnDiagramVersionService;
 
 
-    public void createDiagram(BpmnDiagramTO bpmnDiagramTO){
+    public void createOrUpdateDiagram(BpmnDiagramTO bpmnDiagramTO){
         authService.checkIfOperationIsAllowed(bpmnDiagramTO.getBpmnRepositoryId(), RoleEnum.MEMBER);
-        bpmnDiagramService.createDiagram(bpmnDiagramTO);
+        if (bpmnDiagramTO.getBpmnDiagramId() == null || bpmnDiagramTO.getBpmnDiagramId().isEmpty()) {
+            bpmnDiagramService.createDiagram(bpmnDiagramTO);
+        }
+        else{
+            verifyRelationService.verifyDiagramIsInSpecifiedRepository(bpmnDiagramTO);
+            bpmnDiagramService.updateDiagram(bpmnDiagramTO);
+        }
     }
 
     public List<BpmnDiagramTO> getDiagramsFromRepo(String repositoryId){

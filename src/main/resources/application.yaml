@@ -21,7 +21,13 @@ server:
  # audience: https://flowsquad.io
 
 spring:
-#  security:
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 150MB
+      file-size-threshold: 100MB
+    #  security:
  #   oauth2:
   #    resourceserver:
    #     jwt:
@@ -47,6 +53,7 @@ spring:
     generate-ddl: true
   flyway:
     enabled: false
+
 
 security.basic.enable: false
 
