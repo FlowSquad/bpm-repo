@@ -8,7 +8,7 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface AssignmentMapper {
-    @Mapping(source = "assignmentId", target = "assignmentId")
+
     AssignmentEntity toEntity(Assignment model, AssignmentId assignmentId);
 
     AssignmentId toEmbeddable(String userId, String bpmnRepositoryId);

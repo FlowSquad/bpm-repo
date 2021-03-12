@@ -1,6 +1,5 @@
 package io.bpmnrepo.backend.repository.api.transport;
 
-
 import io.bpmnrepo.backend.shared.enums.RoleEnum;
 import lombok.*;
 
@@ -11,14 +10,15 @@ import javax.validation.constraints.NotNull;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AssignmentTO {
+public class AssignmentWithUserNameTO {
 
     @NotNull
     private String bpmnRepositoryId;
 
     @NotNull
-    private String userId;
+    private String userName;
 
     @NotNull
     private RoleEnum roleEnum;
+
 }

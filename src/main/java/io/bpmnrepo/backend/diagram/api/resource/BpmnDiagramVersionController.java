@@ -34,9 +34,6 @@ public class BpmnDiagramVersionController {
     public ResponseEntity<Void> updateVersion(@PathVariable @NotBlank String bpmnRepositoryId,
                                         @PathVariable @NotBlank String bpmnDiagramId,
                                         @RequestBody BpmnDiagramVersionTO bpmnDiagramVersionTO) {
-        System.out.println("Creating a new version - body accepted");
-        System.out.println(bpmnDiagramVersionTO.getClass());
-        System.out.println(bpmnDiagramVersionTO.getBpmnAsXML());
         this.bpmnDiagramVersionFacade.updateVersion(bpmnRepositoryId, bpmnDiagramId, bpmnDiagramVersionTO);
         return ResponseEntity.ok().build();
     }
