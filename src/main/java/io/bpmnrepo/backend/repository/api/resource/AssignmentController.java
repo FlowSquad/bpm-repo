@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -18,15 +20,14 @@ public class AssignmentController {
     private final AssignmentService assignmentService;
 
     @PostMapping
-    public ResponseEntity<Void> createOrUpdateUserAssignment(@RequestBody @Validated AssignmentWithUserNameTO assignmentWithUserNameTO){
+    public ResponseEntity<Void> createOrUpdateUserAssignment(@RequestBody @Valid AssignmentWithUserNameTO assignmentWithUserNameTO){
         log.debug("Creating new Assignment for " + assignmentWithUserNameTO.getUserName());
         this.assignmentService.createOrUpdateAssignment(assignmentWithUserNameTO);
-        System.out.println("Created Assignment");
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deleteUserAssignment(@RequestBody @Validated AssignmentWithUserNameTO assignmentWithUserNameTO){
+    public ResponseEntity<Void> deleteUserAssignment(@RequestBody @Valid AssignmentWithUserNameTO assignmentWithUserNameTO){
         log.debug(String.format("Deleting assignment for user %s", assignmentWithUserNameTO.getUserName()));
         this.assignmentService.deleteAssignment(assignmentWithUserNameTO);
         return ResponseEntity.ok().build();

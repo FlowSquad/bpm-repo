@@ -11,7 +11,7 @@ public class NoSecurityUserContext implements UserContext {
     private final static String DEFAULT_USER = "NO_SECURITY_USER";
 
     @Override
-    public String getUserName() {
+    public String getUserEmail() {
         return DEFAULT_USER;
     }
 }

@@ -22,7 +22,13 @@ public class UserEntity {
     @Column(name = "user_id", unique = true, updatable = false, nullable = false, length = 36)
     private String userId;
 
-    @Column(name = "user_name")
+    @Column(name = "user_name", unique = true, nullable = false)
     private String userName;
+
+    @Column(name = "api_key", unique = true, nullable = false)
+    private String apiKey;
+
+    @Column(name = "email", unique = true, nullable = false)
+    private String email;
 
 }

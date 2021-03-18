@@ -18,14 +18,17 @@ dependencies {
 
     // REST-Resource related Dependencies
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation "javax.validation:validation-api:2.0.1.Final"
+
+
 
     // Security, out for testing purpose
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation "org.springframework.security:spring-security-oauth2-resource-server"
     implementation "org.springframework.security:spring-security-oauth2-jose"
     implementation "org.springframework.security:spring-security-config"
-    //compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+    compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
 
     //Mapping
     implementation 'org.mapstruct:mapstruct:1.4.2.Final'

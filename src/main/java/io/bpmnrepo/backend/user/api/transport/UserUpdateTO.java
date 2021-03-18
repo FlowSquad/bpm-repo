@@ -1,11 +1,12 @@
 package io.bpmnrepo.backend.user.api.transport;
 
+import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import lombok.*;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Getter
@@ -13,16 +14,16 @@ import javax.validation.constraints.Size;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserTO {
+public class UserUpdateTO {
 
     @NotEmpty
-    @Size(min = 3, max = 50)
-    private String userName;
+    private String userId;
 
     @Nullable
-    private String apiKey;
+    @Size(min = 3, max = 50)
+    private String username;
 
     @Email
-    @NotEmpty
+    @Nullable
     private String email;
 }

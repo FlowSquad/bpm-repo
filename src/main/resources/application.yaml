@@ -1,7 +1,7 @@
-#bpmnrepo:
- # security:
-  #  usercontext:
- #     email_claim: https://flowsquad.io/email
+bpmnrepo:
+  security:
+    usercontext:
+      email_claim: https://flowsquad.io/email
 
 # Logging Configurations
 logging:
@@ -17,21 +17,15 @@ server:
   port: 8080
 
 # Security Configurations
-#auth0:
- # audience: https://flowsquad.io
+auth0:
+  audience: 3h8eEHlAfoMF4yYkTOzsDcQc6rgpLOxO
 
 spring:
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 50MB
-      max-request-size: 150MB
-      file-size-threshold: 100MB
-    #  security:
- #   oauth2:
-  #    resourceserver:
-   #     jwt:
-    #      issuer-uri: https://flowsquad.eu.auth0.com/
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://flowsquad.eu.auth0.com/
 
   # Active Profile
  # profiles:

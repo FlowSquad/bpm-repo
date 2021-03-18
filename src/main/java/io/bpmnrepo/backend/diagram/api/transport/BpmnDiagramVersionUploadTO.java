@@ -2,7 +2,10 @@ package io.bpmnrepo.backend.diagram.api.transport;
 
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
+import io.bpmnrepo.backend.diagram.infrastructure.SaveTypeEnum;
 import lombok.*;
+
+import javax.validation.constraints.NotEmpty;
 
 @Getter
 @Setter
@@ -11,12 +14,12 @@ import lombok.*;
 @NoArgsConstructor
 public class BpmnDiagramVersionUploadTO {
 
+    @Nullable
+    private String bpmnDiagramVersionComment;
+
     @NotNull
     private String bpmnAsXML;
 
-    @Nullable
-    private String bpmnRepositoryId;
+    private SaveTypeEnum saveType;
 
-    @Nullable
-    private String bpmnDiagramId;
 }

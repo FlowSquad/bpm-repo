@@ -1,7 +1,10 @@
 package io.bpmnrepo.backend.user.domain.business;
 
 import io.bpmnrepo.backend.shared.config.UserContext;
+import io.bpmnrepo.backend.shared.exception.AccessRightException;
+import io.bpmnrepo.backend.shared.exception.NameConflictException;
 import io.bpmnrepo.backend.user.api.transport.UserTO;
+import io.bpmnrepo.backend.user.api.transport.UserUpdateTO;
 import io.bpmnrepo.backend.user.domain.mapper.UserMapper;
 import io.bpmnrepo.backend.user.domain.model.User;
 import io.bpmnrepo.backend.user.infrastructure.entity.UserEntity;
@@ -19,35 +22,82 @@ public class UserService {
     private final UserMapper mapper;
 
     public void createUser(UserTO userTO) {
-        User user = this.mapper.toModel(userTO);
-        System.out.println(user.getUserName());
-        if (checkIfUsernameIsAllowed(user.getUserName())) {
-            throw new NameAlreadyInUseException(String.format("The username \"%s\" is not not available", user.getUserName()));
-        } else {
-            saveToDb(this.mapper.toEntity(user));
+        User user = new User(userTO);
+        checkIfUsernameIsAvailable(userTO.getUserName());
+        checkIfEmailIsAvailable(userTO.getEmail());
+        saveToDb(this.mapper.toEntity(user));
+    }
+
+/*User muss selbst angemeldet sein
+*   get current user
+*
+* */
+    public void updateUser(UserUpdateTO userUpdateTO) {
+        verifyUserIsChangingOwnProfile(userUpdateTO.getUserId());
+        updateOrAdoptProperties(userUpdateTO);
+    }
+
+    private void updateOrAdoptProperties(UserUpdateTO userUpdateTO) {
+        User user = this.getCurrentUser();
+        if(userUpdateTO.getUsername() != null && !userUpdateTO.getUsername().equals(user.getUserName())){
+            checkIfUsernameIsAvailable(userUpdateTO.getUsername());
+            user.setUserName(userUpdateTO.getUsername());
+        }
+        if(userUpdateTO.getEmail() != null && !userUpdateTO.getEmail().equals(user.getEmail())){
+            checkIfEmailIsAvailable(userUpdateTO.getEmail());
+            user.setEmail(userUpdateTO.getEmail());
+        }
+        saveToDb(this.mapper.toEntity(user));
+    }
+
+    private void verifyUserIsChangingOwnProfile(String userId) {
+        String currentUserId = this.getUserIdOfCurrentUser();
+        if(!currentUserId.equals(userId)){
+            throw new AccessRightException("You can only change your own profile");
         }
     }
 
-    public String getUserIdByUserName(String userName){
-        UserEntity userEntity = userJpa.findByUserNameEquals(userName);
+
+    private void checkIfEmailIsAvailable(String email) {
+        if(this.userJpa.existsUserEntityByEmail(email)){
+            throw new NameConflictException(String.format("The email address %s is already in use", email));
+        }
+    }
+
+    public String getUserIdByEmail(String email){
+        UserEntity userEntity = userJpa.findByEmail(email);
+        if(userEntity == null){
+            throw new AccessRightException("This user does not exist");
+        }
         String userId = userEntity.getUserId();
         return userId;
     }
 
     public String getUserIdOfCurrentUser(){
-        String userName = userContext.getUserName();
-        return this.getUserIdByUserName(userName);
+        String email = userContext.getUserEmail();
+        return this.getUserIdByEmail(email);
     }
 
-    //true: username already taken, false: username available
-    public boolean checkIfUsernameIsAllowed(String userName){
-        if(this.userJpa.existsUserEntityByUserName(userName) || userName == null || userName.isEmpty() || userName.isBlank()){
-            return true;
-        }
-        else{
-            return false;
+
+    public void checkIfUsernameIsAvailable(String username){
+        if(this.userJpa.existsUserEntityByUserName(username)){
+            throw new NameConflictException(String.format("The username \"%s\" is not available", username));
         }
     }
+
+    public UserTO getApiKey(){
+        final User currentUser = getCurrentUser();
+        currentUser.updateApiKey();
+        this.saveToDb(this.mapper.toEntity(currentUser));
+        return this.mapper.toTO(currentUser);
+    }
+
+    public User getCurrentUser(){
+        String email = userContext.getUserEmail();
+        UserEntity userEntity = this.userJpa.findByEmail(email);
+        return this.mapper.toModel(userEntity);
+    }
+
 
 
     public void saveToDb(UserEntity entity){

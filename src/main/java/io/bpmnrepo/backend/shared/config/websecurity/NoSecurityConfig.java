@@ -1,4 +1,4 @@
-package io.bpmnrepo.backend.shared.config;
+package io.bpmnrepo.backend.shared.config.websecurity;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

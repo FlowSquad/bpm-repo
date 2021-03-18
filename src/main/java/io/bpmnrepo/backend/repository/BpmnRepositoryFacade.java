@@ -5,6 +5,10 @@ import io.bpmnrepo.backend.diagram.domain.business.BpmnDiagramVersionService;
 import io.bpmnrepo.backend.repository.api.transport.BpmnRepositoryTO;
 import io.bpmnrepo.backend.repository.domain.business.AssignmentService;
 import io.bpmnrepo.backend.repository.domain.business.BpmnRepositoryService;
+import io.bpmnrepo.backend.repository.infrastructure.entity.AssignmentEntity;
+import io.bpmnrepo.backend.repository.infrastructure.entity.BpmnRepositoryEntity;
+import io.bpmnrepo.backend.repository.infrastructure.repository.AssignmentJpa;
+import io.bpmnrepo.backend.repository.infrastructure.repository.BpmnRepoJpa;
 import io.bpmnrepo.backend.shared.AuthService;
 import io.bpmnrepo.backend.shared.enums.RoleEnum;
 import io.bpmnrepo.backend.user.domain.business.UserService;
@@ -13,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -25,12 +30,15 @@ public class BpmnRepositoryFacade {
     private final UserService userService;
     private final AuthService authService;
     private final BpmnDiagramVersionService bpmnDiagramVersionService;
+    private final BpmnRepoJpa bpmnRepoJpa;
+    private final AssignmentJpa assignmentJpa;
 
     public void createOrUpdateRepository(BpmnRepositoryTO bpmnRepositoryTO){
         if(bpmnRepositoryTO.getBpmnRepositoryId() == null || bpmnRepositoryTO.getBpmnRepositoryId().isBlank()){
+            checkIfRepositoryNameIsAvailable(bpmnRepositoryTO.getBpmnRepositoryName());
             String bpmnRepositoryId = this.bpmnRepositoryService.createRepository(bpmnRepositoryTO);
             this.assignmentService.createInitialAssignment(bpmnRepositoryId);
-            log.debug("Created new repository");
+            log.debug("Successfully created new repository");
         }
         else{
             authService.checkIfOperationIsAllowed(bpmnRepositoryTO.getBpmnRepositoryId(), RoleEnum.ADMIN);
@@ -38,6 +46,19 @@ public class BpmnRepositoryFacade {
             log.debug("The repository has been updated");
         }
     }
+
+    private void checkIfRepositoryNameIsAvailable(String bpmnRepositoryName) {
+        List<AssignmentEntity> assignmentList = this.assignmentJpa.findAssignmentEntitiesByAssignmentId_UserIdEquals(this.userService.getUserIdOfCurrentUser());
+        for (AssignmentEntity assignmentEntity : assignmentList) {
+            Optional<BpmnRepositoryEntity> assignedRepository = this.bpmnRepoJpa.findByBpmnRepositoryIdEquals(assignmentEntity.getAssignmentId().getBpmnRepositoryId());
+            if(assignedRepository.isPresent()){
+                if(assignedRepository.get().getBpmnRepositoryName().equals(bpmnRepositoryName)){
+                    log.warn("You are member of a repository with the same name (just a warning, no error)");
+                }
+            }
+        }
+    }
+
 
     public BpmnRepositoryTO getSingleRepository(String repositoryId){
         authService.checkIfOperationIsAllowed(repositoryId, RoleEnum.VIEWER);

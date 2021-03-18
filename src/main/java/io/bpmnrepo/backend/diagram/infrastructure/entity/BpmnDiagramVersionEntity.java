@@ -1,13 +1,11 @@
 package io.bpmnrepo.backend.diagram.infrastructure.entity;
 
 
+import io.bpmnrepo.backend.diagram.infrastructure.SaveTypeEnum;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
-
-
 import javax.persistence.*;
-import javax.sql.rowset.serial.SerialBlob;
-import java.sql.Blob;
+
 
 @Getter
 @Builder
@@ -25,8 +23,15 @@ public class BpmnDiagramVersionEntity {
     @Column(name = "bpmn_diagram_version_comment")
     private String bpmnDiagramVersionComment;
 
-    @Column(name = "bpmn_diagram_version_number")
-    private Long bpmnDiagramVersionNumber;
+    @Column(name = "bpmn_diagram_version_release", nullable = false)
+    private Integer bpmnDiagramVersionRelease;
+
+    @Column(name = "bpmn_diagram_version_milestone", nullable = false)
+    private Integer bpmnDiagramVersionMilestone;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "save_type", nullable = false)
+    private SaveTypeEnum saveType;
 
     @Lob
     @Column(name = "bpmn_diagram_version_file")

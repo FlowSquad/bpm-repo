@@ -1,11 +1,14 @@
 package io.bpmnrepo.backend.diagram.api.transport;
 
-import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
+import io.bpmnrepo.backend.diagram.infrastructure.SaveTypeEnum;
 import lombok.*;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.io.File;
 
 @Getter
@@ -22,18 +25,23 @@ public class BpmnDiagramVersionTO {
     private String bpmnDiagramVersionComment;
 
     @Nullable
-    private Long bpmnDiagramVersionNumber;
+    private Integer bpmnDiagramVersionRelease;
 
+    @Nullable
+    private Integer bpmnDiagramVersionMilestone;
     //must not be nullable in the end
-    @NotNull
+    @NotEmpty
     private String bpmnAsXML;
 
+    @NotEmpty
+    private SaveTypeEnum saveType;
+
     //@NotNull
-    @Nullable
+    @NotEmpty
     private String bpmnDiagramId;
 
     //@NotNull
-    @Nullable
+    @NotEmpty
     private String bpmnRepositoryId;
 
 }

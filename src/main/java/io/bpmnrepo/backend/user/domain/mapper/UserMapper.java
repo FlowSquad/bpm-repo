@@ -9,5 +9,7 @@ import org.mapstruct.Mapper;
 public interface UserMapper {
     User toModel(UserTO userTO);
     UserEntity toEntity(User model);
+    User toModel(UserEntity userEntity);
+    UserTO toTO(User user);
 
 }

@@ -19,6 +19,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/api/bpmnrepo")
 public class BpmnRepositoryController {
 
@@ -35,14 +36,14 @@ public class BpmnRepositoryController {
     @GetMapping()
     @Operation(summary = "Get all Repositories")
     public ResponseEntity<List<BpmnRepositoryTO>> getAllRepositories(){
-        System.out.println("Returning all Repositories assigned to current user (NO_SECURITY_USER)");
+        log.debug("Returning all Repositories assigned to current user");
         return ResponseEntity.ok().body(this.bpmnRepositoryFacade.getAllRepositories());
     }
 
     @GetMapping("/{repositoryId}")
     @Operation(summary = "Get a single Repository by providing its ID")
     public ResponseEntity<BpmnRepositoryTO> getSingleRepository(@PathVariable @NotBlank final String repositoryId){
-        System.out.println(String.format("Returning single repository with id %s", repositoryId));
+        log.debug(String.format("Returning single repository with id %s", repositoryId));
         return ResponseEntity.ok().body(this.bpmnRepositoryFacade.getSingleRepository(repositoryId));
     }
 
@@ -50,7 +51,7 @@ public class BpmnRepositoryController {
     @DeleteMapping("/{repositoryId}")
     @Operation(summary = "Delete a Repository if you own it")
     public ResponseEntity<Void> deleteRepository(@PathVariable("repositoryId") @NotBlank final String repositoryId){
-        System.out.println("Deleting Repository with ID " + repositoryId);
+        log.debug("Deleting Repository with ID " + repositoryId);
         this.bpmnRepositoryFacade.deleteRepository(repositoryId);
         return ResponseEntity.ok().build();
     }

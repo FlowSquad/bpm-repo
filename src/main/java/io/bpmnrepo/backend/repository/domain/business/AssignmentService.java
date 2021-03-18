@@ -29,21 +29,21 @@ public class AssignmentService {
 
 
     public void createOrUpdateAssignment(AssignmentWithUserNameTO assignmentWithUserNameTO){
-        log.debug(assignmentWithUserNameTO.getUserName());
-
-        log.debug(userService.getUserIdByUserName(assignmentWithUserNameTO.getUserName()));
-        String newAssignmentUserId = this.userService.getUserIdByUserName(assignmentWithUserNameTO.getUserName());
         this.authService.checkIfOperationIsAllowed(assignmentWithUserNameTO.getBpmnRepositoryId(), RoleEnum.ADMIN);
-        AssignmentTO assignmentTO = new AssignmentTO(assignmentWithUserNameTO.getBpmnRepositoryId(), userService.getUserIdByUserName(assignmentWithUserNameTO.getUserName()), assignmentWithUserNameTO.getRoleEnum());
+        String newAssignmentUserId = this.userService.getUserIdByEmail(assignmentWithUserNameTO.getUserName());
+
+        AssignmentTO assignmentTO = new AssignmentTO(assignmentWithUserNameTO.getBpmnRepositoryId(), userService.getUserIdByEmail(assignmentWithUserNameTO.getUserName()), assignmentWithUserNameTO.getRoleEnum());
         AssignmentEntity assignmentEntity = assignmentJpa.findByAssignmentId_BpmnRepositoryIdAndAssignmentId_UserId(assignmentTO.getBpmnRepositoryId(), newAssignmentUserId);
         if(assignmentEntity == null){
             createAssignment(assignmentTO);
+            log.debug("Created assignment");
         }
         else{
             updateAssignment(assignmentTO);
             log.debug(String.format("Updated role to %s", assignmentTO.getRoleEnum().toString()));
         }
     }
+
 
     public void createAssignment(AssignmentTO assignmentTO){
         Assignment assignment = new Assignment(assignmentTO);
@@ -56,6 +56,7 @@ public class AssignmentService {
         //Assignments can be managed by Admins and Owners
         String newAssignmentUserId = assignmentTO.getUserId();
         String currentUserId = this.userService.getUserIdOfCurrentUser();
+        this.authService.checkIfOperationIsAllowed(assignmentTO.getBpmnRepositoryId(), RoleEnum.ADMIN);
 
         //Exception if the user tries to change its own rights
         if (newAssignmentUserId == currentUserId) {
@@ -63,7 +64,7 @@ public class AssignmentService {
         }
         //Exception if the user tries to change the role of someone with higher permissions (if an admin tries to change the role of an owner)
         if(this.getUserRole(assignmentTO.getBpmnRepositoryId(), newAssignmentUserId).ordinal() < this.getUserRole(assignmentTO.getBpmnRepositoryId(), currentUserId).ordinal()){
-            throw new AccessRightException("You cant change the role of " + this.getUserRole(assignmentTO.getBpmnRepositoryId(), newAssignmentUserId) + " because your role provides less rights (You are an " + this.getUserRole(assignmentTO.getBpmnRepositoryId(), this.userService.getUserIdOfCurrentUser()) + ")");
+            throw new AccessRightException(String.format("You cant change the role of %s because your role provides less rights (You are an \"%s\")", this.getUserRole(assignmentTO.getBpmnRepositoryId(), newAssignmentUserId), this.getUserRole(assignmentTO.getBpmnRepositoryId(), this.userService.getUserIdOfCurrentUser())));
         }
         //Exception if the user tries to give someone a role that is higher than its own
         if(this.getUserRole(assignmentTO.getBpmnRepositoryId(), currentUserId).ordinal() > assignmentTO.getRoleEnum().ordinal()){
@@ -80,7 +81,7 @@ public class AssignmentService {
         AssignmentTO assignmentTO = new AssignmentTO(bpmnRepositoryId, currentUser, RoleEnum.OWNER);
         Assignment assignment = new Assignment(assignmentTO);
         AssignmentEntity assignmentEntity = this.mapper.toEntity(assignment, this.mapper.toEmbeddable(currentUser, bpmnRepositoryId));
-        this.saveToDb(assignmentEntity);
+        this.assignmentJpa.save(assignmentEntity);
     }
 
     //receive all AssignmentEntities related to the user
@@ -92,8 +93,6 @@ public class AssignmentService {
 
 
     public AssignmentEntity getAssignmentEntity(String bpmnRepositoryId, String userId){
-        System.out.println(bpmnRepositoryId);
-        System.out.println(userId);
         return this.assignmentJpa.findByAssignmentId_BpmnRepositoryIdAndAssignmentId_UserId(bpmnRepositoryId, userId);
     }
 
@@ -106,12 +105,11 @@ public class AssignmentService {
     public void saveToDb(AssignmentEntity assignmentEntity){
         authService.checkIfOperationIsAllowed(assignmentEntity.getAssignmentId().getBpmnRepositoryId(), RoleEnum.ADMIN);
         assignmentJpa.save(assignmentEntity);
-        log.debug("Created Assignment");
     }
 
 
     public void deleteAssignment(AssignmentWithUserNameTO assignmentWithUserNameTO){
-        String assignmentUserId = this.userService.getUserIdByUserName(assignmentWithUserNameTO.getUserName());
+        String assignmentUserId = this.userService.getUserIdByEmail(assignmentWithUserNameTO.getUserName());
         String currentUserId = this.userService.getUserIdOfCurrentUser();
         this.authService.checkIfOperationIsAllowed(assignmentWithUserNameTO.getBpmnRepositoryId(), RoleEnum.ADMIN);
 

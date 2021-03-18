@@ -12,14 +12,5 @@ import java.nio.charset.StandardCharsets;
 @ToString
 public class BpmnDiagramVersionUpload {
     private byte[] bpmnDiagramVersionFile;
-    private String bpmnRepositoryId;
-    private String bpmnDiagramId;
     private String bpmnDiagramVersionNumber;
-
-    public BpmnDiagramVersionUpload(final BpmnDiagramVersionUploadTO bpmnDiagramVersionUploadTO){
-        this.bpmnRepositoryId = bpmnDiagramVersionUploadTO.getBpmnRepositoryId();
-        this.bpmnDiagramId = bpmnDiagramVersionUploadTO.getBpmnDiagramId();
-        this.bpmnDiagramVersionFile = bpmnDiagramVersionUploadTO.getBpmnAsXML().getBytes();
-    }
-
 }

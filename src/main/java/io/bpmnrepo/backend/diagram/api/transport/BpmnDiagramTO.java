@@ -3,6 +3,8 @@ package io.bpmnrepo.backend.diagram.api.transport;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -15,10 +17,10 @@ public class BpmnDiagramTO {
     @Nullable
     private String bpmnDiagramId;
 
-    @NotNull
+    @Nullable
     private String bpmnRepositoryId;
 
-    @NotNull
+    @NotEmpty
     private String bpmnDiagramName;
 
     @NotNull

@@ -9,12 +9,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
+
 @Slf4j
 @RestController
+@Validated
 @RequiredArgsConstructor
 @RequestMapping("/api/diagram")
 public class BpmnDiagramController {
@@ -22,11 +24,11 @@ public class BpmnDiagramController {
     private final BpmnDiagramFacade bpmnDiagramFacade;
 
 
-    //create new Diagram, parent RepositoryID has to be passed
-    @PostMapping()
-    public ResponseEntity<Void> createOrUpdateDiagram(@RequestBody @Validated final BpmnDiagramTO bpmnDiagramTO){
-        log.debug("creating new Diagram: \"" + bpmnDiagramTO.getBpmnDiagramName() + "\"");
-        this.bpmnDiagramFacade.createOrUpdateDiagram(bpmnDiagramTO);
+    @PostMapping("/{repositoryId}")
+    public ResponseEntity<Void> createOrUpdateDiagram(@PathVariable @NotBlank String repositoryId,
+                                                      @RequestBody @Valid final BpmnDiagramTO bpmnDiagramTO){
+        log.debug("Creating or updating Diagram");
+        this.bpmnDiagramFacade.createOrUpdateDiagram(repositoryId, bpmnDiagramTO);
         return ResponseEntity.ok().build();
     }
 
@@ -38,11 +40,10 @@ public class BpmnDiagramController {
 
     }
 
-
     @GetMapping("/{bpmnRepositoryId}/{bpmnDiagramId}")
     public ResponseEntity<BpmnDiagramTO> getSingleDiagram(@PathVariable @NotBlank String bpmnRepositoryId,
                                                           @PathVariable @NotBlank String bpmnDiagramId){
-        log.debug("Returning diagram with id" + bpmnDiagramId);
+        log.debug("Returning diagram with ID " + bpmnDiagramId);
         return ResponseEntity.ok().body(this.bpmnDiagramFacade.getSingleDiagram(bpmnRepositoryId, bpmnDiagramId));
     }
 
