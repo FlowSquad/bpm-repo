@@ -2,8 +2,10 @@ package io.bpmnrepo.backend.diagram;
 
 
 import io.bpmnrepo.backend.diagram.api.transport.BpmnDiagramTO;
+import io.bpmnrepo.backend.diagram.api.transport.BpmnDiagramUploadTO;
 import io.bpmnrepo.backend.diagram.domain.business.BpmnDiagramService;
 import io.bpmnrepo.backend.diagram.domain.business.BpmnDiagramVersionService;
+import io.bpmnrepo.backend.diagram.domain.exception.DiagramNameAlreadyInUseException;
 import io.bpmnrepo.backend.diagram.infrastructure.repository.BpmnDiagramJpa;
 import io.bpmnrepo.backend.shared.AuthService;
 import io.bpmnrepo.backend.shared.VerifyRelationService;
@@ -30,10 +32,9 @@ public class BpmnDiagramFacade {
     private final BpmnDiagramJpa bpmnDiagramJpa;
 
 
-    public void createOrUpdateDiagram(String bpmnRepositoryId, BpmnDiagramTO bpmnDiagramTO){
-        this.verifyRelationService.checkIfRepositoryIdsMatch(bpmnRepositoryId, bpmnDiagramTO);
+    public void createOrUpdateDiagram(String bpmnRepositoryId, BpmnDiagramUploadTO bpmnDiagramUploadTO){
         authService.checkIfOperationIsAllowed(bpmnRepositoryId, RoleEnum.MEMBER);
-        bpmnDiagramTO.setBpmnRepositoryId(bpmnRepositoryId);
+        BpmnDiagramTO bpmnDiagramTO = new BpmnDiagramTO(bpmnRepositoryId, bpmnDiagramUploadTO);
         if (bpmnDiagramTO.getBpmnDiagramId() == null || bpmnDiagramTO.getBpmnDiagramId().isEmpty()) {
             checkIfNameIsAvailable(bpmnRepositoryId, bpmnDiagramTO.getBpmnDiagramName());
             bpmnDiagramService.createDiagram(bpmnDiagramTO);
@@ -48,7 +49,7 @@ public class BpmnDiagramFacade {
 
     public void checkIfNameIsAvailable(String bpmnRepositoryId, String bpmnDiagramName){
         if(bpmnDiagramJpa.findBpmnDiagramEntityByBpmnRepositoryIdAndBpmnDiagramName(bpmnRepositoryId, bpmnDiagramName) !=  null){
-            throw new NameConflictException("Diagram name duplicated - please choose another name");
+            throw new DiagramNameAlreadyInUseException();
         }
     }
 
@@ -60,7 +61,7 @@ public class BpmnDiagramFacade {
     public BpmnDiagramTO getSingleDiagram(String bpmnRepositoryId, String bpmnDiagramId){
         verifyRelationService.verifyDiagramIsInSpecifiedRepository(bpmnRepositoryId, bpmnDiagramId);
         authService.checkIfOperationIsAllowed(bpmnRepositoryId, RoleEnum.VIEWER);
-        return bpmnDiagramService.getSingleDiagram(bpmnRepositoryId, bpmnDiagramId);
+        return bpmnDiagramService.getSingleDiagram(bpmnDiagramId);
     }
 
 
@@ -68,7 +69,7 @@ public class BpmnDiagramFacade {
         verifyRelationService.verifyDiagramIsInSpecifiedRepository(bpmnRepositoryId, bpmnDiagramId);
         authService.checkIfOperationIsAllowed(bpmnRepositoryId, RoleEnum.ADMIN);
         bpmnDiagramVersionService.deleteAllByDiagramId(bpmnDiagramId);
-        bpmnDiagramService.deleteDiagram(bpmnRepositoryId, bpmnDiagramId);
+        bpmnDiagramService.deleteDiagram(bpmnDiagramId);
     }
 
 }

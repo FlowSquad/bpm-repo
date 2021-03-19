@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
+@Transactional
 @Validated
 @RequiredArgsConstructor
 @RequestMapping("api/version")
@@ -37,7 +39,7 @@ public class BpmnDiagramVersionController {
 
 
     //get the latest version of a diagram
-    @GetMapping("/{bpmnRepositoryId}/{bpmnDiagramId}")
+    @GetMapping("/{bpmnRepositoryId}/{bpmnDiagramId}/latest")
     @Operation(summary = "Return the latest version of the requested diagram")
     public ResponseEntity<BpmnDiagramVersionTO> getLatestVersion(@PathVariable @NotBlank final String bpmnRepositoryId,
                                                                  @PathVariable @NotBlank final String bpmnDiagramId){
@@ -46,7 +48,7 @@ public class BpmnDiagramVersionController {
     }
 
     //get all versions by providing the corresponding parent diagram id
-    @GetMapping("/all/{bpmnRepositoryId}/{bpmnDiagramId}")
+    @GetMapping("/{bpmnRepositoryId}/{bpmnDiagramId}/all")
     public ResponseEntity<List<BpmnDiagramVersionTO>> getAllVersions(@PathVariable @NotBlank final String bpmnRepositoryId,
                                                                      @PathVariable @NotBlank final String bpmnDiagramId){
         log.debug("Returning all Versions");
@@ -62,14 +64,4 @@ public class BpmnDiagramVersionController {
         log.debug("Returning single Version");
         return ResponseEntity.ok().body(this.bpmnDiagramVersionFacade.getSingleVersion(bpmnRepositoryId, bpmnDiagramId, bpmnDiagramVersionId));
     }
-
-/*
-    //kann raus
-    @PostMapping("/update/{bpmnRepositoryId}/{bpmnDiagramId}")
-    public ResponseEntity<Void> updateVersion(@PathVariable @NotBlank String bpmnRepositoryId,
-                                              @PathVariable @NotBlank String bpmnDiagramId,
-                                              @RequestBody BpmnDiagramVersionUploadTO bpmnDiagramVersionUploadTO) {
-        this.bpmnDiagramVersionFacade.createOrUpdateVersion(bpmnRepositoryId, bpmnDiagramId, bpmnDiagramVersionUploadTO);
-        return ResponseEntity.ok().build();
-    }*/
 }

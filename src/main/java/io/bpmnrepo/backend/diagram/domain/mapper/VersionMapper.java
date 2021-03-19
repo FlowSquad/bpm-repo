@@ -12,6 +12,8 @@ import org.mapstruct.Mapping;
 public interface VersionMapper {
     BpmnDiagramVersionEntity toEntity(final BpmnDiagramVersion model);
 
+    BpmnDiagramVersion toModel(final BpmnDiagramVersionEntity entity);
+
     @Mapping(target = "bpmnAsXML", expression = "java(new String(entity.getBpmnDiagramVersionFile()))")
     BpmnDiagramVersionTO toTO(final BpmnDiagramVersionEntity entity);
 

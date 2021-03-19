@@ -1,6 +1,7 @@
 package io.bpmnrepo.backend.repository.domain.business;
 
 
+import io.bpmnrepo.backend.repository.api.transport.NewBpmnRepositoryTO;
 import io.bpmnrepo.backend.repository.domain.mapper.RepositoryMapper;
 import io.bpmnrepo.backend.diagram.domain.business.BpmnDiagramService;
 import io.bpmnrepo.backend.diagram.infrastructure.entity.BpmnDiagramEntity;
@@ -29,24 +30,19 @@ public class BpmnRepositoryService {
     private final RepositoryMapper mapper;
     private final BpmnRepoJpa bpmnRepoJpa;
 
-    public String createRepository(BpmnRepositoryTO bpmnRepositoryTO){
-        BpmnRepository bpmnRepository = new BpmnRepository(bpmnRepositoryTO);
+    public String createRepository(NewBpmnRepositoryTO newBpmnRepositoryTO){
+        BpmnRepository bpmnRepository = this.mapper.toModel(newBpmnRepositoryTO);
         BpmnRepositoryEntity bpmnRepositoryEntity = this.mapper.toEntity(bpmnRepository);
-        this.saveToDb(bpmnRepositoryEntity);
-        return bpmnRepositoryEntity.getBpmnRepositoryId();
+        bpmnRepository = this.saveToDb(bpmnRepositoryEntity);
+        return bpmnRepository.getBpmnRepositoryId();
     }
 
 
-    public void updateRepository(BpmnRepositoryTO bpmnRepositoryTO){
-        BpmnRepositoryEntity bpmnRepositoryEntity = this.bpmnRepoJpa.getOne(bpmnRepositoryTO.getBpmnRepositoryId());
-        BpmnRepository bpmnRepository = new BpmnRepository(bpmnRepositoryTO);
-        if(bpmnRepository.getBpmnRepositoryName() != null && !bpmnRepository.getBpmnRepositoryName().isEmpty()){
-            bpmnRepositoryEntity.setBpmnRepositoryName(bpmnRepositoryTO.getBpmnRepositoryName());
-        }
-        if(bpmnRepository.getBpmnRepositoryDescription() != null && !bpmnRepository.getBpmnRepositoryDescription().isEmpty()){
-            bpmnRepositoryEntity.setBpmnRepositoryDescription(bpmnRepository.getBpmnRepositoryDescription());
-        }
-        bpmnRepositoryEntity.setUpdatedDate(bpmnRepository.getUpdatedDate());
+    public void updateRepository(String bpmnRepositoryTO, NewBpmnRepositoryTO newBpmnRepositoryTO){
+        BpmnRepositoryEntity bpmnRepositoryEntity = this.bpmnRepoJpa.getOne(bpmnRepositoryTO);
+        BpmnRepository bpmnRepository = this.mapper.toModel(bpmnRepositoryEntity);
+        bpmnRepository.updateRepo(newBpmnRepositoryTO);
+        bpmnRepositoryEntity = this.mapper.toEntity(bpmnRepository);
         this.saveToDb(bpmnRepositoryEntity);
     }
 
@@ -59,8 +55,8 @@ public class BpmnRepositoryService {
     }
 
 
-    public void saveToDb(final BpmnRepositoryEntity bpmnRepositoryEntity){
-        bpmnRepoJpa.save(bpmnRepositoryEntity);
+    public BpmnRepository saveToDb(final BpmnRepositoryEntity bpmnRepositoryEntity){
+        return this.mapper.toModel(bpmnRepoJpa.save(bpmnRepositoryEntity));
     }
 
 }

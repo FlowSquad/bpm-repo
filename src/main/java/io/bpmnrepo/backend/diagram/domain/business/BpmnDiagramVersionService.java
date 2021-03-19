@@ -24,34 +24,20 @@ import java.util.stream.Collectors;
 public class BpmnDiagramVersionService {
 
     private final BpmnDiagramVersionJpa bpmnDiagramVersionJpa;
-    private final AuthService authService;
     private final VersionMapper mapper;
 
     public String updateVersion(BpmnDiagramVersionTO bpmnDiagramVersionTO) {
-        bpmnDiagramVersionTO = updateOrAdoptProperties(bpmnDiagramVersionTO);
-
-        BpmnDiagramVersion bpmnDiagramVersion = new BpmnDiagramVersion((bpmnDiagramVersionTO));
-        String bpmnDiagramVersionId = this.saveToDb(this.mapper.toEntity(bpmnDiagramVersion));
+        BpmnDiagramVersionEntity bpmnDiagramVersionEntity =  this.bpmnDiagramVersionJpa.findFirstByBpmnDiagramIdOrderByBpmnDiagramVersionReleaseDescBpmnDiagramVersionMilestoneDesc(bpmnDiagramVersionTO.getBpmnDiagramId());
+        BpmnDiagramVersion bpmnDiagramVersion = this.mapper.toModel(bpmnDiagramVersionEntity);
+        bpmnDiagramVersion.updateVersion(bpmnDiagramVersionTO, bpmnDiagramVersion);
+        String bpmnDiagramVersionId = this.saveToDb(bpmnDiagramVersion);
         return bpmnDiagramVersionId;
     }
 
-    public BpmnDiagramVersionTO updateOrAdoptProperties(BpmnDiagramVersionTO bpmnDiagramVersionTO) {
-        BpmnDiagramVersionEntity bpmnDiagramVersionEntity = this.bpmnDiagramVersionJpa.findFirstByBpmnDiagramIdOrderByBpmnDiagramVersionReleaseDescBpmnDiagramVersionMilestoneDesc(bpmnDiagramVersionTO.getBpmnDiagramId());
-        //Adopt the old comment if no new one is provided
-        if (bpmnDiagramVersionTO.getBpmnDiagramVersionComment() == null || bpmnDiagramVersionTO.getBpmnDiagramVersionComment().isEmpty()) {
-            bpmnDiagramVersionTO.setBpmnDiagramVersionComment(bpmnDiagramVersionEntity.getBpmnDiagramVersionComment());
-        } else {
-            bpmnDiagramVersionTO.setBpmnDiagramVersionComment(bpmnDiagramVersionTO.getBpmnDiagramVersionComment());
-        }
-        //VersionNo of persisted (old) version
-        bpmnDiagramVersionTO.setBpmnDiagramVersionRelease(bpmnDiagramVersionEntity.getBpmnDiagramVersionRelease());
-        bpmnDiagramVersionTO.setBpmnDiagramVersionMilestone(bpmnDiagramVersionEntity.getBpmnDiagramVersionMilestone());
-        return bpmnDiagramVersionTO;
-    }
 
     public String createInitialVersion(BpmnDiagramVersionTO bpmnDiagramVersionTO){
         BpmnDiagramVersion bpmnDiagramVersion = new BpmnDiagramVersion(bpmnDiagramVersionTO);
-        String bpmnDiagramVersionId = this.saveToDb(this.mapper.toEntity(bpmnDiagramVersion));
+        String bpmnDiagramVersionId = this.saveToDb(bpmnDiagramVersion);
         return bpmnDiagramVersionId;
     }
 
@@ -73,11 +59,11 @@ public class BpmnDiagramVersionService {
             return this.mapper.toTO(bpmnDiagramVersionJpa.findAllByBpmnDiagramVersionIdEquals(bpmnDiagramVersionId));
     }
 
-    private String saveToDb(BpmnDiagramVersionEntity bpmnDiagramVersionEntity){
-        authService.checkIfOperationIsAllowed(bpmnDiagramVersionEntity.getBpmnRepositoryId(), RoleEnum.MEMBER);
-        bpmnDiagramVersionJpa.save(bpmnDiagramVersionEntity);
+    private String saveToDb(BpmnDiagramVersion bpmnDiagramVersion){
+        bpmnDiagramVersionJpa.save(this.mapper.toEntity(bpmnDiagramVersion));
         log.debug("Saving successful");
-        return bpmnDiagramVersionEntity.getBpmnDiagramVersionId();
+        BpmnDiagramVersionEntity bpmnDiagramVersionEntity = this.bpmnDiagramVersionJpa.findAllByBpmnDiagramVersionIdEquals(bpmnDiagramVersion.getBpmnDiagramId());
+        return (bpmnDiagramVersionEntity.getBpmnDiagramId());
     }
 
 

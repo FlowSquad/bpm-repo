@@ -20,5 +20,6 @@ public class AssignmentTO {
     @NotEmpty
     private String userId;
 
+    @NotEmpty
     private RoleEnum roleEnum;
 }

@@ -56,9 +56,12 @@ dependencies {
     //Commons
     compile 'commons-io:commons-io:2.7'
 
+
+
+    testImplementation('org.mockito:mockito-junit-jupiter:3.2.4')
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 
 }
 

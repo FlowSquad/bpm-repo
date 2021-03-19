@@ -1,11 +1,13 @@
 package io.bpmnrepo.backend.repository.domain.model;
 
 import io.bpmnrepo.backend.repository.api.transport.BpmnRepositoryTO;
+import io.bpmnrepo.backend.repository.api.transport.NewBpmnRepositoryTO;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,5 +28,15 @@ public class BpmnRepository {
         this.bpmnRepositoryDescription = bpmnRepositoryTO.getBpmnRepositoryDescription();
         this.createdDate = LocalDateTime.now();
         this.updatedDate = LocalDateTime.now();
+    }
+
+    public void updateRepo(final NewBpmnRepositoryTO newBpmnRepositoryTO){
+        if(newBpmnRepositoryTO.getBpmnRepositoryName() != null && !newBpmnRepositoryTO.getBpmnRepositoryName().isEmpty()){
+            this.setBpmnRepositoryName(newBpmnRepositoryTO.getBpmnRepositoryName());
+        }
+        if(newBpmnRepositoryTO.getBpmnRepositoryDescription() != null && !newBpmnRepositoryTO.getBpmnRepositoryDescription().isEmpty()){
+            this.setBpmnRepositoryDescription(newBpmnRepositoryTO.getBpmnRepositoryDescription());
+        }
+        this.setUpdatedDate(LocalDateTime.now());
     }
 }

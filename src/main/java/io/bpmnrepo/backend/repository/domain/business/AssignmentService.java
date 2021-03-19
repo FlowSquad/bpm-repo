@@ -46,7 +46,7 @@ public class AssignmentService {
 
 
     public void createAssignment(AssignmentTO assignmentTO){
-        Assignment assignment = new Assignment(assignmentTO);
+        Assignment assignment = this.mapper.toModel(assignmentTO);
         AssignmentEntity assignmentEntity = this.mapper.toEntity(assignment, this.mapper.toEmbeddable(assignment.getUserId(), assignment.getBpmnRepositoryId()));
         this.saveToDb(assignmentEntity);
     }
@@ -58,16 +58,19 @@ public class AssignmentService {
         String currentUserId = this.userService.getUserIdOfCurrentUser();
         this.authService.checkIfOperationIsAllowed(assignmentTO.getBpmnRepositoryId(), RoleEnum.ADMIN);
 
+        RoleEnum currentUserRole = this.getUserRole(assignmentTO.getBpmnRepositoryId(), currentUserId);
+        RoleEnum affectedUserRole = this.getUserRole(assignmentTO.getBpmnRepositoryId(), newAssignmentUserId);
+
         //Exception if the user tries to change its own rights
         if (newAssignmentUserId == currentUserId) {
             throw new AccessRightException("You can't change your own role");
         }
         //Exception if the user tries to change the role of someone with higher permissions (if an admin tries to change the role of an owner)
-        if(this.getUserRole(assignmentTO.getBpmnRepositoryId(), newAssignmentUserId).ordinal() < this.getUserRole(assignmentTO.getBpmnRepositoryId(), currentUserId).ordinal()){
+        if(affectedUserRole.ordinal() < currentUserRole.ordinal()){
             throw new AccessRightException(String.format("You cant change the role of %s because your role provides less rights (You are an \"%s\")", this.getUserRole(assignmentTO.getBpmnRepositoryId(), newAssignmentUserId), this.getUserRole(assignmentTO.getBpmnRepositoryId(), this.userService.getUserIdOfCurrentUser())));
         }
         //Exception if the user tries to give someone a role that is higher than its own
-        if(this.getUserRole(assignmentTO.getBpmnRepositoryId(), currentUserId).ordinal() > assignmentTO.getRoleEnum().ordinal()){
+        if(currentUserRole.ordinal() > assignmentTO.getRoleEnum().ordinal()){
             throw new AccessRightException("You can't assign roles with higher permissions than your own");
         }
         Assignment assignment = new Assignment(assignmentTO);

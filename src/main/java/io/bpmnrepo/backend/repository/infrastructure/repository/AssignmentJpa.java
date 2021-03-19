@@ -12,9 +12,7 @@ public interface AssignmentJpa extends JpaRepository<AssignmentEntity, String> {
 
     AssignmentEntity findByAssignmentId_BpmnRepositoryIdAndAssignmentId_UserId(String bpmnRepositoryId, String userId);
 
-    @Transactional
     void deleteAssignmentEntityByAssignmentId_BpmnRepositoryIdAndAssignmentId_UserId(String bpmnRepositoryId, String userId);
 
-    @Transactional
     int deleteAllByAssignmentId_BpmnRepositoryId(String bpmnRepositoryId);
 }

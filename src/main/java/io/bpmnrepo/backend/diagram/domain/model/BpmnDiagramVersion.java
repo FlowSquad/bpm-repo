@@ -1,12 +1,14 @@
 package io.bpmnrepo.backend.diagram.domain.model;
 
 import ch.qos.logback.core.rolling.helper.IntegerTokenConverter;
+import io.bpmnrepo.backend.diagram.api.transport.BpmnDiagramTO;
 import io.bpmnrepo.backend.diagram.api.transport.BpmnDiagramVersionTO;
 import io.bpmnrepo.backend.diagram.api.transport.BpmnDiagramVersionUploadTO;
 import io.bpmnrepo.backend.diagram.infrastructure.SaveTypeEnum;
 import lombok.*;
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -34,17 +36,24 @@ public class BpmnDiagramVersion {
     }
 
 
+    public void updateVersion(final BpmnDiagramVersionTO bpmnDiagramVersionTO, final BpmnDiagramVersion bpmnDiagramVersion){
+        if (bpmnDiagramVersionTO.getBpmnDiagramVersionComment() == null || bpmnDiagramVersionTO.getBpmnDiagramVersionComment().isEmpty()) {
+            this.setBpmnDiagramVersionComment(bpmnDiagramVersion.getBpmnDiagramVersionComment());
+        } else {
+            bpmnDiagramVersionTO.setBpmnDiagramVersionComment(bpmnDiagramVersionTO.getBpmnDiagramVersionComment());
+        }
+        //VersionNo of persisted (old) version
+        this.setBpmnDiagramVersionRelease(bpmnDiagramVersion.getBpmnDiagramVersionRelease());
+        this.setBpmnDiagramVersionMilestone(bpmnDiagramVersion.getBpmnDiagramVersionMilestone());
+    }
+
+
     public Integer generateReleaseNumber(BpmnDiagramVersionTO bpmnDiagramVersionTO){
         if(bpmnDiagramVersionTO.getBpmnDiagramVersionRelease() != null) {
-            switch (bpmnDiagramVersionTO.getSaveType()){
-                case AUTOSAVE:
-                    return bpmnDiagramVersionTO.getBpmnDiagramVersionRelease();
-                case MILESTONE:
-                    return  bpmnDiagramVersionTO.getBpmnDiagramVersionRelease();
-                case RELEASE:
-                    return bpmnDiagramVersionTO.getBpmnDiagramVersionRelease() +1;
-                default:
-                    return bpmnDiagramVersionTO.getBpmnDiagramVersionRelease();
+            if (bpmnDiagramVersionTO.getSaveType().equals(SaveTypeEnum.RELEASE)) {
+                return bpmnDiagramVersionTO.getBpmnDiagramVersionRelease() + 1;
+            } else {
+                return bpmnDiagramVersionTO.getBpmnDiagramVersionRelease();
             }
         }
         else{

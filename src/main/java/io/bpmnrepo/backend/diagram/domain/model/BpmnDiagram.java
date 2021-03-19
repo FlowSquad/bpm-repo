@@ -7,6 +7,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,12 +19,18 @@ public class BpmnDiagram {
     private String bpmnDiagramDescription;
     private String bpmnRepositoryId;
     private LocalDateTime createdDate;
+    private LocalDateTime updatedDate;
 
-    public BpmnDiagram(final BpmnDiagramTO bpmnDiagramTO){
-        this.bpmnDiagramId = bpmnDiagramTO.getBpmnDiagramId();
-        this.bpmnDiagramName = bpmnDiagramTO.getBpmnDiagramName();
-        this.bpmnDiagramDescription = bpmnDiagramTO.getBpmnDiagramDescription();
-        this.bpmnRepositoryId = bpmnDiagramTO.getBpmnRepositoryId();
-        this.createdDate = LocalDateTime.now();
+
+
+    public void updateDiagram(final BpmnDiagramTO bpmnDiagramTO, final BpmnDiagram bpmnDiagram) {
+        if (bpmnDiagramTO.getBpmnDiagramName() != null || !bpmnDiagramTO.getBpmnDiagramName().isEmpty()) {
+            this.setBpmnDiagramName(bpmnDiagramTO.getBpmnDiagramName());
+        }
+        if (bpmnDiagramTO.getBpmnDiagramDescription() != null || !bpmnDiagramTO.getBpmnDiagramDescription().isEmpty()) {
+            this.setBpmnDiagramDescription(bpmnDiagramTO.getBpmnDiagramDescription());
+        }
+        this.setCreatedDate(bpmnDiagram.getCreatedDate());
     }
+
 }

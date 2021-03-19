@@ -15,12 +15,9 @@ public interface BpmnDiagramVersionJpa extends JpaRepository<BpmnDiagramVersionE
 
     BpmnDiagramVersionEntity findFirstByBpmnDiagramIdOrderByBpmnDiagramVersionReleaseDescBpmnDiagramVersionMilestoneDesc(String bpmnDiagramId);
 
-    @Transactional
     int deleteAllByBpmnRepositoryId(String bpmnRepositoryId);
 
-    @Transactional
     int deleteAllByBpmnDiagramId(String bpmnDiagramId);
 
-    @Transactional
     int deleteAllByBpmnRepositoryIdAndBpmnDiagramIdAndSaveType(String bpmnRepositoryId, String bpmnDiagramId, SaveTypeEnum saveTypeEnum);
 }

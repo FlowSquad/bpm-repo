@@ -25,19 +25,16 @@ public class BpmnDiagramService {
 
 
     public void createDiagram(BpmnDiagramTO bpmnDiagramTO){
-        BpmnDiagram bpmnDiagram = new BpmnDiagram(bpmnDiagramTO);
-        saveToDb(this.mapper.toEntity(bpmnDiagram));
+        BpmnDiagram bpmnDiagram = this.mapper.toModel(bpmnDiagramTO);
+        //BpmnDiagram bpmnDiagram = new BpmnDiagram(bpmnDiagramTO);
+        saveToDb(bpmnDiagram);
     }
 
     public void updateDiagram(BpmnDiagramTO bpmnDiagramTO){
         BpmnDiagramEntity bpmnDiagramEntity = this.bpmnDiagramJpa.findBpmnDiagramEntityByBpmnDiagramIdEquals(bpmnDiagramTO.getBpmnDiagramId());
-        if(bpmnDiagramTO.getBpmnDiagramName() != null || !bpmnDiagramTO.getBpmnDiagramName().isEmpty()){
-            bpmnDiagramEntity.setBpmnDiagramName(bpmnDiagramTO.getBpmnDiagramName());
-        }
-        if(bpmnDiagramTO.getBpmnDiagramDescription() != null || !bpmnDiagramTO.getBpmnDiagramDescription().isEmpty()){
-            bpmnDiagramEntity.setBpmnDiagramDescription(bpmnDiagramTO.getBpmnDiagramDescription());
-        }
-        saveToDb(bpmnDiagramEntity);
+        BpmnDiagram bpmnDiagram = this.mapper.toModel(bpmnDiagramEntity);
+        bpmnDiagram.updateDiagram(bpmnDiagramTO, bpmnDiagram);
+        saveToDb(bpmnDiagram);
     }
 
 
@@ -48,21 +45,20 @@ public class BpmnDiagramService {
     }
 
 
-    public BpmnDiagramTO getSingleDiagram(String bpmnRepositoryId, String bpmnDiagramId){
+    public BpmnDiagramTO getSingleDiagram(String bpmnDiagramId){
         return this.mapper.toTO(this.bpmnDiagramJpa.findBpmnDiagramEntityByBpmnDiagramIdEquals(bpmnDiagramId));
     }
 
 
 
-    private void saveToDb(BpmnDiagramEntity bpmnDiagramEntity){
-        authService.checkIfOperationIsAllowed(bpmnDiagramEntity.getBpmnRepositoryId(), RoleEnum.MEMBER);
-        bpmnDiagramJpa.save(bpmnDiagramEntity);
+    private void saveToDb(BpmnDiagram bpmnDiagram){
+        bpmnDiagramJpa.save(this.mapper.toEntity(bpmnDiagram));
 
     }
 
 
 
-    public void deleteDiagram(String bpmnRepositoryId, String bpmnDiagramId){
+    public void deleteDiagram(String bpmnDiagramId){
         int deletedDiagrams = this.bpmnDiagramJpa.deleteBpmnDiagramEntitiyByBpmnDiagramId(bpmnDiagramId);
         log.info(String.format("Deleted %s Diagram", deletedDiagrams));
     }

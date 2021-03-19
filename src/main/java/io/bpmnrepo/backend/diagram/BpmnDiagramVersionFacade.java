@@ -24,7 +24,7 @@ public class BpmnDiagramVersionFacade {
     public String createOrUpdateVersion(String bpmnRepositoryId, String bpmnDiagramId, BpmnDiagramVersionUploadTO bpmnDiagramVersionUploadTO){
         authService.checkIfOperationIsAllowed(bpmnRepositoryId, RoleEnum.MEMBER);
         verifyRelationService.verifyDiagramIsInSpecifiedRepository(bpmnRepositoryId, bpmnDiagramId);
-        BpmnDiagramVersionTO bpmnDiagramVersionTO = adoptProperties(bpmnRepositoryId, bpmnDiagramId, bpmnDiagramVersionUploadTO);
+        BpmnDiagramVersionTO bpmnDiagramVersionTO = new BpmnDiagramVersionTO(bpmnRepositoryId, bpmnDiagramId, bpmnDiagramVersionUploadTO);
         //true if it is the initial version
         if(verifyRelationService.checkIfVersionIsInitialVersion(bpmnDiagramId)){
             String bpmnDiagramVersionId = this.bpmnDiagramVersionService.createInitialVersion(bpmnDiagramVersionTO);
@@ -40,14 +40,14 @@ public class BpmnDiagramVersionFacade {
 
     //simply deletes all entities that contain the SaveType "AUTOSAVE"
     private void deleteAutosavedVersionsIfReleaseOrMilestoneIsSaved(String bpmnRepositoryId, String bpmnDiagramId, SaveTypeEnum saveTypeEnum) {
-        if(saveTypeEnum != SaveTypeEnum.AUTOSAVE){
+        if(saveTypeEnum.equals(SaveTypeEnum.AUTOSAVE)){
             this.bpmnDiagramVersionService.deleteAutosavedVersions(bpmnRepositoryId, bpmnDiagramId);
         }
 
 
     }
 
-    public BpmnDiagramVersionTO adoptProperties(String bpmnRepositoryId, String bpmnDiagramId, BpmnDiagramVersionUploadTO bpmnDiagramVersionUploadTO){
+/*    public BpmnDiagramVersionTO adoptProperties(String bpmnRepositoryId, String bpmnDiagramId, BpmnDiagramVersionUploadTO bpmnDiagramVersionUploadTO){
         BpmnDiagramVersionTO bpmnDiagramVersionTO = new BpmnDiagramVersionTO();
         bpmnDiagramVersionTO.setBpmnRepositoryId(bpmnRepositoryId);
         bpmnDiagramVersionTO.setBpmnDiagramId(bpmnDiagramId);
@@ -55,7 +55,7 @@ public class BpmnDiagramVersionFacade {
         bpmnDiagramVersionTO.setBpmnDiagramVersionComment(bpmnDiagramVersionUploadTO.getBpmnDiagramVersionComment());
         bpmnDiagramVersionTO.setSaveType(bpmnDiagramVersionUploadTO.getSaveType());
         return bpmnDiagramVersionTO;
-    }
+    }*/
 
     public List<BpmnDiagramVersionTO> getAllVersions(String bpmnRepositoryId, String bpmnDiagramId){
         verifyRelationService.verifyDiagramIsInSpecifiedRepository(bpmnRepositoryId, bpmnDiagramId);

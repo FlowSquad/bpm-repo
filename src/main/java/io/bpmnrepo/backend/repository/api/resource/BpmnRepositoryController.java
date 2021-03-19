@@ -3,6 +3,7 @@ package io.bpmnrepo.backend.repository.api.resource;
 
 import io.bpmnrepo.backend.repository.BpmnRepositoryFacade;
 import io.bpmnrepo.backend.repository.api.transport.BpmnRepositoryTO;
+import io.bpmnrepo.backend.repository.api.transport.NewBpmnRepositoryTO;
 import io.bpmnrepo.backend.repository.domain.business.BpmnRepositoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -19,6 +21,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@Transactional
 @Validated
 @RequestMapping("/api/bpmnrepo")
 public class BpmnRepositoryController {
@@ -28,10 +31,19 @@ public class BpmnRepositoryController {
 
     @PostMapping()
     @Operation(summary = "Create a new Repository")
-    public ResponseEntity<Void> createOrUpdateRepository(@RequestBody @Valid final BpmnRepositoryTO repositoryTO){
-        bpmnRepositoryFacade.createOrUpdateRepository(repositoryTO);
+    public ResponseEntity<Void> createOrUpdateRepository(@RequestBody @Valid final NewBpmnRepositoryTO newBpmnRepositoryTO){
+        bpmnRepositoryFacade.createOrUpdateRepository(newBpmnRepositoryTO);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/{bpmnRepositoryId}")
+    @Operation(summary = "Update a Repository")
+    public ResponseEntity<Void> updateRepository(@PathVariable @NotBlank final String bpmnRepositoryId,
+                                                @RequestBody @Valid final NewBpmnRepositoryTO newBpmnRepositoryTO){
+        bpmnRepositoryFacade.updateRepository(bpmnRepositoryId, newBpmnRepositoryTO);
+        return ResponseEntity.ok().build();
+    }
+
 
     @GetMapping()
     @Operation(summary = "Get all Repositories")
@@ -50,7 +62,7 @@ public class BpmnRepositoryController {
 
     @DeleteMapping("/{repositoryId}")
     @Operation(summary = "Delete a Repository if you own it")
-    public ResponseEntity<Void> deleteRepository(@PathVariable("repositoryId") @NotBlank final String repositoryId){
+    public ResponseEntity<Void> deleteRepository(@PathVariable @NotBlank final String repositoryId){
         log.debug("Deleting Repository with ID " + repositoryId);
         this.bpmnRepositoryFacade.deleteRepository(repositoryId);
         return ResponseEntity.ok().build();

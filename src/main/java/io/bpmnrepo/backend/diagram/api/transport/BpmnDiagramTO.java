@@ -17,7 +17,7 @@ public class BpmnDiagramTO {
     @Nullable
     private String bpmnDiagramId;
 
-    @Nullable
+    @NotNull
     private String bpmnRepositoryId;
 
     @NotEmpty
@@ -25,5 +25,12 @@ public class BpmnDiagramTO {
 
     @NotNull
     private String bpmnDiagramDescription;
+
+    public BpmnDiagramTO(String bpmnRepositoryId, BpmnDiagramUploadTO bpmnDiagramUploadTO){
+        this.bpmnDiagramId = bpmnDiagramUploadTO.getBpmnDiagramId();
+        this.bpmnRepositoryId = bpmnRepositoryId;
+        this.bpmnDiagramName = bpmnDiagramUploadTO.getBpmnDiagramName();
+        this.bpmnDiagramDescription = bpmnDiagramUploadTO.getBpmnDiagramDescription();
+    }
 
 }

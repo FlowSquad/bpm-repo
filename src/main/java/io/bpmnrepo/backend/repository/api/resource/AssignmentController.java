@@ -9,11 +9,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@Transactional
 @RequestMapping("/api/assignment")
 public class AssignmentController {
 

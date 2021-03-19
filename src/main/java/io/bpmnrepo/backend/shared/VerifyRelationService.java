@@ -52,48 +52,4 @@ public class VerifyRelationService {
             return false;
         }
     }
-
-    public void checkIfRepositoryIdsMatch(String bpmnRepositoryId, BpmnDiagramTO bpmnDiagramTO) {
-        if(bpmnDiagramTO.getBpmnRepositoryId() != null){
-            if(!bpmnDiagramTO.getBpmnRepositoryId().equals(bpmnRepositoryId)){
-                log.warn("Repository Ids from URL and TO don't match, using repository Id from URL...");
-            }
-        }
-    }
-
-/*    public void verifyDiagramIsInSpecifiedRepository(BpmnDiagramVersionTO bpmnDiagramVersionTO) {
-        String bpmnRepositoryId = bpmnDiagramVersionTO.getBpmnRepositoryId();
-        String bpmnDiagramId = bpmnDiagramVersionTO.getBpmnDiagramId();
-        BpmnDiagramEntity bpmnDiagramEntity = bpmnDiagramJpa.findBpmnDiagramEntityByBpmnDiagramIdEquals(bpmnDiagramId);
-        if (!bpmnDiagramEntity.getBpmnRepositoryId().equals(bpmnRepositoryId)) {
-            throw new AccessRightException("This Diagram does not belong to the specified Repository");
-        }
-    }
-
-
-    public void verifyVersionIsInitialVersion(String bpmnDiagramId){
-        BpmnDiagramVersionEntity bpmnDiagramVersionEntity = bpmnDiagramVersionJpa.findFirstByBpmnDiagramIdOrderByBpmnDiagramVersionNumberDesc(bpmnDiagramId);
-        if(bpmnDiagramVersionEntity != null){
-            throw new AccessRightException(String.format("Tried to create initial version, although there are already %s versions of this Diagram present", bpmnDiagramVersionEntity.getBpmnDiagramVersionNumber().toString()));
-        }
-    }
-    public void verifyVersionIsUpdate(BpmnDiagramVersionTO bpmnDiagramVersionTO){
-        BpmnDiagramVersionEntity bpmnDiagramVersionEntity = bpmnDiagramVersionJpa.findFirstByBpmnDiagramIdOrderByBpmnDiagramVersionNumberDesc(bpmnDiagramVersionTO.getBpmnDiagramId());
-        if(bpmnDiagramVersionEntity == null){
-            throw new AccessRightException(String.format("No diagram found that could be updated"));
-        }
-        String bpmnAsXLMOld = new String(bpmnDiagramVersionEntity.getBpmnDiagramVersionFile());
-        if(bpmnAsXLMOld.equals(bpmnDiagramVersionTO.getBpmnAsXML())){
-            throw new AccessRightException("No changes detected, updating failed");
-        }
-    }
-
-    public void verifyVersionIsFromSpecifiedDiagram(BpmnDiagramVersionTO bpmnDiagramVersionTO){
-        String bpmnDiagramVersionId = bpmnDiagramVersionTO.getBpmnDiagramVersionId();
-        String bpmnDiagramId = bpmnDiagramVersionTO.getBpmnDiagramId();
-        BpmnDiagramVersionEntity bpmnDiagramVersionEntity = bpmnDiagramVersionJpa.findAllByBpmnDiagramVersionIdEquals(bpmnDiagramVersionId);
-        if(!bpmnDiagramVersionEntity.getBpmnDiagramId().equals(bpmnDiagramId)){
-            throw new AccessRightException("This version does not belong to the specified Diagram");
-        }
-    }*/
 }

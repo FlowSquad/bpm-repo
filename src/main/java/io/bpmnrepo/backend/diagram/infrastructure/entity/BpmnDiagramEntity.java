@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -31,4 +32,9 @@ public class BpmnDiagramEntity {
     @Column(name = "bpmd_diagram_description")
     private String bpmnDiagramDescription;
 
+    @Column(name = "created_date")
+    private LocalDateTime createdDate;
+
+    @Column(name = "updated_date")
+    private LocalDateTime updatedDate;
 }

@@ -44,4 +44,12 @@ public class BpmnDiagramVersionTO {
     @NotEmpty
     private String bpmnRepositoryId;
 
+
+    public BpmnDiagramVersionTO(String bpmnRepositoryId, String bpmnDiagramId, BpmnDiagramVersionUploadTO bpmnDiagramVersionUploadTO){
+        this.bpmnRepositoryId = bpmnRepositoryId;
+        this.bpmnDiagramId = bpmnDiagramId;
+        this.bpmnDiagramVersionComment = bpmnDiagramVersionUploadTO.getBpmnDiagramVersionComment();
+        this.bpmnAsXML = bpmnDiagramVersionUploadTO.getBpmnAsXML();
+        this.saveType = bpmnDiagramVersionUploadTO.getSaveType();
+    }
 }

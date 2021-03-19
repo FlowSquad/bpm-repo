@@ -11,15 +11,9 @@ import java.util.Optional;
 //@Repository
 public interface BpmnRepoJpa extends JpaRepository<BpmnRepositoryEntity, String>{
     List<BpmnRepositoryEntity> findAllByBpmnRepositoryNameIsNot(String bpmnRepositoryName);
-
     List<BpmnRepositoryEntity> findAllByBpmnRepositoryId(String bpmnRepositoryId);
-
     BpmnRepositoryEntity findByBpmnRepositoryIdAndBpmnRepositoryName(String bpmnRepositoryId, String bpmnRepositoryName);
-
-    @Transactional
     void deleteBpmnRepositoryEntityByBpmnRepositoryId(String bpmnRepositoryId);
-
     BpmnRepositoryEntity findByBpmnRepositoryId(String bpmnRepositoryId);
     Optional<BpmnRepositoryEntity> findByBpmnRepositoryIdEquals(String bpmnRepositoryId);
-    //Boolean findByBpmnRepositoryIdExists(String bpmnRepositoryId);
 }

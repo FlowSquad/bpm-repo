@@ -3,6 +3,7 @@ package io.bpmnrepo.backend.repository;
 import io.bpmnrepo.backend.diagram.domain.business.BpmnDiagramService;
 import io.bpmnrepo.backend.diagram.domain.business.BpmnDiagramVersionService;
 import io.bpmnrepo.backend.repository.api.transport.BpmnRepositoryTO;
+import io.bpmnrepo.backend.repository.api.transport.NewBpmnRepositoryTO;
 import io.bpmnrepo.backend.repository.domain.business.AssignmentService;
 import io.bpmnrepo.backend.repository.domain.business.BpmnRepositoryService;
 import io.bpmnrepo.backend.repository.infrastructure.entity.AssignmentEntity;
@@ -33,18 +34,17 @@ public class BpmnRepositoryFacade {
     private final BpmnRepoJpa bpmnRepoJpa;
     private final AssignmentJpa assignmentJpa;
 
-    public void createOrUpdateRepository(BpmnRepositoryTO bpmnRepositoryTO){
-        if(bpmnRepositoryTO.getBpmnRepositoryId() == null || bpmnRepositoryTO.getBpmnRepositoryId().isBlank()){
-            checkIfRepositoryNameIsAvailable(bpmnRepositoryTO.getBpmnRepositoryName());
-            String bpmnRepositoryId = this.bpmnRepositoryService.createRepository(bpmnRepositoryTO);
-            this.assignmentService.createInitialAssignment(bpmnRepositoryId);
-            log.debug("Successfully created new repository");
-        }
-        else{
-            authService.checkIfOperationIsAllowed(bpmnRepositoryTO.getBpmnRepositoryId(), RoleEnum.ADMIN);
-            this.bpmnRepositoryService.updateRepository(bpmnRepositoryTO);
-            log.debug("The repository has been updated");
-        }
+    public void createOrUpdateRepository(NewBpmnRepositoryTO newBpmnRepositoryTO){
+        checkIfRepositoryNameIsAvailable(newBpmnRepositoryTO.getBpmnRepositoryName());
+        String bpmnRepositoryId = this.bpmnRepositoryService.createRepository(newBpmnRepositoryTO);
+        this.assignmentService.createInitialAssignment(bpmnRepositoryId);
+        log.debug("Successfully created new repository");
+    }
+
+    public void updateRepository(String bpmnRepositoryId, NewBpmnRepositoryTO newBpmnRepositoryTO) {
+        authService.checkIfOperationIsAllowed(bpmnRepositoryId, RoleEnum.ADMIN);
+        this.bpmnRepositoryService.updateRepository(bpmnRepositoryId, newBpmnRepositoryTO);
+        log.debug("The repository has been updated");
     }
 
     private void checkIfRepositoryNameIsAvailable(String bpmnRepositoryName) {

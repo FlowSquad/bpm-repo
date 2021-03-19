@@ -31,7 +31,7 @@ public class User {
         this.apiKey = this.newApiKey();
     }
 
-    public String newApiKey(){
+    private String newApiKey(){
         return UUID.randomUUID().toString();
 
     }

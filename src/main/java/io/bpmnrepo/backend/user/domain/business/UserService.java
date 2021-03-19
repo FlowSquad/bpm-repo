@@ -5,6 +5,8 @@ import io.bpmnrepo.backend.shared.exception.AccessRightException;
 import io.bpmnrepo.backend.shared.exception.NameConflictException;
 import io.bpmnrepo.backend.user.api.transport.UserTO;
 import io.bpmnrepo.backend.user.api.transport.UserUpdateTO;
+import io.bpmnrepo.backend.user.domain.exception.EmailAlreadyInUseException;
+import io.bpmnrepo.backend.user.domain.exception.UsernameAlreadyInUseException;
 import io.bpmnrepo.backend.user.domain.mapper.UserMapper;
 import io.bpmnrepo.backend.user.domain.model.User;
 import io.bpmnrepo.backend.user.infrastructure.entity.UserEntity;
@@ -60,7 +62,7 @@ public class UserService {
 
     private void checkIfEmailIsAvailable(String email) {
         if(this.userJpa.existsUserEntityByEmail(email)){
-            throw new NameConflictException(String.format("The email address %s is already in use", email));
+            throw new EmailAlreadyInUseException(email);
         }
     }
 
@@ -81,7 +83,7 @@ public class UserService {
 
     public void checkIfUsernameIsAvailable(String username){
         if(this.userJpa.existsUserEntityByUserName(username)){
-            throw new NameConflictException(String.format("The username \"%s\" is not available", username));
+            throw new UsernameAlreadyInUseException(username);
         }
     }
 
