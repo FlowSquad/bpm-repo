@@ -30,10 +30,6 @@ public class UserService {
         saveToDb(this.mapper.toEntity(user));
     }
 
-/*User muss selbst angemeldet sein
-*   get current user
-*
-* */
     public void updateUser(UserUpdateTO userUpdateTO) {
         verifyUserIsChangingOwnProfile(userUpdateTO.getUserId());
         updateOrAdoptProperties(userUpdateTO);
@@ -64,6 +60,11 @@ public class UserService {
         if(this.userJpa.existsUserEntityByEmail(email)){
             throw new EmailAlreadyInUseException(email);
         }
+    }
+
+    public String getUserIdByUsername(String username){
+        UserEntity userEntity = this.userJpa.findByUserNameEquals(username);
+        return userEntity.getUserId();
     }
 
     public String getUserIdByEmail(String email){

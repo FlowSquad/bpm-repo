@@ -4,7 +4,6 @@ package io.bpmnrepo.backend.repository.api.resource;
 import io.bpmnrepo.backend.repository.BpmnRepositoryFacade;
 import io.bpmnrepo.backend.repository.api.transport.BpmnRepositoryTO;
 import io.bpmnrepo.backend.repository.api.transport.NewBpmnRepositoryTO;
-import io.bpmnrepo.backend.repository.domain.business.BpmnRepositoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Slf4j
@@ -28,14 +26,24 @@ public class BpmnRepositoryController {
 
     private final BpmnRepositoryFacade bpmnRepositoryFacade;
 
-
+    /** Repo erstellen
+     *
+     * @param newBpmnRepositoryTO
+     * @return
+     */
     @PostMapping()
     @Operation(summary = "Create a new Repository")
-    public ResponseEntity<Void> createOrUpdateRepository(@RequestBody @Valid final NewBpmnRepositoryTO newBpmnRepositoryTO){
-        bpmnRepositoryFacade.createOrUpdateRepository(newBpmnRepositoryTO);
+    public ResponseEntity<Void> createRepository(@RequestBody @Valid final NewBpmnRepositoryTO newBpmnRepositoryTO){
+        bpmnRepositoryFacade.createRepository(newBpmnRepositoryTO);
         return ResponseEntity.ok().build();
     }
 
+    /** Repo eigenschaften ändern (Name oder Beschreibung)
+     *
+     * @param bpmnRepositoryId
+     * @param newBpmnRepositoryTO
+     * @return
+     */
     @PutMapping("/{bpmnRepositoryId}")
     @Operation(summary = "Update a Repository")
     public ResponseEntity<Void> updateRepository(@PathVariable @NotBlank final String bpmnRepositoryId,
@@ -45,6 +53,10 @@ public class BpmnRepositoryController {
     }
 
 
+    /** Alle dem user zogeordneten Repos abfragen
+     *
+     * @return
+     */
     @GetMapping()
     @Operation(summary = "Get all Repositories")
     public ResponseEntity<List<BpmnRepositoryTO>> getAllRepositories(){
@@ -52,6 +64,11 @@ public class BpmnRepositoryController {
         return ResponseEntity.ok().body(this.bpmnRepositoryFacade.getAllRepositories());
     }
 
+    /** Einzelnes Repo abfragen
+     *
+     * @param repositoryId
+     * @return
+     */
     @GetMapping("/{repositoryId}")
     @Operation(summary = "Get a single Repository by providing its ID")
     public ResponseEntity<BpmnRepositoryTO> getSingleRepository(@PathVariable @NotBlank final String repositoryId){
@@ -59,7 +76,11 @@ public class BpmnRepositoryController {
         return ResponseEntity.ok().body(this.bpmnRepositoryFacade.getSingleRepository(repositoryId));
     }
 
-
+    /** Repository löschen (Kann nur von Ownern ausgeführt werden)
+     *
+     * @param repositoryId
+     * @return
+     */
     @DeleteMapping("/{repositoryId}")
     @Operation(summary = "Delete a Repository if you own it")
     public ResponseEntity<Void> deleteRepository(@PathVariable @NotBlank final String repositoryId){

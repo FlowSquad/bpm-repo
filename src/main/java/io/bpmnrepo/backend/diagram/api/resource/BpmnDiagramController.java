@@ -27,7 +27,12 @@ public class BpmnDiagramController {
 
     private final BpmnDiagramFacade bpmnDiagramFacade;
 
-
+    /** Neue Repos erstellen oder Name bzw. Beschreibung eines Diagrams ändern, indem die DiagramId im Body mitgegeben wird
+     *
+     * @param repositoryId
+     * @param bpmnDiagramUploadTO
+     * @return
+     */
     @PostMapping("/{repositoryId}")
     public ResponseEntity<Void> createOrUpdateDiagram(@PathVariable @NotBlank String repositoryId,
                                                       @RequestBody @Valid final BpmnDiagramUploadTO bpmnDiagramUploadTO){
@@ -36,6 +41,11 @@ public class BpmnDiagramController {
         return ResponseEntity.ok().build();
     }
 
+    /** Alle Diagramme innerhalb eines Repos abfragen
+     *
+     * @param repositoryId
+     * @return
+     */
     @GetMapping("/all/{repositoryId}")
     public ResponseEntity<List<BpmnDiagramTO>> getDiagramsFromRepo(@PathVariable @NotBlank String repositoryId){
         //Exceptionhandling for n.a. repositoryId
@@ -44,6 +54,12 @@ public class BpmnDiagramController {
 
     }
 
+    /** Einzelnes Diagram abfragen
+     *
+     * @param bpmnRepositoryId
+     * @param bpmnDiagramId
+     * @return
+     */
     @GetMapping("/{bpmnRepositoryId}/{bpmnDiagramId}")
     public ResponseEntity<BpmnDiagramTO> getSingleDiagram(@PathVariable @NotBlank String bpmnRepositoryId,
                                                           @PathVariable @NotBlank String bpmnDiagramId){
@@ -51,6 +67,12 @@ public class BpmnDiagramController {
         return ResponseEntity.ok().body(this.bpmnDiagramFacade.getSingleDiagram(bpmnRepositoryId, bpmnDiagramId));
     }
 
+    /** Ein Diagram, inklusive aller child-versionen löschen
+     *
+     * @param bpmnRepositoryId
+     * @param bpmnDiagramId
+     * @return
+     */
     @DeleteMapping("{bpmnRepositoryId}/{bpmnDiagramId}")
     @Operation(summary = "Delete one Diagram and all of its versions")
     public ResponseEntity<Void> deleteDiagram(@PathVariable @NotBlank String bpmnRepositoryId,

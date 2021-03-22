@@ -1,6 +1,7 @@
 package io.bpmnrepo.backend.repository;
 
 import io.bpmnrepo.backend.repository.api.transport.BpmnRepositoryTO;
+import io.bpmnrepo.backend.repository.api.transport.NewBpmnRepositoryTO;
 import io.bpmnrepo.backend.repository.domain.model.BpmnRepository;
 import io.bpmnrepo.backend.repository.infrastructure.entity.AssignmentEntity;
 import io.bpmnrepo.backend.repository.infrastructure.entity.AssignmentId;
@@ -20,6 +21,14 @@ public class RepositoryBuilder {
                 .updatedDate(updatedDate)
                 .build();
     }
+
+    public static NewBpmnRepositoryTO buildNewRepoTO(final String repoName, final String repoDesc){
+        return NewBpmnRepositoryTO.builder()
+                .bpmnRepositoryName(repoName)
+                .bpmnRepositoryDescription(repoDesc)
+                .build();
+    }
+
 
     public static BpmnRepositoryTO buildRepoTO(final String repoName, final String repoDesc){
         return BpmnRepositoryTO.builder()

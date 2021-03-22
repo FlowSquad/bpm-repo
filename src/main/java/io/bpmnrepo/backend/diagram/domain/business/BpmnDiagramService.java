@@ -33,7 +33,7 @@ public class BpmnDiagramService {
     public void updateDiagram(BpmnDiagramTO bpmnDiagramTO){
         BpmnDiagramEntity bpmnDiagramEntity = this.bpmnDiagramJpa.findBpmnDiagramEntityByBpmnDiagramIdEquals(bpmnDiagramTO.getBpmnDiagramId());
         BpmnDiagram bpmnDiagram = this.mapper.toModel(bpmnDiagramEntity);
-        bpmnDiagram.updateDiagram(bpmnDiagramTO, bpmnDiagram);
+        bpmnDiagram.updateDiagram(bpmnDiagramTO);
         saveToDb(bpmnDiagram);
     }
 
@@ -49,6 +49,14 @@ public class BpmnDiagramService {
         return this.mapper.toTO(this.bpmnDiagramJpa.findBpmnDiagramEntityByBpmnDiagramIdEquals(bpmnDiagramId));
     }
 
+
+    public void updateUpdatedDate(String bpmnDiagramId){
+        BpmnDiagramEntity bpmnDiagramEntity = this.bpmnDiagramJpa.findBpmnDiagramEntityByBpmnDiagramIdEquals(bpmnDiagramId);
+        BpmnDiagram bpmnDiagram = this.mapper.toModel(bpmnDiagramEntity);
+        bpmnDiagram.updateDate();
+        log.debug("Updating Date");
+        this.saveToDb(bpmnDiagram);
+    }
 
 
     private void saveToDb(BpmnDiagram bpmnDiagram){

@@ -23,14 +23,18 @@ public class BpmnDiagram {
 
 
 
-    public void updateDiagram(final BpmnDiagramTO bpmnDiagramTO, final BpmnDiagram bpmnDiagram) {
+    public void updateDiagram(final BpmnDiagramTO bpmnDiagramTO) {
         if (bpmnDiagramTO.getBpmnDiagramName() != null || !bpmnDiagramTO.getBpmnDiagramName().isEmpty()) {
             this.setBpmnDiagramName(bpmnDiagramTO.getBpmnDiagramName());
         }
         if (bpmnDiagramTO.getBpmnDiagramDescription() != null || !bpmnDiagramTO.getBpmnDiagramDescription().isEmpty()) {
             this.setBpmnDiagramDescription(bpmnDiagramTO.getBpmnDiagramDescription());
         }
-        this.setCreatedDate(bpmnDiagram.getCreatedDate());
+        updateDate();
+    }
+
+    public void updateDate(){
+        this.updatedDate = LocalDateTime.now();
     }
 
 }

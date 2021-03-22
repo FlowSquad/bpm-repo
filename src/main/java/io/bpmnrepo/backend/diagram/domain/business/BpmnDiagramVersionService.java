@@ -62,7 +62,7 @@ public class BpmnDiagramVersionService {
     private String saveToDb(BpmnDiagramVersion bpmnDiagramVersion){
         bpmnDiagramVersionJpa.save(this.mapper.toEntity(bpmnDiagramVersion));
         log.debug("Saving successful");
-        BpmnDiagramVersionEntity bpmnDiagramVersionEntity = this.bpmnDiagramVersionJpa.findAllByBpmnDiagramVersionIdEquals(bpmnDiagramVersion.getBpmnDiagramId());
+        BpmnDiagramVersionEntity bpmnDiagramVersionEntity = this.bpmnDiagramVersionJpa.findFirstByBpmnDiagramIdAndBpmnRepositoryIdOrderByBpmnDiagramVersionReleaseDescBpmnDiagramVersionMilestoneDesc(bpmnDiagramVersion.getBpmnDiagramId(), bpmnDiagramVersion.getBpmnRepositoryId());
         return (bpmnDiagramVersionEntity.getBpmnDiagramId());
     }
 

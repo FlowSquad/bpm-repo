@@ -2,6 +2,7 @@ package io.bpmnrepo.backend.diagram;
 
 import io.bpmnrepo.backend.diagram.api.transport.BpmnDiagramVersionTO;
 import io.bpmnrepo.backend.diagram.api.transport.BpmnDiagramVersionUploadTO;
+import io.bpmnrepo.backend.diagram.domain.business.BpmnDiagramService;
 import io.bpmnrepo.backend.diagram.domain.business.BpmnDiagramVersionService;
 import io.bpmnrepo.backend.diagram.infrastructure.SaveTypeEnum;
 import io.bpmnrepo.backend.shared.AuthService;
@@ -19,6 +20,7 @@ public class BpmnDiagramVersionFacade {
     private final AuthService authService;
     private final VerifyRelationService verifyRelationService;
     private final BpmnDiagramVersionService bpmnDiagramVersionService;
+    private final BpmnDiagramService bpmnDiagramService;
 
 
     public String createOrUpdateVersion(String bpmnRepositoryId, String bpmnDiagramId, BpmnDiagramVersionUploadTO bpmnDiagramVersionUploadTO){
@@ -32,6 +34,8 @@ public class BpmnDiagramVersionFacade {
         }
         else{
             String bpmnDiagramVersionId = this.bpmnDiagramVersionService.updateVersion(bpmnDiagramVersionTO);
+            //refresh the updated date in diagramEntity
+            this.bpmnDiagramService.updateUpdatedDate(bpmnDiagramId);
             deleteAutosavedVersionsIfReleaseOrMilestoneIsSaved(bpmnRepositoryId, bpmnDiagramId, bpmnDiagramVersionUploadTO.getSaveType());
             return bpmnDiagramVersionId;
         }

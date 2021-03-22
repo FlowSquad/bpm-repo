@@ -1,0 +1,50 @@
+name: Build & Publish
+
+on:
+  push:
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  CLUSTER_NAME: ${{ secrets.GCP_CLUSTER_NAME }}
+  CLUSTER_ZONE: ${{ secrets.GCP_CLUSTER_ZONE }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Setup Java 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: Build application
+        uses: eskatos/gradle-command-action@v1
+        with:
+          arguments: build -x test
+
+      - name: Prepare Build Directory
+        run: >-
+          mkdir target;
+          mkdir -p target;
+          cp build/libs/*.jar target;
+          cp Dockerfile target;
+      - name: Checkout actions
+        run: >-
+          git clone https://$GITHUB_TOKEN@github.com/FlowSquad/action-cicd-docker ./.github/actions/action-cicd-docker;
+          cd ./.github/actions/action-cicd-docker;
+          yarn;
+          cd ../../..;
+        env:
+          GITHUB_TOKEN: ${{ secrets.PACKAGES_DEPLOYMENT_TOKEN }}
+
+      - name: Build and deploy
+        uses: ./.github/actions/action-cicd-docker
+        with:
+          gcp-project-id: ${{ secrets.GCP_PROJECT_ID }}
+          gcp-service-account-key: ${{ secrets.GCP_SA_KEY }}
+          gcp-cloud-build-bucket: ${{ secrets.GCP_PROJECT_ID }}_cloudbuild
+          source-folder: target
+          image-name: bpmnrepo-backend

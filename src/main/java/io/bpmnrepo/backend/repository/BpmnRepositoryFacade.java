@@ -6,6 +6,7 @@ import io.bpmnrepo.backend.repository.api.transport.BpmnRepositoryTO;
 import io.bpmnrepo.backend.repository.api.transport.NewBpmnRepositoryTO;
 import io.bpmnrepo.backend.repository.domain.business.AssignmentService;
 import io.bpmnrepo.backend.repository.domain.business.BpmnRepositoryService;
+import io.bpmnrepo.backend.repository.domain.exception.RepositoryNameAlreadyInUseException;
 import io.bpmnrepo.backend.repository.infrastructure.entity.AssignmentEntity;
 import io.bpmnrepo.backend.repository.infrastructure.entity.BpmnRepositoryEntity;
 import io.bpmnrepo.backend.repository.infrastructure.repository.AssignmentJpa;
@@ -34,7 +35,7 @@ public class BpmnRepositoryFacade {
     private final BpmnRepoJpa bpmnRepoJpa;
     private final AssignmentJpa assignmentJpa;
 
-    public void createOrUpdateRepository(NewBpmnRepositoryTO newBpmnRepositoryTO){
+    public void createRepository(NewBpmnRepositoryTO newBpmnRepositoryTO){
         checkIfRepositoryNameIsAvailable(newBpmnRepositoryTO.getBpmnRepositoryName());
         String bpmnRepositoryId = this.bpmnRepositoryService.createRepository(newBpmnRepositoryTO);
         this.assignmentService.createInitialAssignment(bpmnRepositoryId);
@@ -53,7 +54,7 @@ public class BpmnRepositoryFacade {
             Optional<BpmnRepositoryEntity> assignedRepository = this.bpmnRepoJpa.findByBpmnRepositoryIdEquals(assignmentEntity.getAssignmentId().getBpmnRepositoryId());
             if(assignedRepository.isPresent()){
                 if(assignedRepository.get().getBpmnRepositoryName().equals(bpmnRepositoryName)){
-                    log.warn("You are member of a repository with the same name (just a warning, no error)");
+                    throw new RepositoryNameAlreadyInUseException();
                 }
             }
         }

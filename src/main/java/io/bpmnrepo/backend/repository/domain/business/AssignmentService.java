@@ -1,5 +1,6 @@
 package io.bpmnrepo.backend.repository.domain.business;
 
+import io.bpmnrepo.backend.repository.api.transport.AssignmentDeletionTO;
 import io.bpmnrepo.backend.repository.api.transport.AssignmentWithUserNameTO;
 import io.bpmnrepo.backend.repository.domain.mapper.AssignmentMapper;
 import io.bpmnrepo.backend.repository.domain.model.Assignment;
@@ -111,18 +112,22 @@ public class AssignmentService {
     }
 
 
-    public void deleteAssignment(AssignmentWithUserNameTO assignmentWithUserNameTO){
-        String assignmentUserId = this.userService.getUserIdByEmail(assignmentWithUserNameTO.getUserName());
+    public void deleteAssignment(AssignmentDeletionTO assignmentDeletionTO){
+        String deletedUserId = this.userService.getUserIdByUsername(assignmentDeletionTO.getUserName());
         String currentUserId = this.userService.getUserIdOfCurrentUser();
-        this.authService.checkIfOperationIsAllowed(assignmentWithUserNameTO.getBpmnRepositoryId(), RoleEnum.ADMIN);
+        this.authService.checkIfOperationIsAllowed(assignmentDeletionTO.getBpmnRepositoryId(), RoleEnum.ADMIN);
 
-        if(this.getUserRole(assignmentWithUserNameTO.getBpmnRepositoryId(), assignmentUserId).ordinal() < this.getUserRole(assignmentWithUserNameTO.getBpmnRepositoryId(), currentUserId).ordinal()){
-            throw new AccessRightException(String.format("You cant remove %s from this repository because your role provides less rights (You are an %s)",
-                    this.getUserRole(assignmentWithUserNameTO.getBpmnRepositoryId(), assignmentUserId),
-                    this.getUserRole(assignmentWithUserNameTO.getBpmnRepositoryId(), this.userService.getUserIdOfCurrentUser())));
+        RoleEnum currentUserRole = this.getUserRole(assignmentDeletionTO.getBpmnRepositoryId(), currentUserId);
+        RoleEnum deletedUserRole = this.getUserRole(assignmentDeletionTO.getBpmnRepositoryId(), deletedUserId);
+        //role of deleted user has to be equal or weaker than role of current user (0:Owner, 1:Admin, 2:Member, 3: Viewer)
+        if(currentUserRole.ordinal() > deletedUserRole.ordinal()){
+            System.out.println("current: " + currentUserRole.ordinal() + " deleted: " + deletedUserRole.ordinal());
+            throw new AccessRightException(String.format("You cant remove %s (Repository-%s) from this repository because your role provides less rights (You are an %s)",
+                    assignmentDeletionTO.getUserName(),
+                    deletedUserRole,
+                    currentUserRole));
         }
-
-        this.assignmentJpa.deleteAssignmentEntityByAssignmentId_BpmnRepositoryIdAndAssignmentId_UserId(assignmentWithUserNameTO.getBpmnRepositoryId(), assignmentUserId);
+        this.assignmentJpa.deleteAssignmentEntityByAssignmentId_BpmnRepositoryIdAndAssignmentId_UserId(assignmentDeletionTO.getBpmnRepositoryId(), deletedUserId);
     }
 
 

@@ -1,5 +1,6 @@
 package io.bpmnrepo.backend.repository.api.resource;
 
+import io.bpmnrepo.backend.repository.api.transport.AssignmentDeletionTO;
 import io.bpmnrepo.backend.repository.api.transport.AssignmentWithUserNameTO;
 import io.bpmnrepo.backend.repository.api.transport.AssignmentTO;
 import io.bpmnrepo.backend.repository.domain.business.AssignmentService;
@@ -21,6 +22,12 @@ public class AssignmentController {
 
     private final AssignmentService assignmentService;
 
+    /** Neue Assignments erstellen oder Rollen ändern. Kann von Admins und Ownern ausgeführt werden
+     *
+     * @param assignmentWithUserNameTO
+     * @return
+     */
+
     @PostMapping
     public ResponseEntity<Void> createOrUpdateUserAssignment(@RequestBody @Valid AssignmentWithUserNameTO assignmentWithUserNameTO){
         log.debug("Creating new Assignment for " + assignmentWithUserNameTO.getUserName());
@@ -28,10 +35,15 @@ public class AssignmentController {
         return ResponseEntity.ok().build();
     }
 
+    /** User komplett vom Repository entfernen. Kann von Admind und Ownern ausgeführt werden
+     *
+     * @param assignmentDeletionTO
+     * @return
+     */
     @DeleteMapping
-    public ResponseEntity<Void> deleteUserAssignment(@RequestBody @Valid AssignmentWithUserNameTO assignmentWithUserNameTO){
-        log.debug(String.format("Deleting assignment for user %s", assignmentWithUserNameTO.getUserName()));
-        this.assignmentService.deleteAssignment(assignmentWithUserNameTO);
+    public ResponseEntity<Void> deleteUserAssignment(@RequestBody @Valid AssignmentDeletionTO assignmentDeletionTO){
+        log.debug(String.format("Deleting assignment for user %s", assignmentDeletionTO.getUserName()));
+        this.assignmentService.deleteAssignment(assignmentDeletionTO);
         return ResponseEntity.ok().build();
     }
 }

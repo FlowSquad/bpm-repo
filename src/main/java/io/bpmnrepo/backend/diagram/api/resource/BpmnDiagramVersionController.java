@@ -27,6 +27,13 @@ public class BpmnDiagramVersionController {
 
     private final BpmnDiagramVersionFacade bpmnDiagramVersionFacade;
 
+    /** Version erstellen bzw. updaten, indem die VersionId im Body mitgegeben wird
+     *
+     * @param bpmnRepositoryId
+     * @param bpmnDiagramId
+     * @param bpmnDiagramVersionUploadTO
+     * @return
+     */
     //returns the id of the version that has just been saved
     @PostMapping("/{bpmnRepositoryId}/{bpmnDiagramId}")
     public ResponseEntity<String> createOrUpdateVersion(@PathVariable @NotBlank String bpmnRepositoryId,
@@ -37,7 +44,12 @@ public class BpmnDiagramVersionController {
     }
 
 
-
+    /** aktuellste Version abfragen
+     *
+     * @param bpmnRepositoryId
+     * @param bpmnDiagramId
+     * @return
+     */
     //get the latest version of a diagram
     @GetMapping("/{bpmnRepositoryId}/{bpmnDiagramId}/latest")
     @Operation(summary = "Return the latest version of the requested diagram")
@@ -47,6 +59,13 @@ public class BpmnDiagramVersionController {
         return ResponseEntity.ok().body(this.bpmnDiagramVersionFacade.getLatestVersion(bpmnRepositoryId, bpmnDiagramId));
     }
 
+
+    /** Liste aller Versionen eines Diagramms abfragen
+     *
+     * @param bpmnRepositoryId
+     * @param bpmnDiagramId
+     * @return
+     */
     //get all versions by providing the corresponding parent diagram id
     @GetMapping("/{bpmnRepositoryId}/{bpmnDiagramId}/all")
     public ResponseEntity<List<BpmnDiagramVersionTO>> getAllVersions(@PathVariable @NotBlank final String bpmnRepositoryId,
@@ -55,8 +74,13 @@ public class BpmnDiagramVersionController {
         return ResponseEntity.ok().body(this.bpmnDiagramVersionFacade.getAllVersions(bpmnRepositoryId, bpmnDiagramId));
     }
 
-    //get one specific version by providing version id
-    //diagramID act. not neccessary
+    /** Einzelne Version abfragen
+     *
+     * @param bpmnRepositoryId
+     * @param bpmnDiagramId
+     * @param bpmnDiagramVersionId
+     * @return
+     */
     @GetMapping("/{bpmnRepositoryId}/{bpmnDiagramId}/{bpmnDiagramVersionId}")
     public ResponseEntity<BpmnDiagramVersionTO> getSingleVersion(@PathVariable @NotBlank final String bpmnRepositoryId,
                                                                  @PathVariable @NotBlank final String bpmnDiagramId,
