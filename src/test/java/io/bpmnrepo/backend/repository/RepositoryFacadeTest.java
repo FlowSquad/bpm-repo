@@ -1,16 +1,13 @@
-package io.bpmnrepo.backend;
+package io.bpmnrepo.backend.repository;
 
 
 
 import io.bpmnrepo.backend.diagram.domain.business.BpmnDiagramService;
 import io.bpmnrepo.backend.diagram.domain.business.BpmnDiagramVersionService;
-import io.bpmnrepo.backend.repository.AssignmentBuilder;
-import io.bpmnrepo.backend.repository.BpmnRepositoryFacade;
-import io.bpmnrepo.backend.repository.RepositoryBuilder;
+import io.bpmnrepo.backend.assignment.AssignmentBuilder;
 import io.bpmnrepo.backend.repository.api.transport.NewBpmnRepositoryTO;
 import io.bpmnrepo.backend.repository.domain.business.AssignmentService;
 import io.bpmnrepo.backend.repository.domain.business.BpmnRepositoryService;
-import io.bpmnrepo.backend.repository.domain.model.Assignment;
 import io.bpmnrepo.backend.repository.infrastructure.entity.AssignmentEntity;
 import io.bpmnrepo.backend.repository.infrastructure.entity.AssignmentId;
 import io.bpmnrepo.backend.repository.infrastructure.repository.AssignmentJpa;

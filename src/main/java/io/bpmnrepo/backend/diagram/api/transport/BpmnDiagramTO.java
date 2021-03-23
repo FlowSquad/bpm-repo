@@ -6,6 +6,7 @@ import org.springframework.lang.Nullable;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -25,6 +26,12 @@ public class BpmnDiagramTO {
 
     @NotNull
     private String bpmnDiagramDescription;
+
+    @Nullable
+    private LocalDateTime createdDate;
+
+    @Nullable
+    private LocalDateTime updatedDate;
 
     public BpmnDiagramTO(String bpmnRepositoryId, BpmnDiagramUploadTO bpmnDiagramUploadTO){
         this.bpmnDiagramId = bpmnDiagramUploadTO.getBpmnDiagramId();

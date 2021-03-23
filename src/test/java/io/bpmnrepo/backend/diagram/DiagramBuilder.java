@@ -1,6 +1,7 @@
 package io.bpmnrepo.backend.diagram;
 
 import io.bpmnrepo.backend.diagram.api.transport.BpmnDiagramTO;
+import io.bpmnrepo.backend.diagram.api.transport.BpmnDiagramUploadTO;
 import io.bpmnrepo.backend.diagram.domain.model.BpmnDiagram;
 import io.bpmnrepo.backend.diagram.infrastructure.entity.BpmnDiagramEntity;
 
@@ -34,6 +35,14 @@ public class DiagramBuilder {
         return BpmnDiagramTO.builder()
                 .bpmnDiagramId(diagramId)
                 .bpmnRepositoryId(repoId)
+                .bpmnDiagramName(diagramName)
+                .bpmnDiagramDescription(diagramDesc)
+                .build();
+    }
+
+    public static BpmnDiagramUploadTO buildUploadTO(final String diagramId, final String diagramName, final String diagramDesc){
+        return BpmnDiagramUploadTO.builder()
+                .bpmnDiagramId(diagramId)
                 .bpmnDiagramName(diagramName)
                 .bpmnDiagramDescription(diagramDesc)
                 .build();

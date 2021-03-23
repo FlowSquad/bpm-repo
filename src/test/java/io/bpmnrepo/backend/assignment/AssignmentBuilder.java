@@ -1,4 +1,4 @@
-package io.bpmnrepo.backend.repository;
+package io.bpmnrepo.backend.assignment;
 
 import io.bpmnrepo.backend.repository.domain.model.Assignment;
 import io.bpmnrepo.backend.repository.infrastructure.entity.AssignmentEntity;
