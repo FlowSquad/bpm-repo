@@ -30,8 +30,9 @@ public class RepositoryBuilder {
     }
 
 
-    public static BpmnRepositoryTO buildRepoTO(final String repoName, final String repoDesc){
+    public static BpmnRepositoryTO buildRepoTO(final String repoId, final String repoName, final String repoDesc){
         return BpmnRepositoryTO.builder()
+                .bpmnRepositoryId(repoId)
                 .bpmnRepositoryName(repoName)
                 .bpmnRepositoryDescription(repoDesc)
                 .build();

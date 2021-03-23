@@ -38,8 +38,9 @@ public class BpmnRepositoryService {
     }
 
 
-    public void updateRepository(String bpmnRepositoryTO, NewBpmnRepositoryTO newBpmnRepositoryTO){
-        BpmnRepositoryEntity bpmnRepositoryEntity = this.bpmnRepoJpa.getOne(bpmnRepositoryTO);
+
+    public void updateRepository(String bpmnRepositoryId, NewBpmnRepositoryTO newBpmnRepositoryTO){
+        BpmnRepositoryEntity bpmnRepositoryEntity = this.bpmnRepoJpa.getOne(bpmnRepositoryId);
         BpmnRepository bpmnRepository = this.mapper.toModel(bpmnRepositoryEntity);
         bpmnRepository.updateRepo(newBpmnRepositoryTO);
         bpmnRepositoryEntity = this.mapper.toEntity(bpmnRepository);
@@ -58,5 +59,4 @@ public class BpmnRepositoryService {
     public BpmnRepository saveToDb(final BpmnRepositoryEntity bpmnRepositoryEntity){
         return this.mapper.toModel(bpmnRepoJpa.save(bpmnRepositoryEntity));
     }
-
 }

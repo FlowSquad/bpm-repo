@@ -21,12 +21,10 @@ public class BpmnDiagramService {
 
     private final BpmnDiagramJpa bpmnDiagramJpa;
     private final DiagramMapper mapper;
-    private final AuthService authService;
 
 
     public void createDiagram(BpmnDiagramTO bpmnDiagramTO){
         BpmnDiagram bpmnDiagram = this.mapper.toModel(bpmnDiagramTO);
-        //BpmnDiagram bpmnDiagram = new BpmnDiagram(bpmnDiagramTO);
         saveToDb(bpmnDiagram);
     }
 
