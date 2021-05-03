@@ -32,12 +32,14 @@ public class OAuthAuthenticationFilter extends OncePerRequestFilter {
     private String emailClaimKey;
 
     protected void doFilterInternal(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse, final FilterChain filterChain) throws ServletException, IOException {
-        final String oAuthKey = this.getOAuthTokenFromHeader(httpServletRequest);
-        System.out.println(oAuthKey);
-        System.out.println(userService.getUserIdOfCurrentUser());
-        System.out.println("ok");
-        this.authenticateUserIfOAuthKeyExists(oAuthKey);
-        filterChain.doFilter(httpServletRequest, httpServletResponse);
+        if (httpServletRequest.getRequestURI().endsWith("/actuator/health")){
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
+        }
+        else{
+            final String oAuthKey = this.getOAuthTokenFromHeader(httpServletRequest);
+            this.authenticateUserIfOAuthKeyExists(oAuthKey);
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
+        }
     }
 
     /* --------------------------------------- private helper methods --------------------------------------- */
