@@ -11,6 +11,7 @@ public interface BpmnDiagramJpa extends JpaRepository<BpmnDiagramEntity, String>
     List<BpmnDiagramEntity> findBpmnDiagramEntitiesByBpmnRepositoryId(String bpmnDiagramRepositoryId);
     BpmnDiagramEntity findBpmnDiagramEntityByBpmnDiagramIdEquals(String bpmnDiagramId);
     BpmnDiagramEntity findBpmnDiagramEntityByBpmnRepositoryIdAndBpmnDiagramName(String bpmnRepositoryId, String bpmnDiagramName);
+    int countAllByBpmnRepositoryId(String bpmnRepositoryId);
     int deleteBpmnDiagramEntitiyByBpmnDiagramId(String bpmnDiagramId);
     int deleteAllByBpmnRepositoryId(String bpmnRepositoryId);
 }

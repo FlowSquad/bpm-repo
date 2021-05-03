@@ -85,7 +85,7 @@ public class RepositoryFacadeTest {
     public void createRepository(){
         newBpmnRepositoryTO = RepositoryBuilder.buildNewRepoTO(REPONAME, REPODESC);
         AssignmentId assignmentId = AssignmentBuilder.buildAssignmentId(USERID, REPOID);
-        AssignmentEntity assignment = AssignmentBuilder.buildAssignment(assignmentId, RoleEnum.MEMBER);
+        AssignmentEntity assignment = AssignmentBuilder.buildAssignmentEntity(assignmentId, RoleEnum.MEMBER);
         List<AssignmentEntity> assignmentList = new ArrayList<>();
         assignmentList.add(assignment);
         assignmentList.add(assignment);

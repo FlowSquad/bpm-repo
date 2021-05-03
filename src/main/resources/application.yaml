@@ -14,7 +14,7 @@ logging:
 server:
   error:
     include-message: always
-  port: 8080
+  port: 8081
 
 # Security Configurations
 auth0:

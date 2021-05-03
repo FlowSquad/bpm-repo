@@ -42,4 +42,5 @@ public class BpmnDiagramVersionEntity {
 
     @Column(name = "bpmn_repository_id", nullable = false)
     private String bpmnRepositoryId;
+
 }

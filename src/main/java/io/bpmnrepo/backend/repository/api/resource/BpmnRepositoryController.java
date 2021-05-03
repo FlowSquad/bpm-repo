@@ -2,8 +2,10 @@ package io.bpmnrepo.backend.repository.api.resource;
 
 
 import io.bpmnrepo.backend.repository.BpmnRepositoryFacade;
+import io.bpmnrepo.backend.repository.api.transport.BpmnRepositoryRequestTO;
 import io.bpmnrepo.backend.repository.api.transport.BpmnRepositoryTO;
 import io.bpmnrepo.backend.repository.api.transport.NewBpmnRepositoryTO;
+import io.bpmnrepo.backend.user.domain.business.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,7 @@ public class BpmnRepositoryController {
 
     private final BpmnRepositoryFacade bpmnRepositoryFacade;
 
+    private final UserService userService;
     /** Repo erstellen
      *
      * @param newBpmnRepositoryTO
@@ -34,6 +37,7 @@ public class BpmnRepositoryController {
     @PostMapping()
     @Operation(summary = "Create a new Repository")
     public ResponseEntity<Void> createRepository(@RequestBody @Valid final NewBpmnRepositoryTO newBpmnRepositoryTO){
+
         bpmnRepositoryFacade.createRepository(newBpmnRepositoryTO);
         return ResponseEntity.ok().build();
     }
@@ -59,7 +63,7 @@ public class BpmnRepositoryController {
      */
     @GetMapping()
     @Operation(summary = "Get all Repositories")
-    public ResponseEntity<List<BpmnRepositoryTO>> getAllRepositories(){
+    public ResponseEntity<List<BpmnRepositoryRequestTO>> getAllRepositories(){
         log.debug("Returning all Repositories assigned to current user");
         return ResponseEntity.ok().body(this.bpmnRepositoryFacade.getAllRepositories());
     }
@@ -71,9 +75,11 @@ public class BpmnRepositoryController {
      */
     @GetMapping("/{repositoryId}")
     @Operation(summary = "Get a single Repository by providing its ID")
-    public ResponseEntity<BpmnRepositoryTO> getSingleRepository(@PathVariable @NotBlank final String repositoryId){
+    public ResponseEntity<BpmnRepositoryRequestTO> getSingleRepository(@PathVariable @NotBlank final String repositoryId){
         log.debug(String.format("Returning single repository with id %s", repositoryId));
-        return ResponseEntity.ok().body(this.bpmnRepositoryFacade.getSingleRepository(repositoryId));
+        BpmnRepositoryRequestTO bpmnRepositoryRequestTO = this.bpmnRepositoryFacade.getSingleRepository(repositoryId);
+        log.debug(bpmnRepositoryRequestTO.getBpmnRepositoryName());
+        return ResponseEntity.ok().body(bpmnRepositoryRequestTO);
     }
 
     /** Repository löschen (Kann nur von Ownern ausgeführt werden)

@@ -29,18 +29,16 @@ public class BpmnDiagramVersionTO {
 
     @Nullable
     private Integer bpmnDiagramVersionMilestone;
-    //must not be nullable in the end
+
     @NotEmpty
     private String bpmnAsXML;
 
     @NotEmpty
     private SaveTypeEnum saveType;
 
-    //@NotNull
     @NotEmpty
     private String bpmnDiagramId;
 
-    //@NotNull
     @NotEmpty
     private String bpmnRepositoryId;
 

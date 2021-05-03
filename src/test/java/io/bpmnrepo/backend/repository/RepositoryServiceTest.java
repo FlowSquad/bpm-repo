@@ -1,5 +1,6 @@
 package io.bpmnrepo.backend.repository;
 
+import io.bpmnrepo.backend.repository.api.transport.BpmnRepositoryRequestTO;
 import io.bpmnrepo.backend.repository.api.transport.BpmnRepositoryTO;
 import io.bpmnrepo.backend.repository.api.transport.NewBpmnRepositoryTO;
 import io.bpmnrepo.backend.repository.domain.business.BpmnRepositoryService;
@@ -38,6 +39,8 @@ public class RepositoryServiceTest {
     private static final String REPOID = "42";
     private static final String REPONAME = "repo name";
     private static final String REPODESC = "repository description";
+    private static final Integer EXISTINGDIAGRAMS = 5;
+    private static final Integer ASSIGNEDUSERS = 3;
     private static final String USERID = "12345";
     private static LocalDateTime DATE;
 
@@ -90,14 +93,14 @@ public class RepositoryServiceTest {
     @Test
     public void getSingleRepository(){
         BpmnRepositoryEntity bpmnRepositoryEntity = RepositoryBuilder.buildRepoEntity(REPOID, REPONAME, REPODESC, DATE, DATE);
-        BpmnRepositoryTO bpmnRepositoryTO = RepositoryBuilder.buildRepoTO(REPOID, REPONAME, REPODESC);
+        BpmnRepositoryRequestTO bpmnRepositoryRequestTO = RepositoryBuilder.buildNewRepoRequestTO(REPOID, REPONAME, REPODESC, EXISTINGDIAGRAMS, ASSIGNEDUSERS);
 
         when(bpmnRepoJpa.findByBpmnRepositoryId(REPOID)).thenReturn(bpmnRepositoryEntity);
-        when(mapper.toTO(bpmnRepositoryEntity)).thenReturn(bpmnRepositoryTO);
+        when(mapper.toRequestTO(bpmnRepositoryEntity)).thenReturn(bpmnRepositoryRequestTO);
 
         bpmnRepositoryService.getSingleRepository(REPOID);
         verify(bpmnRepoJpa, times(1)).findByBpmnRepositoryId(REPOID);
-        verify(mapper, times(1)).toTO(bpmnRepositoryEntity);
+        verify(mapper, times(1)).toRequestTO(bpmnRepositoryEntity);
 
     }
 

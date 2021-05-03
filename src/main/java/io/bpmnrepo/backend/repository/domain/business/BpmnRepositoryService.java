@@ -1,6 +1,7 @@
 package io.bpmnrepo.backend.repository.domain.business;
 
 
+import io.bpmnrepo.backend.repository.api.transport.BpmnRepositoryRequestTO;
 import io.bpmnrepo.backend.repository.api.transport.NewBpmnRepositoryTO;
 import io.bpmnrepo.backend.repository.domain.mapper.RepositoryMapper;
 import io.bpmnrepo.backend.diagram.domain.business.BpmnDiagramService;
@@ -47,8 +48,20 @@ public class BpmnRepositoryService {
         this.saveToDb(bpmnRepositoryEntity);
     }
 
-    public BpmnRepositoryTO getSingleRepository(String repositoryId){
-        return this.mapper.toTO(this.bpmnRepoJpa.findByBpmnRepositoryId(repositoryId));
+    public BpmnRepositoryRequestTO getSingleRepository(String repositoryId){
+        return this.mapper.toRequestTO(this.bpmnRepoJpa.findByBpmnRepositoryId(repositoryId));
+    }
+
+    public void updateAssignedUsers(String bpmnRepositoryId, Integer assignedUsers){
+        BpmnRepository bpmnRepository = this.mapper.toModel(this.bpmnRepoJpa.findByBpmnRepositoryId(bpmnRepositoryId));
+        bpmnRepository.setAssignedUsers(assignedUsers);
+        this.bpmnRepoJpa.save(this.mapper.toEntity(bpmnRepository));
+    }
+
+    public void updateExistingDiagrams(String bpmnRepositoryId, Integer existingDiagrams){
+        BpmnRepository bpmnRepository = this.mapper.toModel(this.bpmnRepoJpa.findByBpmnRepositoryId(bpmnRepositoryId));
+        bpmnRepository.setExistingDiagrams(existingDiagrams);
+        this.bpmnRepoJpa.save(this.mapper.toEntity(bpmnRepository));
     }
 
     public void deleteRepository(String bpmnRepositoryId){

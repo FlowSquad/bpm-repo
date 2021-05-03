@@ -3,6 +3,7 @@ package io.bpmnrepo.backend.user.domain.business;
 import io.bpmnrepo.backend.shared.config.UserContext;
 import io.bpmnrepo.backend.shared.exception.AccessRightException;
 import io.bpmnrepo.backend.shared.exception.NameConflictException;
+import io.bpmnrepo.backend.shared.exception.NameNotExistentException;
 import io.bpmnrepo.backend.user.api.transport.UserTO;
 import io.bpmnrepo.backend.user.api.transport.UserUpdateTO;
 import io.bpmnrepo.backend.user.domain.exception.EmailAlreadyInUseException;
@@ -64,14 +65,18 @@ public class UserService {
 
     public String getUserIdByUsername(String username){
         UserEntity userEntity = this.userJpa.findByUserNameEquals(username);
+        checkIfUserExists(userEntity);
         return userEntity.getUserId();
+    }
+    public void checkIfUserExists(UserEntity userEntity){
+        if(userEntity == null){
+            throw new NameNotExistentException();
+        }
     }
 
     public String getUserIdByEmail(String email){
         UserEntity userEntity = userJpa.findByEmail(email);
-        if(userEntity == null){
-            throw new AccessRightException("This user does not exist");
-        }
+        checkIfUserExists(userEntity);
         String userId = userEntity.getUserId();
         return userId;
     }

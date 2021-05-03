@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 @Slf4j
 @RestController
@@ -43,4 +44,5 @@ public class UserController {
         log.debug("Returning new Api key");
         return ResponseEntity.ok().body(this.userService.getApiKey());
     }
+
 }

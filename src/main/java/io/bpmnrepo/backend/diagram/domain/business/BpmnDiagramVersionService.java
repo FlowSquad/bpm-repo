@@ -29,7 +29,7 @@ public class BpmnDiagramVersionService {
     public String updateVersion(BpmnDiagramVersionTO bpmnDiagramVersionTO) {
         BpmnDiagramVersionEntity bpmnDiagramVersionEntity =  this.bpmnDiagramVersionJpa.findFirstByBpmnDiagramIdOrderByBpmnDiagramVersionReleaseDescBpmnDiagramVersionMilestoneDesc(bpmnDiagramVersionTO.getBpmnDiagramId());
         BpmnDiagramVersion bpmnDiagramVersion = this.mapper.toModel(bpmnDiagramVersionEntity);
-        bpmnDiagramVersion.updateVersion(bpmnDiagramVersionTO, bpmnDiagramVersion);
+        bpmnDiagramVersion.updateVersion(bpmnDiagramVersionTO);
         String bpmnDiagramVersionId = this.saveToDb(bpmnDiagramVersion);
         return bpmnDiagramVersionId;
     }

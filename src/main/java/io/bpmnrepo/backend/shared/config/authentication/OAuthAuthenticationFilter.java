@@ -1,5 +1,6 @@
 package io.bpmnrepo.backend.shared.config.authentication;
 
+import io.bpmnrepo.backend.user.domain.business.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,12 +26,16 @@ import java.io.IOException;
 public class OAuthAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtDecoder jwtDecoder;
+    private final UserService userService;
 
     @Value("${bpmnrepo.security.usercontext.email_claim}")
     private String emailClaimKey;
 
     protected void doFilterInternal(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse, final FilterChain filterChain) throws ServletException, IOException {
         final String oAuthKey = this.getOAuthTokenFromHeader(httpServletRequest);
+        System.out.println(oAuthKey);
+        System.out.println(userService.getUserIdOfCurrentUser());
+        System.out.println("ok");
         this.authenticateUserIfOAuthKeyExists(oAuthKey);
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
@@ -38,6 +43,7 @@ public class OAuthAuthenticationFilter extends OncePerRequestFilter {
     /* --------------------------------------- private helper methods --------------------------------------- */
 
     private String getOAuthTokenFromHeader(final HttpServletRequest request) {
+        System.out.println("authentication...");
         return request.getHeader(HttpHeaders.AUTHORIZATION);
     }
 

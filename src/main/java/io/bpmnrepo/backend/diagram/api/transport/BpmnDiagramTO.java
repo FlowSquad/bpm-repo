@@ -33,6 +33,11 @@ public class BpmnDiagramTO {
     @Nullable
     private LocalDateTime updatedDate;
 
+    @Nullable
+    private String svgPreview;
+
+
+
     public BpmnDiagramTO(String bpmnRepositoryId, BpmnDiagramUploadTO bpmnDiagramUploadTO){
         this.bpmnDiagramId = bpmnDiagramUploadTO.getBpmnDiagramId();
         this.bpmnRepositoryId = bpmnRepositoryId;

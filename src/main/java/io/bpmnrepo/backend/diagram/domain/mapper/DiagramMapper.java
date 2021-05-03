@@ -12,15 +12,15 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", imports = LocalDateTime.class)
 public interface DiagramMapper {
 
+    @Mapping(target = "svgPreview", expression = "java((to.getSvgPreview() == null) ? null : to.getSvgPreview().getBytes())")
     BpmnDiagram toModel(final BpmnDiagramTO to);
 
     BpmnDiagram toModel(final BpmnDiagramEntity entity);
 
-    @Mapping(target="createdDate", expression="java((model.getCreatedDate() == null) ? LocalDateTime.now() : model.getCreatedDate())")
+    @Mapping(target = "createdDate", expression="java((model.getCreatedDate() == null) ? LocalDateTime.now() : model.getCreatedDate())")
     @Mapping(target = "updatedDate", expression = "java(LocalDateTime.now())")
     BpmnDiagramEntity toEntity(final BpmnDiagram model);
 
+    @Mapping(target = "svgPreview", expression = "java((entity.getSvgPreview() == null) ? null : new String(entity.getSvgPreview()))")
     BpmnDiagramTO toTO(final BpmnDiagramEntity entity);
-
-
 }

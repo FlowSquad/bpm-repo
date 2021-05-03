@@ -30,6 +30,7 @@ public class BpmnDiagramVersionFacade {
         //true if it is the initial version
         if(verifyRelationService.checkIfVersionIsInitialVersion(bpmnDiagramId)){
             String bpmnDiagramVersionId = this.bpmnDiagramVersionService.createInitialVersion(bpmnDiagramVersionTO);
+            this.bpmnDiagramService.updateUpdatedDate(bpmnDiagramId);
             return bpmnDiagramVersionId;
         }
         else{
@@ -47,19 +48,8 @@ public class BpmnDiagramVersionFacade {
         if(saveTypeEnum.equals(SaveTypeEnum.AUTOSAVE)){
             this.bpmnDiagramVersionService.deleteAutosavedVersions(bpmnRepositoryId, bpmnDiagramId);
         }
-
-
     }
 
-/*    public BpmnDiagramVersionTO adoptProperties(String bpmnRepositoryId, String bpmnDiagramId, BpmnDiagramVersionUploadTO bpmnDiagramVersionUploadTO){
-        BpmnDiagramVersionTO bpmnDiagramVersionTO = new BpmnDiagramVersionTO();
-        bpmnDiagramVersionTO.setBpmnRepositoryId(bpmnRepositoryId);
-        bpmnDiagramVersionTO.setBpmnDiagramId(bpmnDiagramId);
-        bpmnDiagramVersionTO.setBpmnAsXML(bpmnDiagramVersionUploadTO.getBpmnAsXML());
-        bpmnDiagramVersionTO.setBpmnDiagramVersionComment(bpmnDiagramVersionUploadTO.getBpmnDiagramVersionComment());
-        bpmnDiagramVersionTO.setSaveType(bpmnDiagramVersionUploadTO.getSaveType());
-        return bpmnDiagramVersionTO;
-    }*/
 
     public List<BpmnDiagramVersionTO> getAllVersions(String bpmnRepositoryId, String bpmnDiagramId){
         verifyRelationService.verifyDiagramIsInSpecifiedRepository(bpmnRepositoryId, bpmnDiagramId);
@@ -79,17 +69,4 @@ public class BpmnDiagramVersionFacade {
         authService.checkIfOperationIsAllowed(bpmnRepositoryId, RoleEnum.VIEWER);
         return bpmnDiagramVersionService.getSingleVersion(bpmnDiagramVersionId);
     }
-
-    //Check if it's really an initial version or an update
-/*    public void createInitialVersion(String bpmnRepositoryId, String bpmnDiagramId, BpmnDiagramVersionUploadTO bpmnDiagramVersionUploadTO){
-        authService.checkIfOperationIsAllowed(bpmnRepositoryId, RoleEnum.MEMBER);
-        verifyRelationService.verifyDiagramIsInSpecifiedRepository(bpmnRepositoryId, bpmnDiagramId);
-
-        verifyRelationService.verifyVersionIsInitialVersion(bpmnDiagramId);
-        bpmnDiagramVersionService.createInitialVersion(bpmnDiagramVersionUploadTO);
-    }*/
-
-/*    public void updateVersion(String bpmnRepositoryId, String bpmnDiagramId, BpmnDiagramVersionUploadTO bpmnDiagramVersionUploadTO) {
-        bpmnDiagramVersionService.updateVersion(bpmnDiagramVersionUploadTO);
-    }*/
 }

@@ -4,6 +4,7 @@ import io.bpmnrepo.backend.repository.api.transport.AssignmentDeletionTO;
 import io.bpmnrepo.backend.repository.api.transport.AssignmentWithUserNameTO;
 import io.bpmnrepo.backend.repository.domain.mapper.AssignmentMapper;
 import io.bpmnrepo.backend.repository.domain.model.Assignment;
+import io.bpmnrepo.backend.repository.infrastructure.entity.AssignmentId;
 import io.bpmnrepo.backend.shared.AuthService;
 import io.bpmnrepo.backend.repository.infrastructure.entity.AssignmentEntity;
 import io.bpmnrepo.backend.shared.enums.RoleEnum;
@@ -27,13 +28,16 @@ public class AssignmentService {
     private final AuthService authService;
     private final UserService userService;
     private final AssignmentMapper mapper;
+    private final BpmnRepositoryService bpmnRepositoryService;
 
 
     public void createOrUpdateAssignment(AssignmentWithUserNameTO assignmentWithUserNameTO){
         this.authService.checkIfOperationIsAllowed(assignmentWithUserNameTO.getBpmnRepositoryId(), RoleEnum.ADMIN);
-        String newAssignmentUserId = this.userService.getUserIdByEmail(assignmentWithUserNameTO.getUserName());
+        String newAssignmentUserId = this.userService.getUserIdByUsername(assignmentWithUserNameTO.getUserName());
+        String bpmnRepositoryId = assignmentWithUserNameTO.getBpmnRepositoryId();
 
-        AssignmentTO assignmentTO = new AssignmentTO(assignmentWithUserNameTO.getBpmnRepositoryId(), userService.getUserIdByEmail(assignmentWithUserNameTO.getUserName()), assignmentWithUserNameTO.getRoleEnum());
+        RoleEnum newRole = assignmentWithUserNameTO.getRoleEnum();
+        AssignmentTO assignmentTO = new AssignmentTO(bpmnRepositoryId, newAssignmentUserId, newRole);
         AssignmentEntity assignmentEntity = assignmentJpa.findByAssignmentId_BpmnRepositoryIdAndAssignmentId_UserId(assignmentTO.getBpmnRepositoryId(), newAssignmentUserId);
         if(assignmentEntity == null){
             createAssignment(assignmentTO);
@@ -48,8 +52,11 @@ public class AssignmentService {
 
     public void createAssignment(AssignmentTO assignmentTO){
         Assignment assignment = this.mapper.toModel(assignmentTO);
-        AssignmentEntity assignmentEntity = this.mapper.toEntity(assignment, this.mapper.toEmbeddable(assignment.getUserId(), assignment.getBpmnRepositoryId()));
+        AssignmentId assignmentId = this.mapper.toEmbeddable(assignment.getUserId(), assignment.getBpmnRepositoryId());
+        AssignmentEntity assignmentEntity = this.mapper.toEntity(assignment, assignmentId);
         this.saveToDb(assignmentEntity);
+        Integer assignedUsers = this.assignmentJpa.countByAssignmentId_BpmnRepositoryId(assignment.getBpmnRepositoryId());
+        this.bpmnRepositoryService.updateAssignedUsers(assignment.getBpmnRepositoryId(), assignedUsers);
     }
 
     //0: Owner, 1: Admin, 2: Member, 3: Viewer
@@ -75,7 +82,8 @@ public class AssignmentService {
             throw new AccessRightException("You can't assign roles with higher permissions than your own");
         }
         Assignment assignment = new Assignment(assignmentTO);
-        AssignmentEntity assignmentEntity = this.mapper.toEntity(assignment, this.mapper.toEmbeddable(assignment.getUserId(), assignment.getBpmnRepositoryId()));
+        AssignmentId assignmentId = this.mapper.toEmbeddable(assignment.getUserId(), assignment.getBpmnRepositoryId());
+        AssignmentEntity assignmentEntity = this.mapper.toEntity(assignment, assignmentId);
         this.saveToDb(assignmentEntity);
     }
 
@@ -102,7 +110,8 @@ public class AssignmentService {
 
 
     public RoleEnum getUserRole(String bpmnRepositoryId, String userId){
-        return this.getAssignmentEntity(bpmnRepositoryId, userId).getRoleEnum();
+       AssignmentEntity assignmentEntity = this.getAssignmentEntity(bpmnRepositoryId, userId);
+        return assignmentEntity.getRoleEnum();
     }
 
 
@@ -112,22 +121,24 @@ public class AssignmentService {
     }
 
 
-    public void deleteAssignment(AssignmentDeletionTO assignmentDeletionTO){
-        String deletedUserId = this.userService.getUserIdByUsername(assignmentDeletionTO.getUserName());
+    public void deleteAssignment(String bpmnRepositoryId, String deletedUsername){
+        String deletedUserId = this.userService.getUserIdByUsername(deletedUsername);
         String currentUserId = this.userService.getUserIdOfCurrentUser();
-        this.authService.checkIfOperationIsAllowed(assignmentDeletionTO.getBpmnRepositoryId(), RoleEnum.ADMIN);
+        this.authService.checkIfOperationIsAllowed(bpmnRepositoryId, RoleEnum.ADMIN);
 
-        RoleEnum currentUserRole = this.getUserRole(assignmentDeletionTO.getBpmnRepositoryId(), currentUserId);
-        RoleEnum deletedUserRole = this.getUserRole(assignmentDeletionTO.getBpmnRepositoryId(), deletedUserId);
+        RoleEnum currentUserRole = this.getUserRole(bpmnRepositoryId, currentUserId);
+        RoleEnum deletedUserRole = this.getUserRole(bpmnRepositoryId, deletedUserId);
         //role of deleted user has to be equal or weaker than role of current user (0:Owner, 1:Admin, 2:Member, 3: Viewer)
         if(currentUserRole.ordinal() > deletedUserRole.ordinal()){
             System.out.println("current: " + currentUserRole.ordinal() + " deleted: " + deletedUserRole.ordinal());
             throw new AccessRightException(String.format("You cant remove %s (Repository-%s) from this repository because your role provides less rights (You are an %s)",
-                    assignmentDeletionTO.getUserName(),
+                    deletedUsername,
                     deletedUserRole,
                     currentUserRole));
         }
-        this.assignmentJpa.deleteAssignmentEntityByAssignmentId_BpmnRepositoryIdAndAssignmentId_UserId(assignmentDeletionTO.getBpmnRepositoryId(), deletedUserId);
+        this.assignmentJpa.deleteAssignmentEntityByAssignmentId_BpmnRepositoryIdAndAssignmentId_UserId(bpmnRepositoryId, deletedUserId);
+        Integer assignedUsers = this.assignmentJpa.countByAssignmentId_BpmnRepositoryId(bpmnRepositoryId);
+        this.bpmnRepositoryService.updateAssignedUsers(bpmnRepositoryId, assignedUsers);
     }
 
 

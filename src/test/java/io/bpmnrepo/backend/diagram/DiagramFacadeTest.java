@@ -4,6 +4,7 @@ import io.bpmnrepo.backend.diagram.api.transport.BpmnDiagramUploadTO;
 import io.bpmnrepo.backend.diagram.domain.business.BpmnDiagramService;
 import io.bpmnrepo.backend.diagram.domain.business.BpmnDiagramVersionService;
 import io.bpmnrepo.backend.diagram.infrastructure.repository.BpmnDiagramJpa;
+import io.bpmnrepo.backend.repository.domain.business.BpmnRepositoryService;
 import io.bpmnrepo.backend.shared.AuthService;
 import io.bpmnrepo.backend.shared.VerifyRelationService;
 import io.bpmnrepo.backend.shared.enums.RoleEnum;
@@ -36,11 +37,14 @@ public class DiagramFacadeTest {
     private BpmnDiagramVersionService bpmnDiagramVersionService;
     @Mock
     private BpmnDiagramJpa bpmnDiagramJpa;
+    @Mock
+    private BpmnRepositoryService bpmnRepositoryService;
 
     private static final String DIAGRAMID = "123456";
     private static final String REPOID = "01";
     private static final String DIAGRAMNAME = "TestDiagram";
     private static final String DIAGRAMDESC = "SomeDescription";
+    private static final Integer EXISTINGDIAGRAMS = 5;
     private static LocalDateTime DATE;
 
     @BeforeAll
@@ -68,10 +72,14 @@ public class DiagramFacadeTest {
 
     @Test
     public void deleteDiagram(){
+        when(bpmnDiagramService.countExistingDiagrams(REPOID)).thenReturn(EXISTINGDIAGRAMS);
+
         bpmnDiagramFacade.deleteDiagram(REPOID, DIAGRAMID);
+
         verify(verifyRelationService, times(1)).verifyDiagramIsInSpecifiedRepository(REPOID, DIAGRAMID);
         verify(authService, times(1)).checkIfOperationIsAllowed(REPOID, RoleEnum.ADMIN);
         verify(bpmnDiagramVersionService, times(1)).deleteAllByDiagramId(DIAGRAMID);
         verify(bpmnDiagramService, times(1)).deleteDiagram(DIAGRAMID);
+        verify(bpmnRepositoryService, times(1)).updateExistingDiagrams(REPOID, EXISTINGDIAGRAMS);
     }
 }

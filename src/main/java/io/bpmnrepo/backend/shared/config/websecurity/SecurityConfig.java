@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 @Profile("!no-security")
 @EnableWebSecurity
@@ -21,6 +22,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(final HttpSecurity http) throws Exception {
+        //TODO: safe to do this?
+        http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues());
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
@@ -53,7 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         // TODO: implement strategy to re-enable csrf
         http.csrf().disable();
-        http.cors().disable();
+       // http.cors().disable();
     }
 
 }

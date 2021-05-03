@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Profile("no-security")
 public class NoSecurityUserContext implements UserContext {
 
-    private final static String DEFAULT_USER = "NO_SECURITY_USER";
+    private final static String DEFAULT_USER = "dennis.mayer@flowsquad.io";
 
     @Override
     public String getUserEmail() {

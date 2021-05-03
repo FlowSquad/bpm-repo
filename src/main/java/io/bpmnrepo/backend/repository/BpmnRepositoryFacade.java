@@ -2,6 +2,8 @@ package io.bpmnrepo.backend.repository;
 
 import io.bpmnrepo.backend.diagram.domain.business.BpmnDiagramService;
 import io.bpmnrepo.backend.diagram.domain.business.BpmnDiagramVersionService;
+import io.bpmnrepo.backend.diagram.infrastructure.repository.BpmnDiagramJpa;
+import io.bpmnrepo.backend.repository.api.transport.BpmnRepositoryRequestTO;
 import io.bpmnrepo.backend.repository.api.transport.BpmnRepositoryTO;
 import io.bpmnrepo.backend.repository.api.transport.NewBpmnRepositoryTO;
 import io.bpmnrepo.backend.repository.domain.business.AssignmentService;
@@ -34,6 +36,8 @@ public class BpmnRepositoryFacade {
     private final BpmnDiagramVersionService bpmnDiagramVersionService;
     private final BpmnRepoJpa bpmnRepoJpa;
     private final AssignmentJpa assignmentJpa;
+    private final BpmnDiagramJpa bpmnDiagramJpa;
+
 
     public void createRepository(NewBpmnRepositoryTO newBpmnRepositoryTO){
         checkIfRepositoryNameIsAvailable(newBpmnRepositoryTO.getBpmnRepositoryName());
@@ -61,16 +65,17 @@ public class BpmnRepositoryFacade {
     }
 
 
-    public BpmnRepositoryTO getSingleRepository(String repositoryId){
+    public BpmnRepositoryRequestTO getSingleRepository(String repositoryId){
         authService.checkIfOperationIsAllowed(repositoryId, RoleEnum.VIEWER);
         return bpmnRepositoryService.getSingleRepository(repositoryId);
     }
 
 
-    public List<BpmnRepositoryTO> getAllRepositories(){
+    public List<BpmnRepositoryRequestTO> getAllRepositories(){
     final String userId = this.userService.getUserIdOfCurrentUser();
     return this.assignmentService.getAllAssignedRepositoryIds(userId).stream()
             .map(bpmnRepositoryId -> bpmnRepositoryService.getSingleRepository(bpmnRepositoryId))
+            //.map(bpmnRepositoryTO -> this.appendExistingDiagramsAndAssignedUsers(bpmnRepositoryTO.getBpmnRepositoryId()))
             .collect(Collectors.toList());
 }
 
@@ -82,4 +87,10 @@ public class BpmnRepositoryFacade {
         this.assignmentService.deleteAllByRepositoryId(bpmnRepositoryId);
         log.debug("Deleted repository including related diagrams and assignments");
     }
+
+/*    public BpmnRepositoryRequestTO appendExistingDiagramsAndAssignedUsers(String bpmnRepositoryId){
+        Integer existingDiagrams = this.bpmnDiagramJpa.countAllByBpmnRepositoryId(bpmnRepositoryId);
+        Integer assignedUsers = this.assignmentJpa.countByAssignmentId_BpmnRepositoryId(bpmnRepositoryId);
+        BpmnRepositoryRequestTO bpmnRepositoryRequestTO =
+    }*/
 }

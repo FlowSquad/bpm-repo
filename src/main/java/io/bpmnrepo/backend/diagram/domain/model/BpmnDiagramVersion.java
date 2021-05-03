@@ -7,6 +7,8 @@ import io.bpmnrepo.backend.diagram.api.transport.BpmnDiagramVersionUploadTO;
 import io.bpmnrepo.backend.diagram.infrastructure.SaveTypeEnum;
 import lombok.*;
 
+import java.nio.charset.StandardCharsets;
+
 @Getter
 @Setter
 @Builder
@@ -36,24 +38,24 @@ public class BpmnDiagramVersion {
     }
 
 
-    public void updateVersion(final BpmnDiagramVersionTO bpmnDiagramVersionTO, final BpmnDiagramVersion bpmnDiagramVersion){
+    public void updateVersion(final BpmnDiagramVersionTO bpmnDiagramVersionTO){
         if (bpmnDiagramVersionTO.getBpmnDiagramVersionComment() == null || bpmnDiagramVersionTO.getBpmnDiagramVersionComment().isEmpty()) {
-            this.setBpmnDiagramVersionComment(bpmnDiagramVersion.getBpmnDiagramVersionComment());
+            this.setBpmnDiagramVersionComment(this.getBpmnDiagramVersionComment());
         } else {
-            bpmnDiagramVersionTO.setBpmnDiagramVersionComment(bpmnDiagramVersionTO.getBpmnDiagramVersionComment());
+            this.setBpmnDiagramVersionComment(bpmnDiagramVersionTO.getBpmnDiagramVersionComment());
         }
-        //VersionNo of persisted (old) version
-        this.setBpmnDiagramVersionRelease(bpmnDiagramVersion.getBpmnDiagramVersionRelease());
-        this.setBpmnDiagramVersionMilestone(bpmnDiagramVersion.getBpmnDiagramVersionMilestone());
+        this.setBpmnDiagramVersionRelease(generateReleaseNumber(bpmnDiagramVersionTO));
+        this.setBpmnDiagramVersionMilestone(generateMilestoneNumber(bpmnDiagramVersionTO));
+        this.setBpmnDiagramVersionFile(bpmnDiagramVersionTO.getBpmnAsXML().getBytes());
     }
 
 
     public Integer generateReleaseNumber(BpmnDiagramVersionTO bpmnDiagramVersionTO){
-        if(bpmnDiagramVersionTO.getBpmnDiagramVersionRelease() != null) {
+        if(this.getBpmnDiagramVersionRelease() != null) {
             if (bpmnDiagramVersionTO.getSaveType().equals(SaveTypeEnum.RELEASE)) {
-                return bpmnDiagramVersionTO.getBpmnDiagramVersionRelease() + 1;
+                return this.getBpmnDiagramVersionRelease() + 1;
             } else {
-                return bpmnDiagramVersionTO.getBpmnDiagramVersionRelease();
+                return this.getBpmnDiagramVersionRelease();
             }
         }
         else{
@@ -62,20 +64,13 @@ public class BpmnDiagramVersion {
     }
 
     public Integer generateMilestoneNumber(BpmnDiagramVersionTO bpmnDiagramVersionTO){
-        if(bpmnDiagramVersionTO.getBpmnDiagramVersionMilestone() != null) {
             switch (bpmnDiagramVersionTO.getSaveType()){
                 case AUTOSAVE:
-                    return bpmnDiagramVersionTO.getBpmnDiagramVersionMilestone();
+                    return this.getBpmnDiagramVersionMilestone();
                 case MILESTONE:
-                    return bpmnDiagramVersionTO.getBpmnDiagramVersionMilestone() + 1;
-                case RELEASE:
-                    return 0;
+                    return this.getBpmnDiagramVersionMilestone() + 1;
                 default:
                     return 0;
             }
-        }
-        else{
-            return 0;
-        }
     }
 }

@@ -27,7 +27,7 @@ public class BpmnDiagramVersionController {
 
     private final BpmnDiagramVersionFacade bpmnDiagramVersionFacade;
 
-    /** Version erstellen bzw. updaten, indem die VersionId im Body mitgegeben wird
+    /** Version erstellen (bzw updaten, indem die VersionId im Body mitgegeben wird). Nach diesem Call "updatePreviewSVG" in DiagramController aufrufen!
      *
      * @param bpmnRepositoryId
      * @param bpmnDiagramId
@@ -36,11 +36,12 @@ public class BpmnDiagramVersionController {
      */
     //returns the id of the version that has just been saved
     @PostMapping("/{bpmnRepositoryId}/{bpmnDiagramId}")
-    public ResponseEntity<String> createOrUpdateVersion(@PathVariable @NotBlank String bpmnRepositoryId,
+    public ResponseEntity<Void> createOrUpdateVersion(@PathVariable @NotBlank String bpmnRepositoryId,
                                               @PathVariable @NotBlank String bpmnDiagramId,
                                               @RequestBody @Valid BpmnDiagramVersionUploadTO bpmnDiagramVersionUploadTO){
         String bpmnDiagramVersionId = bpmnDiagramVersionFacade.createOrUpdateVersion(bpmnRepositoryId, bpmnDiagramId, bpmnDiagramVersionUploadTO);
-        return ResponseEntity.ok().body(bpmnDiagramVersionId);
+        log.debug(String.format("Current versionId: %s", bpmnDiagramVersionId));
+        return ResponseEntity.ok().build();
     }
 
 

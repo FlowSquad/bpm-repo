@@ -20,6 +20,9 @@ public class BpmnDiagramVersionUploadTO {
     @NotNull
     private String bpmnAsXML;
 
+    @Nullable
     private SaveTypeEnum saveType;
+
+
 
 }

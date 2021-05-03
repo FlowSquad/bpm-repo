@@ -20,14 +20,15 @@ public class BpmnDiagram {
     private String bpmnRepositoryId;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
+    private byte[] svgPreview;
 
 
 
     public void updateDiagram(final BpmnDiagramTO bpmnDiagramTO) {
-        if (bpmnDiagramTO.getBpmnDiagramName() != null || !bpmnDiagramTO.getBpmnDiagramName().isEmpty()) {
+        if (bpmnDiagramTO.getBpmnDiagramName() != null && !bpmnDiagramTO.getBpmnDiagramName().isEmpty()) {
             this.setBpmnDiagramName(bpmnDiagramTO.getBpmnDiagramName());
         }
-        if (bpmnDiagramTO.getBpmnDiagramDescription() != null || !bpmnDiagramTO.getBpmnDiagramDescription().isEmpty()) {
+        if (bpmnDiagramTO.getBpmnDiagramDescription() != null && !bpmnDiagramTO.getBpmnDiagramDescription().isEmpty()) {
             this.setBpmnDiagramDescription(bpmnDiagramTO.getBpmnDiagramDescription());
         }
         updateDate();
