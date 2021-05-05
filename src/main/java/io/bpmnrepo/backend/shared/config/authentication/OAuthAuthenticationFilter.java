@@ -59,7 +59,7 @@ public class OAuthAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void authenticateUser(final Jwt oAuthToken) {
-        final String username = oAuthToken.getClaimAsString("email");
+        final String username = oAuthToken.getClaimAsString("https://flowsquad.io/email");
         final UserToken authenticatedUser = new UserToken(username, AuthorityUtils.NO_AUTHORITIES);
         SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
     }
