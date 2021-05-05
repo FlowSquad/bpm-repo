@@ -24,7 +24,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<Void> createUser(@RequestBody @Valid final UserTO userTO){
         log.debug("Creating new user " + userTO.getUserName());
         this.userService.createUser(userTO);
