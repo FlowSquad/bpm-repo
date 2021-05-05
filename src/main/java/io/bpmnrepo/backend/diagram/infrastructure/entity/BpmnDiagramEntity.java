@@ -38,8 +38,7 @@ public class BpmnDiagramEntity {
     @Column(name = "updated_date")
     private LocalDateTime updatedDate;
 
-    @Lob
-    @Column(name = "svg_preview")
+    @Column(name = "svg_preview", columnDefinition = "TEXT")
     private byte[] svgPreview;
 
 }

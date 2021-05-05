@@ -83,7 +83,12 @@ public class UserService {
 
     public String getUserIdOfCurrentUser(){
         String email = userContext.getUserEmail();
-        return this.getUserIdByEmail(email);
+        UserEntity userEntity = userJpa.findByEmail(email);
+        if(userEntity == null){
+            userEntity = userJpa.findByUserNameEquals(email);
+        }
+        System.out.println("userId: "+ userEntity.getUserId());
+        return userEntity.getUserId();
     }
 
 

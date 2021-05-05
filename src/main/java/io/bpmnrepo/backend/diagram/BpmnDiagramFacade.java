@@ -111,14 +111,10 @@ public class BpmnDiagramFacade {
         authService.checkIfOperationIsAllowed(bpmnDiagramEntity.getBpmnRepositoryId(), RoleEnum.VIEWER);
         String currentUserId = this.userService.getUserIdOfCurrentUser();
         StarredEntity starredEntity = this.starredJpa.findByStarredId_BpmnDiagramIdAndStarredId_UserId(bpmnDiagramId, currentUserId);
-        System.out.println(starredEntity);
-        System.out.println(currentUserId);
         if(starredEntity == null){
-            System.out.println("in create");
             this.starredService.createStarred(bpmnDiagramId, currentUserId);
         }
         else{
-            System.out.println("In delete");
             this.starredService.deleteStarred(bpmnDiagramId, currentUserId);
         }
     }

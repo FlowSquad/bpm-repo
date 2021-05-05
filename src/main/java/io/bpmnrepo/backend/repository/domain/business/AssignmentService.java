@@ -130,7 +130,6 @@ public class AssignmentService {
         RoleEnum deletedUserRole = this.getUserRole(bpmnRepositoryId, deletedUserId);
         //role of deleted user has to be equal or weaker than role of current user (0:Owner, 1:Admin, 2:Member, 3: Viewer)
         if(currentUserRole.ordinal() > deletedUserRole.ordinal()){
-            System.out.println("current: " + currentUserRole.ordinal() + " deleted: " + deletedUserRole.ordinal());
             throw new AccessRightException(String.format("You cant remove %s (Repository-%s) from this repository because your role provides less rights (You are an %s)",
                     deletedUsername,
                     deletedUserRole,

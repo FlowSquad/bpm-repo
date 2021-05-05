@@ -42,7 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         // Endpoints that are accessible with API-Key and oAuth-Key
         http.authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/api/version/**").authenticated()
+                .antMatchers(HttpMethod.GET, "/api/**").authenticated()
                 .and()
                 .addFilterBefore(this.apiKeyAuthenticationFilter, BasicAuthenticationFilter.class)
                 .addFilterBefore(this.oAuthFilter, BasicAuthenticationFilter.class);

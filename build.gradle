@@ -42,8 +42,8 @@ dependencies {
 
     implementation "org.springframework.boot:spring-boot-starter-actuator"
     implementation "org.flywaydb:flyway-core:${flywayVersion}"
-    runtimeOnly "mysql:mysql-connector-java:8.0.18"
-    //runtimeOnly "org.postgresql:postgresql"
+    //runtimeOnly "mysql:mysql-connector-java:8.0.18"
+    runtimeOnly "org.postgresql:postgresql"
 
     // Lombok
     compileOnly 'org.projectlombok:lombok'

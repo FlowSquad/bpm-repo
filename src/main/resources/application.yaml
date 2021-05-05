@@ -33,17 +33,20 @@ spring:
 
   # Database Configurations
   datasource:
-    url: "jdbc:mysql://localhost:3306/bpmnrepo_db"
-    username: "root"
+    url: "jdbc:postgresql://localhost:5432/bpmnrepo_db_postgres"
+    username: "keycloak"
     password: "password"
-    platform: mysql
+    platform: postgres
   jpa:
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         show_sql: false
         use_sql_comments: true
         ddl-auto: update
+        jdbc:
+          lob:
+            non_contextual_creation: true
     generate-ddl: true
   flyway:
     enabled: false
