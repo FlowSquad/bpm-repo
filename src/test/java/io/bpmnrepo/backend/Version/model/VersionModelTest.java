@@ -26,7 +26,6 @@ public class VersionModelTest {
     private static final String DIAGRAMID = "001";
     private static final String VERSIONID = "v-01";
     private static final String FILESTRING = "somexmlString";
-    private static final byte[] FILEBYTES = FILESTRING.getBytes();
     private static final Integer RELEASE = 1;
     private static final Integer MILESTONE = 2;
     private static final String COMMENT = "versionComment";
@@ -36,7 +35,7 @@ public class VersionModelTest {
 
     @Test
     public void updateVersion(){
-        final BpmnDiagramVersion bpmnDiagramVersion = VersionBuilder.buildVersion(VERSIONID, DIAGRAMID, REPOID, COMMENT, RELEASE, MILESTONE, FILEBYTES, saveTypeMileStone);
+        final BpmnDiagramVersion bpmnDiagramVersion = VersionBuilder.buildVersion(VERSIONID, DIAGRAMID, REPOID, COMMENT, RELEASE, MILESTONE, FILESTRING, saveTypeMileStone);
         final BpmnDiagramVersionTO bpmnDiagramVersionTO = VersionBuilder.buildVersionTO(VERSIONID, DIAGRAMID, REPOID, UPDATEDCOMMENT, RELEASE, MILESTONE, FILESTRING, saveTypeMileStone);
 
         //first update: MILESTONE - check version numbers

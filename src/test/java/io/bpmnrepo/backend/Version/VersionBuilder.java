@@ -9,7 +9,7 @@ import io.bpmnrepo.backend.diagram.infrastructure.entity.BpmnDiagramVersionEntit
 
 public class VersionBuilder {
 
-    public static BpmnDiagramVersion buildVersion(String versionId, String diagramId, String repoId, String comment, Integer release, Integer milestone, byte[] file, SaveTypeEnum saveTypeEnum){
+    public static BpmnDiagramVersion buildVersion(String versionId, String diagramId, String repoId, String comment, Integer release, Integer milestone, String file, SaveTypeEnum saveTypeEnum){
         return BpmnDiagramVersion.builder()
                 .bpmnDiagramVersionId(versionId)
                 .bpmnDiagramId(diagramId)
@@ -35,7 +35,7 @@ public class VersionBuilder {
                 .build();
     }
 
-    public static BpmnDiagramVersionEntity buildVersionEntity(String versionId, String diagramId, String repoId, String comment, Integer release, Integer milestone, byte[] file, SaveTypeEnum saveTypeEnum){
+    public static BpmnDiagramVersionEntity buildVersionEntity(String versionId, String diagramId, String repoId, String comment, Integer release, Integer milestone, String file, SaveTypeEnum saveTypeEnum){
         return BpmnDiagramVersionEntity.builder()
                 .bpmnDiagramVersionId(versionId)
                 .bpmnDiagramId(diagramId)

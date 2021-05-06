@@ -39,7 +39,6 @@ public class VersionServiceTest {
     private static final String REPOID = "01";
     private static final String COMMENT = "VersionComment";
     private static final String FILESTRING = "somexmlString";
-    private static final byte[] FILEBYTES = FILESTRING.getBytes(StandardCharsets.UTF_8);
     private static final Integer RELEASE = 1;
     private static final Integer MILESTONE = 0;
     private static final SaveTypeEnum SAVETYPE = SaveTypeEnum.AUTOSAVE;
@@ -54,8 +53,8 @@ public class VersionServiceTest {
 
     @Test
     public void updateVersion(){
-        BpmnDiagramVersionEntity bpmnDiagramVersionEntity = VersionBuilder.buildVersionEntity(VERSIONID, DIAGRAMID, REPOID, COMMENT, RELEASE, MILESTONE, FILEBYTES, SAVETYPE);
-        BpmnDiagramVersion bpmnDiagramVersion = VersionBuilder.buildVersion(VERSIONID, DIAGRAMID, REPOID, COMMENT, RELEASE, MILESTONE, FILEBYTES, SAVETYPE);
+        BpmnDiagramVersionEntity bpmnDiagramVersionEntity = VersionBuilder.buildVersionEntity(VERSIONID, DIAGRAMID, REPOID, COMMENT, RELEASE, MILESTONE, FILESTRING, SAVETYPE);
+        BpmnDiagramVersion bpmnDiagramVersion = VersionBuilder.buildVersion(VERSIONID, DIAGRAMID, REPOID, COMMENT, RELEASE, MILESTONE, FILESTRING, SAVETYPE);
         BpmnDiagramVersionTO bpmnDiagramVersionTO = VersionBuilder.buildVersionTO(VERSIONID, DIAGRAMID, REPOID, COMMENT, RELEASE, MILESTONE, FILESTRING, SAVETYPE);
 
 
@@ -74,14 +73,14 @@ public class VersionServiceTest {
 
         final BpmnDiagramVersionEntity savedVersionEntity = captor.getValue();
         assertNotNull(savedVersionEntity);
-        assertEquals(savedVersionEntity.getBpmnDiagramVersionFile(), FILEBYTES);
+        assertEquals(savedVersionEntity.getBpmnDiagramVersionFile(), FILESTRING);
         assertEquals(savedVersionEntity.getBpmnDiagramVersionRelease(), RELEASE);
     }
 
     @Test
     public void createInitialVersion(){
-        BpmnDiagramVersionEntity bpmnDiagramVersionEntity = VersionBuilder.buildVersionEntity(VERSIONID, DIAGRAMID, REPOID, COMMENT, RELEASE, MILESTONE, FILEBYTES, SAVETYPE);
-        BpmnDiagramVersion bpmnDiagramVersion = VersionBuilder.buildVersion(VERSIONID, DIAGRAMID, REPOID, COMMENT, RELEASE, MILESTONE, FILEBYTES, SAVETYPE);
+        BpmnDiagramVersionEntity bpmnDiagramVersionEntity = VersionBuilder.buildVersionEntity(VERSIONID, DIAGRAMID, REPOID, COMMENT, RELEASE, MILESTONE, FILESTRING, SAVETYPE);
+        BpmnDiagramVersion bpmnDiagramVersion = VersionBuilder.buildVersion(VERSIONID, DIAGRAMID, REPOID, COMMENT, RELEASE, MILESTONE, FILESTRING, SAVETYPE);
         BpmnDiagramVersionTO bpmnDiagramVersionTO = VersionBuilder.buildVersionTO(VERSIONID, DIAGRAMID, REPOID, COMMENT, RELEASE, MILESTONE, FILESTRING, SAVETYPE);
 
         when(mapper.toEntity(bpmnDiagramVersion)).thenReturn(bpmnDiagramVersionEntity);

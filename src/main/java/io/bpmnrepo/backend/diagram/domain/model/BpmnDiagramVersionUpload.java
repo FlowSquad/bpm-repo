@@ -11,6 +11,6 @@ import java.nio.charset.StandardCharsets;
 @AllArgsConstructor
 @ToString
 public class BpmnDiagramVersionUpload {
-    private byte[] bpmnDiagramVersionFile;
+    private String bpmnDiagramVersionFile;
     private String bpmnDiagramVersionNumber;
 }

@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -93,7 +90,7 @@ public class BpmnDiagramService {
                 bpmnDiagramTOList.add(this.mapper.toTO(bpmnDiagramEntity));
             });
         });
-        Collections.sort(bpmnDiagramTOList,(a, b) -> Timestamp.valueOf(a.getUpdatedDate()).compareTo(Timestamp.valueOf(b.getUpdatedDate())));
+        Collections.sort(bpmnDiagramTOList, Comparator.comparing(a -> Timestamp.valueOf(a.getUpdatedDate())));
         Collections.reverse(bpmnDiagramTOList);
         return bpmnDiagramTOList;
     }
@@ -102,7 +99,7 @@ public class BpmnDiagramService {
     public void updatePreviewSVG(String bpmnDiagramId, BpmnDiagramSVGUploadTO bpmnDiagramSVGUploadTO) {
         BpmnDiagramEntity bpmnDiagramEntity = this.bpmnDiagramJpa.findBpmnDiagramEntityByBpmnDiagramIdEquals(bpmnDiagramId);
         BpmnDiagram bpmnDiagram = this.mapper.toModel(bpmnDiagramEntity);
-        bpmnDiagram.setSvgPreview(bpmnDiagramSVGUploadTO.getSvgPreview().getBytes());
+        bpmnDiagram.setSvgPreview(bpmnDiagramSVGUploadTO.getSvgPreview());
         this.saveToDb(bpmnDiagram);
     }
 }

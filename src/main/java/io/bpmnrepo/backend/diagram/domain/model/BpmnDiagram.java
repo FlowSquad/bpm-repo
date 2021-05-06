@@ -20,7 +20,7 @@ public class BpmnDiagram {
     private String bpmnRepositoryId;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
-    private byte[] svgPreview;
+    private String svgPreview;
 
 
 

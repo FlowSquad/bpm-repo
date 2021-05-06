@@ -12,7 +12,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", imports = LocalDateTime.class)
 public interface DiagramMapper {
 
-    @Mapping(target = "svgPreview", expression = "java((to.getSvgPreview() == null) ? null : to.getSvgPreview().getBytes())")
     BpmnDiagram toModel(final BpmnDiagramTO to);
 
     BpmnDiagram toModel(final BpmnDiagramEntity entity);

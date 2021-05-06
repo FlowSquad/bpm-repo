@@ -22,7 +22,7 @@ public class BpmnDiagramVersion {
     private String bpmnRepositoryId;
     private Integer bpmnDiagramVersionRelease;
     private Integer bpmnDiagramVersionMilestone;
-    private byte[] bpmnDiagramVersionFile;
+    private String bpmnDiagramVersionFile;
     private SaveTypeEnum saveType;
 
 
@@ -31,7 +31,7 @@ public class BpmnDiagramVersion {
         this.bpmnDiagramVersionComment = bpmnDiagramVersionTO.getBpmnDiagramVersionComment();
         this.bpmnDiagramVersionRelease = generateReleaseNumber(bpmnDiagramVersionTO);
         this.bpmnDiagramVersionMilestone = generateMilestoneNumber(bpmnDiagramVersionTO);
-        this.bpmnDiagramVersionFile = bpmnDiagramVersionTO.getBpmnAsXML().getBytes();
+        this.bpmnDiagramVersionFile = bpmnDiagramVersionTO.getBpmnAsXML();
         this.bpmnDiagramId = bpmnDiagramVersionTO.getBpmnDiagramId();
         this.bpmnRepositoryId = bpmnDiagramVersionTO.getBpmnRepositoryId();
         this.saveType = bpmnDiagramVersionTO.getSaveType();
@@ -46,7 +46,7 @@ public class BpmnDiagramVersion {
         }
         this.setBpmnDiagramVersionRelease(generateReleaseNumber(bpmnDiagramVersionTO));
         this.setBpmnDiagramVersionMilestone(generateMilestoneNumber(bpmnDiagramVersionTO));
-        this.setBpmnDiagramVersionFile(bpmnDiagramVersionTO.getBpmnAsXML().getBytes());
+        this.setBpmnDiagramVersionFile(bpmnDiagramVersionTO.getBpmnAsXML());
     }
 
 
