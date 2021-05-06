@@ -31,7 +31,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/user/create").permitAll()
                 .antMatchers("/actuator/health").permitAll()
-                .antMatchers("/v2/api-docs",
+                .antMatchers("/v3/api-docs",
                         "/swagger-resources",
                         "/swagger-resources/**",
                         "/configuration/ui",

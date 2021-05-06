@@ -33,8 +33,7 @@ public class BpmnDiagramVersionEntity {
     @Column(name = "save_type", nullable = false)
     private SaveTypeEnum saveType;
 
-    @Lob
-    @Column(name = "bpmn_diagram_version_file")
+    @Column(name = "bpmn_diagram_version_file", columnDefinition = "TEXT")
     private byte[] bpmnDiagramVersionFile;
 
     @Column(name = "bpmn_diagram_id", nullable = false)

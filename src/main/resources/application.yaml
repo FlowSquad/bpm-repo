@@ -18,7 +18,7 @@ server:
 
 # Security Configurations
 auth0:
-  audience: 3h8eEHlAfoMF4yYkTOzsDcQc6rgpLOxO
+  audience: https://flowsquad.io
 
 spring:
   security:
@@ -33,7 +33,7 @@ spring:
 
   # Database Configurations
   datasource:
-    url: "jdbc:postgresql://localhost:5432/bpmnrepo_db_postgres"
+    url: "jdbc:postgresql://localhost:5432/bpmnrepo_db"
     username: "keycloak"
     password: "password"
     platform: postgres
