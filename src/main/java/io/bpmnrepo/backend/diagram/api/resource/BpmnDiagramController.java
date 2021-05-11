@@ -8,6 +8,7 @@ import io.bpmnrepo.backend.diagram.api.transport.BpmnDiagramUploadTO;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -35,11 +36,11 @@ public class BpmnDiagramController {
      * @return
      */
     @PostMapping("/{bpmnRepositoryId}")
-    public ResponseEntity<Void> createOrUpdateDiagram(@PathVariable @NotBlank String bpmnRepositoryId,
+    public ResponseEntity<BpmnDiagramTO> createOrUpdateDiagram(@PathVariable @NotBlank String bpmnRepositoryId,
                                                       @RequestBody @Valid final BpmnDiagramUploadTO bpmnDiagramUploadTO){
         log.debug("Creating or updating Diagram");
-        this.bpmnDiagramFacade.createOrUpdateDiagram(bpmnRepositoryId, bpmnDiagramUploadTO);
-        return ResponseEntity.ok().build();
+        val result = this.bpmnDiagramFacade.createOrUpdateDiagram(bpmnRepositoryId, bpmnDiagramUploadTO);
+        return ResponseEntity.ok(result);
     }
 
     /** Speichern eines SVGs, das später zur Vorschau im Menü angezeigt wird. Aufruf wird von Modeler ausgeführt, nachdem user ein Diagram speichert (den createOrUpdateVersion-Endpoint aufruft) (Conversion XML -> SVG als String wird in Modeler ausgeführt)

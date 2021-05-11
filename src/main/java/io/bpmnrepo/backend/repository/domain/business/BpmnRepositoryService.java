@@ -4,24 +4,12 @@ package io.bpmnrepo.backend.repository.domain.business;
 import io.bpmnrepo.backend.repository.api.transport.BpmnRepositoryRequestTO;
 import io.bpmnrepo.backend.repository.api.transport.NewBpmnRepositoryTO;
 import io.bpmnrepo.backend.repository.domain.mapper.RepositoryMapper;
-import io.bpmnrepo.backend.diagram.domain.business.BpmnDiagramService;
-import io.bpmnrepo.backend.diagram.infrastructure.entity.BpmnDiagramEntity;
 import io.bpmnrepo.backend.repository.domain.model.BpmnRepository;
 import io.bpmnrepo.backend.repository.infrastructure.entity.BpmnRepositoryEntity;
-import io.bpmnrepo.backend.shared.AuthService;
-import io.bpmnrepo.backend.shared.exception.AccessRightException;
-import io.bpmnrepo.backend.repository.infrastructure.repository.AssignmentJpa;
-import io.bpmnrepo.backend.diagram.infrastructure.repository.BpmnDiagramJpa;
 import io.bpmnrepo.backend.repository.infrastructure.repository.BpmnRepoJpa;
-import io.bpmnrepo.backend.repository.api.transport.BpmnRepositoryTO;
-import io.bpmnrepo.backend.shared.enums.RoleEnum;
-import io.bpmnrepo.backend.user.domain.business.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service

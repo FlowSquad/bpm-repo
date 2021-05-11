@@ -3,16 +3,13 @@ package io.bpmnrepo.backend.diagram.domain.business;
 import io.bpmnrepo.backend.diagram.api.transport.BpmnDiagramSVGUploadTO;
 import io.bpmnrepo.backend.diagram.domain.mapper.DiagramMapper;
 import io.bpmnrepo.backend.diagram.domain.model.BpmnDiagram;
-import io.bpmnrepo.backend.shared.AuthService;
 import io.bpmnrepo.backend.diagram.infrastructure.entity.BpmnDiagramEntity;
-import io.bpmnrepo.backend.shared.enums.RoleEnum;
 import io.bpmnrepo.backend.diagram.infrastructure.repository.BpmnDiagramJpa;
 import io.bpmnrepo.backend.diagram.api.transport.BpmnDiagramTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,16 +23,16 @@ public class BpmnDiagramService {
     private final DiagramMapper mapper;
 
 
-    public void createDiagram(BpmnDiagramTO bpmnDiagramTO){
+    public BpmnDiagramTO createDiagram(BpmnDiagramTO bpmnDiagramTO){
         BpmnDiagram bpmnDiagram = this.mapper.toModel(bpmnDiagramTO);
-        saveToDb(bpmnDiagram);
+        return this.mapper.toTO(saveToDb(bpmnDiagram));
     }
 
-    public void updateDiagram(BpmnDiagramTO bpmnDiagramTO){
+    public BpmnDiagramTO updateDiagram(BpmnDiagramTO bpmnDiagramTO){
         BpmnDiagramEntity bpmnDiagramEntity = this.bpmnDiagramJpa.findBpmnDiagramEntityByBpmnDiagramIdEquals(bpmnDiagramTO.getBpmnDiagramId());
         BpmnDiagram bpmnDiagram = this.mapper.toModel(bpmnDiagramEntity);
         bpmnDiagram.updateDiagram(bpmnDiagramTO);
-        saveToDb(bpmnDiagram);
+        return this.mapper.toTO(saveToDb(bpmnDiagram));
     }
 
 
@@ -60,9 +57,8 @@ public class BpmnDiagramService {
     }
 
 
-    private void saveToDb(BpmnDiagram bpmnDiagram){
-        bpmnDiagramJpa.save(this.mapper.toEntity(bpmnDiagram));
-
+    private BpmnDiagramEntity saveToDb(BpmnDiagram bpmnDiagram){
+        return bpmnDiagramJpa.save(this.mapper.toEntity(bpmnDiagram));
     }
 
 
@@ -90,9 +86,9 @@ public class BpmnDiagramService {
                 bpmnDiagramTOList.add(this.mapper.toTO(bpmnDiagramEntity));
             });
         });
-        Collections.sort(bpmnDiagramTOList, Comparator.comparing(a -> Timestamp.valueOf(a.getUpdatedDate())));
+        bpmnDiagramTOList.sort(Comparator.comparing(a -> Timestamp.valueOf(a.getUpdatedDate())));
         Collections.reverse(bpmnDiagramTOList);
-        return bpmnDiagramTOList;
+        return bpmnDiagramTOList.subList(0, Math.min(bpmnDiagramTOList.size(), 10));
     }
 
 

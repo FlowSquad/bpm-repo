@@ -20,6 +20,7 @@ import io.bpmnrepo.backend.shared.enums.RoleEnum;
 import io.bpmnrepo.backend.user.domain.business.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -44,43 +45,44 @@ public class BpmnDiagramFacade {
     private final BpmnRepositoryService bpmnRepositoryService;
 
 
-    public void createOrUpdateDiagram(String bpmnRepositoryId, BpmnDiagramUploadTO bpmnDiagramUploadTO){
+    public BpmnDiagramTO createOrUpdateDiagram(String bpmnRepositoryId, BpmnDiagramUploadTO bpmnDiagramUploadTO) {
         authService.checkIfOperationIsAllowed(bpmnRepositoryId, RoleEnum.MEMBER);
         BpmnDiagramTO bpmnDiagramTO = new BpmnDiagramTO(bpmnRepositoryId, bpmnDiagramUploadTO);
         if (bpmnDiagramTO.getBpmnDiagramId() == null || bpmnDiagramTO.getBpmnDiagramId().isEmpty()) {
             checkIfNameIsAvailable(bpmnRepositoryId, bpmnDiagramTO.getBpmnDiagramName());
-            bpmnDiagramService.createDiagram(bpmnDiagramTO);
+            val result = bpmnDiagramService.createDiagram(bpmnDiagramTO);
             Integer existingDiagrams = this.bpmnDiagramService.countExistingDiagrams(bpmnRepositoryId);
             bpmnRepositoryService.updateExistingDiagrams(bpmnRepositoryId, existingDiagrams);
             log.debug("Diagram created");
-        }
-        else{
+            return result;
+        } else {
             verifyRelationService.verifyDiagramIsInSpecifiedRepository(bpmnDiagramTO);
-            bpmnDiagramService.updateDiagram(bpmnDiagramTO);
+            val result = bpmnDiagramService.updateDiagram(bpmnDiagramTO);
 
             log.debug("Diagram updated");
+            return result;
         }
     }
 
-    public void checkIfNameIsAvailable(String bpmnRepositoryId, String bpmnDiagramName){
-        if(bpmnDiagramJpa.findBpmnDiagramEntityByBpmnRepositoryIdAndBpmnDiagramName(bpmnRepositoryId, bpmnDiagramName) !=  null){
+    public void checkIfNameIsAvailable(String bpmnRepositoryId, String bpmnDiagramName) {
+        if (bpmnDiagramJpa.findBpmnDiagramEntityByBpmnRepositoryIdAndBpmnDiagramName(bpmnRepositoryId, bpmnDiagramName) != null) {
             throw new DiagramNameAlreadyInUseException();
         }
     }
 
-    public List<BpmnDiagramTO> getDiagramsFromRepo(String repositoryId){
+    public List<BpmnDiagramTO> getDiagramsFromRepo(String repositoryId) {
         authService.checkIfOperationIsAllowed(repositoryId, RoleEnum.VIEWER);
         return bpmnDiagramService.getDiagramsFromRepo(repositoryId);
     }
 
-    public BpmnDiagramTO getSingleDiagram(String bpmnRepositoryId, String bpmnDiagramId){
+    public BpmnDiagramTO getSingleDiagram(String bpmnRepositoryId, String bpmnDiagramId) {
         verifyRelationService.verifyDiagramIsInSpecifiedRepository(bpmnRepositoryId, bpmnDiagramId);
         authService.checkIfOperationIsAllowed(bpmnRepositoryId, RoleEnum.VIEWER);
         return bpmnDiagramService.getSingleDiagram(bpmnDiagramId);
     }
 
     public List<BpmnDiagramTO> getRecent() {
-       // List<Assignment> assignments = this.assignmentJpa.findAssignmentEntitiesByAssignmentId_UserIdEquals(this.userService.getUserIdOfCurrentUser());
+        // List<Assignment> assignments = this.assignmentJpa.findAssignmentEntitiesByAssignmentId_UserIdEquals(this.userService.getUserIdOfCurrentUser());
         List<String> assignments = this.assignmentService.getAllAssignedRepositoryIds(this.userService.getUserIdOfCurrentUser());
         //pass assignments to diagramService and return all diagramTOs
         return this.bpmnDiagramService.getRecent(assignments);
@@ -95,7 +97,7 @@ public class BpmnDiagramFacade {
     }
 
 
-        public void deleteDiagram(String bpmnRepositoryId, String bpmnDiagramId){
+    public void deleteDiagram(String bpmnRepositoryId, String bpmnDiagramId) {
         verifyRelationService.verifyDiagramIsInSpecifiedRepository(bpmnRepositoryId, bpmnDiagramId);
         authService.checkIfOperationIsAllowed(bpmnRepositoryId, RoleEnum.ADMIN);
         bpmnDiagramVersionService.deleteAllByDiagramId(bpmnDiagramId);
@@ -111,10 +113,9 @@ public class BpmnDiagramFacade {
         authService.checkIfOperationIsAllowed(bpmnDiagramEntity.getBpmnRepositoryId(), RoleEnum.VIEWER);
         String currentUserId = this.userService.getUserIdOfCurrentUser();
         StarredEntity starredEntity = this.starredJpa.findByStarredId_BpmnDiagramIdAndStarredId_UserId(bpmnDiagramId, currentUserId);
-        if(starredEntity == null){
+        if (starredEntity == null) {
             this.starredService.createStarred(bpmnDiagramId, currentUserId);
-        }
-        else{
+        } else {
             this.starredService.deleteStarred(bpmnDiagramId, currentUserId);
         }
     }
