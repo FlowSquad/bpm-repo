@@ -2,6 +2,8 @@ package io.bpmnrepo.backend.user.api.resource;
 
 
 import io.bpmnrepo.backend.shared.mapper.Mapper;
+import io.bpmnrepo.backend.user.api.transport.UserEmailTO;
+import io.bpmnrepo.backend.user.api.transport.UserInfoTO;
 import io.bpmnrepo.backend.user.api.transport.UserTO;
 import io.bpmnrepo.backend.user.api.transport.UserUpdateTO;
 import io.bpmnrepo.backend.user.domain.business.UserService;
@@ -37,6 +39,16 @@ public class UserController {
         log.debug(String.format("updating user with id %s", userUpdateTO.getUserId()));
         this.userService.updateUser(userUpdateTO);
         return ResponseEntity.ok().build();
+    }
+    @GetMapping("/currentUser")
+    public ResponseEntity<UserInfoTO> getUserInfo(){
+        log.debug("Returning information about logged in user");
+        return ResponseEntity.ok().body(this.userService.getUserInfo());
+    }
+    @GetMapping("/registeredEmail")
+    public ResponseEntity<UserEmailTO> getUserEmail(){
+        log.debug("Returning email registered at Flowsquad");
+        return ResponseEntity.ok().body(this.userService.getUserEmail());
     }
 
     @GetMapping("/apiKey")

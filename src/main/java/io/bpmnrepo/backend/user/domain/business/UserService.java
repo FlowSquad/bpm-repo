@@ -4,6 +4,8 @@ import io.bpmnrepo.backend.shared.config.UserContext;
 import io.bpmnrepo.backend.shared.exception.AccessRightException;
 import io.bpmnrepo.backend.shared.exception.NameConflictException;
 import io.bpmnrepo.backend.shared.exception.NameNotExistentException;
+import io.bpmnrepo.backend.user.api.transport.UserEmailTO;
+import io.bpmnrepo.backend.user.api.transport.UserInfoTO;
 import io.bpmnrepo.backend.user.api.transport.UserTO;
 import io.bpmnrepo.backend.user.api.transport.UserUpdateTO;
 import io.bpmnrepo.backend.user.domain.exception.EmailAlreadyInUseException;
@@ -83,11 +85,11 @@ public class UserService {
 
     public String getUserIdOfCurrentUser(){
         String email = userContext.getUserEmail();
+        System.out.println("Current email: " + email);
         UserEntity userEntity = userJpa.findByEmail(email);
         if(userEntity == null){
             userEntity = userJpa.findByUserNameEquals(email);
         }
-        System.out.println("userId: "+ userEntity.getUserId());
         return userEntity.getUserId();
     }
 
@@ -109,6 +111,23 @@ public class UserService {
         String email = userContext.getUserEmail();
         UserEntity userEntity = this.userJpa.findByEmail(email);
         return this.mapper.toModel(userEntity);
+    }
+
+    public UserEmailTO getUserEmail(){
+        String email = userContext.getUserEmail();
+        UserEmailTO userEmailTO = new UserEmailTO(email);
+        return userEmailTO;
+    }
+
+    public UserInfoTO getUserInfo(){
+        try{
+            User user = getCurrentUser();
+            UserInfoTO userInfoTO = this.mapper.toInfoTO(user);
+            return userInfoTO;
+        } catch(Exception e){
+            log.info("User not existent in bpmnrepo database, trying to create user...");
+            return  null;
+        }
     }
 
 

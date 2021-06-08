@@ -45,8 +45,6 @@ public class OAuthAuthenticationFilter extends OncePerRequestFilter {
     /* --------------------------------------- private helper methods --------------------------------------- */
 
     private String getOAuthTokenFromHeader(final HttpServletRequest request) {
-        System.out.println("authentication...");
-        System.out.println(request.getHeaderNames());
         return request.getHeader(HttpHeaders.AUTHORIZATION);
     }
 
@@ -67,7 +65,6 @@ public class OAuthAuthenticationFilter extends OncePerRequestFilter {
 
     private Jwt getOAuthTokenIfTokenIsValid(final String oAuthToken) {
         final String tokenWithoutBearer = oAuthToken.substring(7);
-        System.out.println(this.jwtDecoder.decode(tokenWithoutBearer));
         return this.jwtDecoder.decode(tokenWithoutBearer);
     }
 }

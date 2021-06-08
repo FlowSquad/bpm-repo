@@ -41,4 +41,7 @@ public class BpmnDiagramEntity {
     @Column(name = "svg_preview", columnDefinition = "TEXT")
     private String svgPreview;
 
+    @Column(name = "file_type")
+    private String fileType;
+
 }

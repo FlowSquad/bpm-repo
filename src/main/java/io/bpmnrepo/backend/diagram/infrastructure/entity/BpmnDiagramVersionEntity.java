@@ -5,6 +5,7 @@ import io.bpmnrepo.backend.diagram.infrastructure.SaveTypeEnum;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -32,6 +33,9 @@ public class BpmnDiagramVersionEntity {
     @Enumerated(value = EnumType.STRING)
     @Column(name = "save_type", nullable = false)
     private SaveTypeEnum saveType;
+
+    @Column(name = "updated_date")
+    private LocalDateTime updatedDate;
 
     @Column(name = "bpmn_diagram_version_file", columnDefinition = "TEXT")
     private String bpmnDiagramVersionFile;

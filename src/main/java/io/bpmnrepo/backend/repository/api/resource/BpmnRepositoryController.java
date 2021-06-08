@@ -37,7 +37,6 @@ public class BpmnRepositoryController {
     @PostMapping()
     @Operation(summary = "Create a new Repository")
     public ResponseEntity<Void> createRepository(@RequestBody @Valid final NewBpmnRepositoryTO newBpmnRepositoryTO){
-
         bpmnRepositoryFacade.createRepository(newBpmnRepositoryTO);
         return ResponseEntity.ok().build();
     }

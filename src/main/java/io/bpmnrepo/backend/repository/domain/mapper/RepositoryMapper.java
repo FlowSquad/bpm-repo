@@ -19,6 +19,8 @@ public interface RepositoryMapper {
 
     @Mapping(target = "createdDate", expression = "java(LocalDateTime.now())")
     @Mapping(target = "updatedDate", expression = "java(LocalDateTime.now())")
+    @Mapping(target = "assignedUsers", expression = "java(1)")
+    @Mapping(target = "existingDiagrams", expression = "java(0)")
     BpmnRepository toModel(final NewBpmnRepositoryTO to);
 
     BpmnRepository toModel(final BpmnRepositoryEntity entity);
