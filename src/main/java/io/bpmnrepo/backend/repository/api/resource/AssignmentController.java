@@ -4,6 +4,7 @@ import io.bpmnrepo.backend.repository.api.transport.AssignmentDeletionTO;
 import io.bpmnrepo.backend.repository.api.transport.AssignmentWithUserNameTO;
 import io.bpmnrepo.backend.repository.api.transport.AssignmentTO;
 import io.bpmnrepo.backend.repository.domain.business.AssignmentService;
+import io.bpmnrepo.backend.user.api.transport.UserInfoTO;
 import io.bpmnrepo.backend.user.domain.business.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -47,6 +49,20 @@ public class AssignmentController {
         log.debug(String.format("Deleting assignment for user %s", username));
         this.assignmentService.deleteAssignment(repositoryId, username);
         return ResponseEntity.ok().build();
+    }
+
+
+    /** Alle user anfragen, die dem Repository zugeordnet sind
+     *
+     * @param
+     * @return
+     */
+    @GetMapping("/{repositoryId}")
+    public ResponseEntity<List<AssignmentTO>> getAllAssignedUsers(@PathVariable String repositoryId){
+        log.debug(String.format("Returning all assigned Users for Repository %s", repositoryId));
+        List<AssignmentTO> assignedUsers = this.assignmentService.getAllAssignedUsers(repositoryId);
+        log.debug(assignedUsers.get(0).getUserName());
+        return ResponseEntity.ok().body(assignedUsers);
     }
 
     @GetMapping

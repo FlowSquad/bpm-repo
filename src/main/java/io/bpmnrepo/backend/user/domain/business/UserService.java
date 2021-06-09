@@ -125,7 +125,7 @@ public class UserService {
             UserInfoTO userInfoTO = this.mapper.toInfoTO(user);
             return userInfoTO;
         } catch(Exception e){
-            log.info("User not existent in bpmnrepo database, trying to create user...");
+            log.info("User not existent in database");
             return  null;
         }
     }

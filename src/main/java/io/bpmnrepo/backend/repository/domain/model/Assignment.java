@@ -11,11 +11,13 @@ import lombok.*;
 @ToString
 public class Assignment {
     private String userId;
+    private String userName;
     private String bpmnRepositoryId;
     private RoleEnum roleEnum;
 
     public Assignment(final AssignmentTO assignmentTO){
         this.userId = assignmentTO.getUserId();
+        this.userName = assignmentTO.getUserName();
         this.bpmnRepositoryId = assignmentTO.getBpmnRepositoryId();
         this.roleEnum = assignmentTO.getRoleEnum();
     }

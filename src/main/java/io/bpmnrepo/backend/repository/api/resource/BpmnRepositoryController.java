@@ -28,7 +28,6 @@ public class BpmnRepositoryController {
 
     private final BpmnRepositoryFacade bpmnRepositoryFacade;
 
-    private final UserService userService;
     /** Repo erstellen
      *
      * @param newBpmnRepositoryTO
