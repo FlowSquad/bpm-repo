@@ -26,12 +26,12 @@ import java.io.IOException;
 public class OAuthAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtDecoder jwtDecoder;
-    private final UserService userService;
 
     @Value("${bpmnrepo.security.usercontext.email_claim}")
     private String emailClaimKey;
 
     protected void doFilterInternal(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse, final FilterChain filterChain) throws ServletException, IOException {
+        System.out.println("Filtering");
         if (httpServletRequest.getRequestURI().endsWith("/actuator/health")){
             filterChain.doFilter(httpServletRequest, httpServletResponse);
         }

@@ -39,15 +39,15 @@ public class AssignmentController {
         return ResponseEntity.ok().build();
     }
 
-    /** User komplett vom Repository entfernen. Kann von Admind und Ownern ausgeführt werden
+    /** User komplett vom Repository entfernen. Kann von Admins und Ownern ausgeführt werden
      *
      * @param
      * @return
      */
-    @DeleteMapping("/{repositoryId}/{username}")
-    public ResponseEntity<Void> deleteUserAssignment(@PathVariable(name = "repositoryId") String repositoryId, @PathVariable(name = "username") String username){
-        log.debug(String.format("Deleting assignment for user %s", username));
-        this.assignmentService.deleteAssignment(repositoryId, username);
+    @DeleteMapping("/{repositoryId}/{userName}")
+    public ResponseEntity<Void> deleteUserAssignment(@PathVariable String repositoryId, @PathVariable String userName){
+        log.debug(String.format("Deleting assignment for user %s", userName));
+        this.assignmentService.deleteAssignment(repositoryId, userName);
         return ResponseEntity.ok().build();
     }
 
@@ -61,13 +61,7 @@ public class AssignmentController {
     public ResponseEntity<List<AssignmentTO>> getAllAssignedUsers(@PathVariable String repositoryId){
         log.debug(String.format("Returning all assigned Users for Repository %s", repositoryId));
         List<AssignmentTO> assignedUsers = this.assignmentService.getAllAssignedUsers(repositoryId);
-        log.debug(assignedUsers.get(0).getUserName());
         return ResponseEntity.ok().body(assignedUsers);
     }
 
-    @GetMapping
-    public ResponseEntity<Void> getCurrentUser(){
-        log.debug(userService.getUserIdOfCurrentUser());
-        return ResponseEntity.ok().build();
-    }
 }

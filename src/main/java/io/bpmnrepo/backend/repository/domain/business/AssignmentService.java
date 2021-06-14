@@ -128,12 +128,9 @@ public class AssignmentService {
     public List<AssignmentTO> getAllAssignedUsers(String bpmnRepositoryId){
         authService.checkIfOperationIsAllowed(bpmnRepositoryId, RoleEnum.MEMBER);
         List<AssignmentEntity> assignments = assignmentJpa.findByAssignmentId_BpmnRepositoryId(bpmnRepositoryId);
-        System.out.println("userid:");
-        System.out.println(assignments.get(0).getUserName());
         List<AssignmentTO> assignedUsers = assignments.stream()
                 .map(assignmentEntity -> mapper.toTO(mapper.toModel(assignmentEntity)))
                 .collect(Collectors.toList());
-        System.out.println(assignedUsers.get(0).getUserName());
         return assignedUsers;
     }
 

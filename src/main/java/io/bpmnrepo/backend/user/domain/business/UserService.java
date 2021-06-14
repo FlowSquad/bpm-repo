@@ -4,10 +4,8 @@ import io.bpmnrepo.backend.shared.config.UserContext;
 import io.bpmnrepo.backend.shared.exception.AccessRightException;
 import io.bpmnrepo.backend.shared.exception.NameConflictException;
 import io.bpmnrepo.backend.shared.exception.NameNotExistentException;
-import io.bpmnrepo.backend.user.api.transport.UserEmailTO;
-import io.bpmnrepo.backend.user.api.transport.UserInfoTO;
-import io.bpmnrepo.backend.user.api.transport.UserTO;
-import io.bpmnrepo.backend.user.api.transport.UserUpdateTO;
+import io.bpmnrepo.backend.shared.exception.UserNotExistentException;
+import io.bpmnrepo.backend.user.api.transport.*;
 import io.bpmnrepo.backend.user.domain.exception.EmailAlreadyInUseException;
 import io.bpmnrepo.backend.user.domain.exception.UsernameAlreadyInUseException;
 import io.bpmnrepo.backend.user.domain.mapper.UserMapper;
@@ -17,6 +15,9 @@ import io.bpmnrepo.backend.user.infrastructure.repository.UserJpa;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -74,6 +75,10 @@ public class UserService {
         if(userEntity == null){
             throw new NameNotExistentException();
         }
+    }    public void checkIfUserExists(User user){
+        if(user == null){
+            throw new UserNotExistentException();
+        }
     }
 
     public String getUserIdByEmail(String email){
@@ -85,7 +90,6 @@ public class UserService {
 
     public String getUserIdOfCurrentUser(){
         String email = userContext.getUserEmail();
-        System.out.println("Current email: " + email);
         UserEntity userEntity = userJpa.findByEmail(email);
         if(userEntity == null){
             userEntity = userJpa.findByUserNameEquals(email);
@@ -120,16 +124,19 @@ public class UserService {
     }
 
     public UserInfoTO getUserInfo(){
-        try{
-            User user = getCurrentUser();
-            UserInfoTO userInfoTO = this.mapper.toInfoTO(user);
-            return userInfoTO;
-        } catch(Exception e){
-            log.info("User not existent in database");
-            return  null;
-        }
+        User user = getCurrentUser();
+        checkIfUserExists(user);
+        UserInfoTO userInfoTO = this.mapper.toInfoTO(user);
+        return userInfoTO;
     }
 
+    public List<UserInfoTO> searchUsers(String typedName){
+        //Parameters correspond to (username, email) -> only one search field that queries both
+        List<UserEntity> userEntities = this.userJpa.findAllByUserNameStartsWithOrEmailStartsWith(typedName, typedName);
+        return userEntities.stream()
+                .map(userEntity -> this.mapper.toInfoTO(this.mapper.toModel(userEntity)))
+                .collect(Collectors.toList());
+    }
 
 
     public void saveToDb(UserEntity entity){

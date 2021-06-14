@@ -76,7 +76,6 @@ public class BpmnRepositoryController {
     public ResponseEntity<BpmnRepositoryRequestTO> getSingleRepository(@PathVariable @NotBlank final String repositoryId){
         log.debug(String.format("Returning single repository with id %s", repositoryId));
         BpmnRepositoryRequestTO bpmnRepositoryRequestTO = this.bpmnRepositoryFacade.getSingleRepository(repositoryId);
-        log.debug(bpmnRepositoryRequestTO.getBpmnRepositoryName());
         return ResponseEntity.ok().body(bpmnRepositoryRequestTO);
     }
 
