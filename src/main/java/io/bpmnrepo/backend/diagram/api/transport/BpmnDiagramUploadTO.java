@@ -21,4 +21,10 @@ public class BpmnDiagramUploadTO {
 
     @NotNull
     private String bpmnDiagramDescription;
+
+    @Nullable
+    private String fileType;
+
+    @Nullable
+    private String svgPreview;
 }

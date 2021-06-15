@@ -33,7 +33,7 @@ spring:
 
   # Database Configurations
   datasource:
-    url: "jdbc:postgresql://localhost:5432/bpmnrepo_db"
+    url: "jdbc:postgresql://localhost:5432/bpmnrepo_db_postgres"
     username: "keycloak"
     password: "password"
     platform: postgres

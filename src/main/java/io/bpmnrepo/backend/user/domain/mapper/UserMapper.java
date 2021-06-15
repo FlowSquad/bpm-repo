@@ -1,9 +1,11 @@
 package io.bpmnrepo.backend.user.domain.mapper;
 
+import io.bpmnrepo.backend.user.api.transport.UserInfoTO;
 import io.bpmnrepo.backend.user.api.transport.UserTO;
 import io.bpmnrepo.backend.user.domain.model.User;
 import io.bpmnrepo.backend.user.infrastructure.entity.UserEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
@@ -11,5 +13,6 @@ public interface UserMapper {
     UserEntity toEntity(User model);
     User toModel(UserEntity userEntity);
     UserTO toTO(User user);
+    UserInfoTO toInfoTO(User user);
 
 }

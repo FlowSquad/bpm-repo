@@ -8,6 +8,7 @@ import io.bpmnrepo.backend.diagram.infrastructure.SaveTypeEnum;
 import lombok.*;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -24,7 +25,7 @@ public class BpmnDiagramVersion {
     private Integer bpmnDiagramVersionMilestone;
     private String bpmnDiagramVersionFile;
     private SaveTypeEnum saveType;
-
+    private LocalDateTime updatedDate;
 
     public BpmnDiagramVersion(final BpmnDiagramVersionTO bpmnDiagramVersionTO) {
         this.bpmnDiagramVersionId = bpmnDiagramVersionTO.getBpmnDiagramVersionId();
@@ -35,6 +36,7 @@ public class BpmnDiagramVersion {
         this.bpmnDiagramId = bpmnDiagramVersionTO.getBpmnDiagramId();
         this.bpmnRepositoryId = bpmnDiagramVersionTO.getBpmnRepositoryId();
         this.saveType = bpmnDiagramVersionTO.getSaveType();
+        this.updatedDate = bpmnDiagramVersionTO.getUpdatedDate();
     }
 
 
@@ -47,6 +49,7 @@ public class BpmnDiagramVersion {
         this.setBpmnDiagramVersionRelease(generateReleaseNumber(bpmnDiagramVersionTO));
         this.setBpmnDiagramVersionMilestone(generateMilestoneNumber(bpmnDiagramVersionTO));
         this.setBpmnDiagramVersionFile(bpmnDiagramVersionTO.getBpmnAsXML());
+        this.setUpdatedDate(LocalDateTime.now());
     }
 
 

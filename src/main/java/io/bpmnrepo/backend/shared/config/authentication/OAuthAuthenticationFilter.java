@@ -26,12 +26,12 @@ import java.io.IOException;
 public class OAuthAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtDecoder jwtDecoder;
-    private final UserService userService;
 
     @Value("${bpmnrepo.security.usercontext.email_claim}")
     private String emailClaimKey;
 
     protected void doFilterInternal(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse, final FilterChain filterChain) throws ServletException, IOException {
+        System.out.println("Filtering");
         if (httpServletRequest.getRequestURI().endsWith("/actuator/health")){
             filterChain.doFilter(httpServletRequest, httpServletResponse);
         }
@@ -45,8 +45,6 @@ public class OAuthAuthenticationFilter extends OncePerRequestFilter {
     /* --------------------------------------- private helper methods --------------------------------------- */
 
     private String getOAuthTokenFromHeader(final HttpServletRequest request) {
-        System.out.println("authentication...");
-        System.out.println(request.getHeaderNames());
         return request.getHeader(HttpHeaders.AUTHORIZATION);
     }
 
@@ -67,7 +65,6 @@ public class OAuthAuthenticationFilter extends OncePerRequestFilter {
 
     private Jwt getOAuthTokenIfTokenIsValid(final String oAuthToken) {
         final String tokenWithoutBearer = oAuthToken.substring(7);
-        System.out.println(this.jwtDecoder.decode(tokenWithoutBearer));
         return this.jwtDecoder.decode(tokenWithoutBearer);
     }
 }

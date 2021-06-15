@@ -15,4 +15,10 @@ public interface AssignmentMapper {
     AssignmentEntity toEntity(Assignment model, AssignmentId assignmentId);
 
     AssignmentId toEmbeddable(String userId, String bpmnRepositoryId);
+
+    @Mapping(target = "bpmnRepositoryId", expression = "java(assignmentEntity.getAssignmentId().getBpmnRepositoryId())")
+    @Mapping(target = "userId", expression = "java(assignmentEntity.getAssignmentId().getUserId())")
+    Assignment toModel(AssignmentEntity assignmentEntity);
+
+    AssignmentTO toTO(Assignment assignment);
 }

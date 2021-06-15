@@ -21,6 +21,7 @@ public class BpmnDiagram {
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
     private String svgPreview;
+    private String fileType;
 
 
 

@@ -11,7 +11,12 @@ import io.bpmnrepo.backend.shared.enums.RoleEnum;
 import io.bpmnrepo.backend.shared.exception.AccessRightException;
 import io.bpmnrepo.backend.repository.infrastructure.repository.AssignmentJpa;
 import io.bpmnrepo.backend.repository.api.transport.AssignmentTO;
+import io.bpmnrepo.backend.user.api.transport.UserInfoTO;
 import io.bpmnrepo.backend.user.domain.business.UserService;
+import io.bpmnrepo.backend.user.domain.mapper.UserMapper;
+import io.bpmnrepo.backend.user.domain.model.User;
+import io.bpmnrepo.backend.user.infrastructure.entity.UserEntity;
+import io.bpmnrepo.backend.user.infrastructure.repository.UserJpa;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,9 +30,11 @@ import java.util.stream.Collectors;
 public class AssignmentService {
 
     private final AssignmentJpa assignmentJpa;
+    private final UserJpa userJpa;
     private final AuthService authService;
     private final UserService userService;
     private final AssignmentMapper mapper;
+    private final UserMapper userMapper;
     private final BpmnRepositoryService bpmnRepositoryService;
 
 
@@ -35,9 +42,10 @@ public class AssignmentService {
         this.authService.checkIfOperationIsAllowed(assignmentWithUserNameTO.getBpmnRepositoryId(), RoleEnum.ADMIN);
         String newAssignmentUserId = this.userService.getUserIdByUsername(assignmentWithUserNameTO.getUserName());
         String bpmnRepositoryId = assignmentWithUserNameTO.getBpmnRepositoryId();
+        String username = assignmentWithUserNameTO.getUserName();
 
         RoleEnum newRole = assignmentWithUserNameTO.getRoleEnum();
-        AssignmentTO assignmentTO = new AssignmentTO(bpmnRepositoryId, newAssignmentUserId, newRole);
+        AssignmentTO assignmentTO = new AssignmentTO(bpmnRepositoryId, newAssignmentUserId, username, newRole);
         AssignmentEntity assignmentEntity = assignmentJpa.findByAssignmentId_BpmnRepositoryIdAndAssignmentId_UserId(assignmentTO.getBpmnRepositoryId(), newAssignmentUserId);
         if(assignmentEntity == null){
             createAssignment(assignmentTO);
@@ -89,10 +97,13 @@ public class AssignmentService {
 
 
     public void createInitialAssignment(String bpmnRepositoryId){
-        String currentUser = this.userService.getUserIdOfCurrentUser();
-        AssignmentTO assignmentTO = new AssignmentTO(bpmnRepositoryId, currentUser, RoleEnum.OWNER);
+        String currentUserId = this.userService.getUserIdOfCurrentUser();
+        UserEntity currentUserEntity = this.userJpa.findByUserIdEquals(currentUserId);
+        User currentUser = this.userMapper.toModel(currentUserEntity);
+        String currentUserName = currentUser.getUserName();
+        AssignmentTO assignmentTO = new AssignmentTO(bpmnRepositoryId, currentUserId, currentUserName, RoleEnum.OWNER);
         Assignment assignment = new Assignment(assignmentTO);
-        AssignmentEntity assignmentEntity = this.mapper.toEntity(assignment, this.mapper.toEmbeddable(currentUser, bpmnRepositoryId));
+        AssignmentEntity assignmentEntity = this.mapper.toEntity(assignment, this.mapper.toEmbeddable(currentUserId, bpmnRepositoryId));
         this.assignmentJpa.save(assignmentEntity);
     }
 
@@ -112,6 +123,15 @@ public class AssignmentService {
     public RoleEnum getUserRole(String bpmnRepositoryId, String userId){
        AssignmentEntity assignmentEntity = this.getAssignmentEntity(bpmnRepositoryId, userId);
         return assignmentEntity.getRoleEnum();
+    }
+
+    public List<AssignmentTO> getAllAssignedUsers(String bpmnRepositoryId){
+        authService.checkIfOperationIsAllowed(bpmnRepositoryId, RoleEnum.MEMBER);
+        List<AssignmentEntity> assignments = assignmentJpa.findByAssignmentId_BpmnRepositoryId(bpmnRepositoryId);
+        List<AssignmentTO> assignedUsers = assignments.stream()
+                .map(assignmentEntity -> mapper.toTO(mapper.toModel(assignmentEntity)))
+                .collect(Collectors.toList());
+        return assignedUsers;
     }
 
 
@@ -142,7 +162,8 @@ public class AssignmentService {
 
 
     public void deleteAllByRepositoryId(String bpmnRepositoryId){
-        //Auth check in Facade
+        //Auth check in RepositoryFacade
+        //Is only called if the corresponding repository is deleted
         int deletedAssignments = this.assignmentJpa.deleteAllByAssignmentId_BpmnRepositoryId(bpmnRepositoryId);
         log.debug(String.format("Deleted Assignments for all %s users", deletedAssignments));
     }

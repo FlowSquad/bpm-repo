@@ -10,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.File;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -37,6 +38,9 @@ public class BpmnDiagramVersionTO {
     private SaveTypeEnum saveType;
 
     @NotEmpty
+    private LocalDateTime updatedDate;
+
+    @NotEmpty
     private String bpmnDiagramId;
 
     @NotEmpty
@@ -49,5 +53,6 @@ public class BpmnDiagramVersionTO {
         this.bpmnDiagramVersionComment = bpmnDiagramVersionUploadTO.getBpmnDiagramVersionComment();
         this.bpmnAsXML = bpmnDiagramVersionUploadTO.getBpmnAsXML();
         this.saveType = bpmnDiagramVersionUploadTO.getSaveType();
+        this.updatedDate = LocalDateTime.now();
     }
 }

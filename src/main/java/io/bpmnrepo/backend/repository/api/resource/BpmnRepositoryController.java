@@ -28,7 +28,6 @@ public class BpmnRepositoryController {
 
     private final BpmnRepositoryFacade bpmnRepositoryFacade;
 
-    private final UserService userService;
     /** Repo erstellen
      *
      * @param newBpmnRepositoryTO
@@ -37,7 +36,6 @@ public class BpmnRepositoryController {
     @PostMapping()
     @Operation(summary = "Create a new Repository")
     public ResponseEntity<Void> createRepository(@RequestBody @Valid final NewBpmnRepositoryTO newBpmnRepositoryTO){
-
         bpmnRepositoryFacade.createRepository(newBpmnRepositoryTO);
         return ResponseEntity.ok().build();
     }
@@ -78,7 +76,6 @@ public class BpmnRepositoryController {
     public ResponseEntity<BpmnRepositoryRequestTO> getSingleRepository(@PathVariable @NotBlank final String repositoryId){
         log.debug(String.format("Returning single repository with id %s", repositoryId));
         BpmnRepositoryRequestTO bpmnRepositoryRequestTO = this.bpmnRepositoryFacade.getSingleRepository(repositoryId);
-        log.debug(bpmnRepositoryRequestTO.getBpmnRepositoryName());
         return ResponseEntity.ok().body(bpmnRepositoryRequestTO);
     }
 
