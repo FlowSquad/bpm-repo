@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -46,5 +47,8 @@ public class DiagramVersionEntity {
     @Column(name = "bpmn_repository_id", nullable = false)
     private String repositoryId;
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "VERSION_ID")
+    private List<DeploymentEntity> deployments;
 
 }

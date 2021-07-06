@@ -65,7 +65,7 @@ public class DiagramVersionService {
                 .orElseThrow();
     }
 
-    private String saveToDb(final DiagramVersion bpmnDiagramVersion) {
+    public String saveToDb(final DiagramVersion bpmnDiagramVersion) {
         log.debug("Save diagram version " + bpmnDiagramVersion);
         final DiagramVersionEntity savedVersion = this.diagramVersionJpaRepository.save(this.mapper.mapToEntity(bpmnDiagramVersion));
         return (savedVersion.getId());
@@ -80,7 +80,6 @@ public class DiagramVersionService {
         final int deletedVersions = this.diagramVersionJpaRepository.deleteAllByRepositoryId(repositoryId);
         log.debug(String.format("Deleted %s versions", deletedVersions));
     }
-    
 
     public void deleteAutosavedVersions(final String bpmnRepositoryId, final String bpmnDiagramId) {
         this.diagramVersionJpaRepository.deleteAllByRepositoryIdAndDiagramIdAndSaveType(bpmnRepositoryId, bpmnDiagramId, SaveTypeEnum.AUTOSAVE);

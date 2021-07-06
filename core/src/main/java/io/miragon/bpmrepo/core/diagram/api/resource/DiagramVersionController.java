@@ -31,7 +31,6 @@ import java.util.List;
 public class DiagramVersionController {
 
     private final DiagramVersionFacade diagramVersionFacade;
-
     private final DiagramVersionApiMapper apiMapper;
 
     /**
@@ -85,14 +84,13 @@ public class DiagramVersionController {
      * @return
      */
     @GetMapping("/{diagramId}/{versionId}")
-    public ResponseEntity<DiagramVersionTO> getSingleVersion(
+    public ResponseEntity<DiagramVersionTO> getVersion(
             @PathVariable @NotBlank final String diagramId,
             @PathVariable @NotBlank final String versionId) {
         log.debug("Returning single Version");
         final DiagramVersion version = this.diagramVersionFacade.getVersion(diagramId, versionId);
         return ResponseEntity.ok(this.apiMapper.mapToTO(version));
     }
-
 
     /**
      * Download a specific version
