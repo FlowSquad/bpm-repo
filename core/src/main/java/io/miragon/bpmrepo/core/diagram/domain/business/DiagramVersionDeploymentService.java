@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -28,6 +30,10 @@ public class DiagramVersionDeploymentService {
         this.deploymentPlugin.deploy(diagram.getName(), version.getXml(), target);
         version.deploy(target, user);
         this.diagramVersionService.saveToDb(version);
+    }
+
+    public List<String> getDeploymentTargets() {
+        return this.deploymentPlugin.getDeploymentTargets();
     }
 
 }
