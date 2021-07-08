@@ -1,7 +1,7 @@
-package io.miragon.bpmnrepo.spring.boot.starter;
+package io.miragon.bpmrepo.spring.boot.starter;
 
-import io.miragon.bpmnrepo.spring.boot.starter.diagram.DefaultDeploymentPlugin;
 import io.miragon.bpmrepo.core.diagram.domain.plugin.DeploymentPlugin;
+import io.miragon.bpmrepo.spring.boot.starter.diagram.DefaultDeploymentPlugin;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
