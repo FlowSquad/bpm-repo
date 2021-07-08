@@ -33,7 +33,6 @@ public class DiagramVersionService {
     }
 
     public String createInitialVersion(final DiagramVersion diagramVersion) {
-        diagramVersion.initXml();
         diagramVersion.updateMilestone(1);
         return this.saveToDb(diagramVersion);
     }
