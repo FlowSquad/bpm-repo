@@ -18,7 +18,6 @@ import lombok.val;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Timer;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -35,8 +34,6 @@ public class DiagramFacade {
 
     private final AssignmentService assignmentService;
     private final RepositoryService repositoryService;
-    private static final Timer timer = new Timer();
-    private final boolean timerActive = false;
 
     public Diagram createDiagram(final String repositoryId, final Diagram diagram) {
         this.authService.checkIfOperationIsAllowed(repositoryId, RoleEnum.MEMBER);
@@ -46,7 +43,6 @@ public class DiagramFacade {
         this.repositoryService.updateExistingDiagrams(repositoryId, existingDiagrams);
         log.debug("Diagram created");
         return result;
-
     }
 
     public Diagram updateDiagram(final String diagramId, final DiagramUpdate diagramUpdate) {
@@ -116,7 +112,6 @@ public class DiagramFacade {
         this.lockService.checkIfVersionIsUnlockedOrLockedByActiveUser(diagram);
         this.diagramService.lockDiagram(diagramId, this.userService.getCurrentUser().getUsername());
     }
-
 
     public void unlockDiagram(final String diagramId) {
         final Diagram diagram = this.diagramService.getDiagramById(diagramId);

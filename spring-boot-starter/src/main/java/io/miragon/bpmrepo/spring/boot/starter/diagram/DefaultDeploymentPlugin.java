@@ -1,4 +1,4 @@
-package io.miragon.bpmnrepo.spring.boot.starter.diagram;
+package io.miragon.bpmrepo.spring.boot.starter.diagram;
 
 import io.miragon.bpmrepo.core.diagram.domain.plugin.DeploymentPlugin;
 import lombok.extern.slf4j.Slf4j;
