@@ -9,7 +9,7 @@ import javax.validation.constraints.NotEmpty;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeplyomentTO {
+public class DeploymentTO {
 
     @NotEmpty
     private String target;

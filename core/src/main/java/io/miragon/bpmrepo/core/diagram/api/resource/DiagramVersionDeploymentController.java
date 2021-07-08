@@ -1,6 +1,6 @@
 package io.miragon.bpmrepo.core.diagram.api.resource;
 
-import io.miragon.bpmrepo.core.diagram.api.transport.DeplyomentTO;
+import io.miragon.bpmrepo.core.diagram.api.transport.DeploymentTO;
 import io.miragon.bpmrepo.core.diagram.domain.business.DiagramVersionDeploymentService;
 import io.miragon.bpmrepo.core.security.UserContext;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,7 +31,7 @@ public class DiagramVersionDeploymentController {
     public ResponseEntity<Void> deployVersion(
             @PathVariable final String diagramId,
             @PathVariable final String versionId,
-            @RequestBody final DeplyomentTO deplyoment) {
+            @RequestBody final DeploymentTO deplyoment) {
         this.deploymentService.deploy(diagramId, versionId, deplyoment.getTarget(), this.userContext.getUserName());
         return ResponseEntity.ok().build();
 
