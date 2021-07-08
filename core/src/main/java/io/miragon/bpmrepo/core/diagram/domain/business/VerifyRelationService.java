@@ -13,6 +13,6 @@ public class VerifyRelationService {
 
     public boolean checkIfVersionIsInitialVersion(final String diagramId) {
         return this.diagramVersionJpaRepository
-                .findFirstByDiagramIdOrderByReleaseDescMilestoneDesc(diagramId).isEmpty();
+                .findFirstByDiagramIdOrderByMilestoneDesc(diagramId).isEmpty();
     }
 }

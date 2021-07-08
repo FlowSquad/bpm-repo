@@ -27,8 +27,6 @@ public class DiagramVersion {
 
     private final String repositoryId;
 
-    private Integer release;
-
     private Integer milestone;
 
     private String xml;
@@ -43,9 +41,7 @@ public class DiagramVersion {
         if (StringUtils.isNotBlank((diagramVersion.getComment()))) {
             this.comment = diagramVersion.getComment();
         }
-
-        this.release = this.generateReleaseNumber(diagramVersion);
-        this.milestone = this.generateMilestoneNumber(diagramVersion);
+        this.milestone++;
         this.xml = diagramVersion.getXml();
         this.updatedDate = LocalDateTime.now();
     }
@@ -91,56 +87,11 @@ public class DiagramVersion {
                 + "</bpmn:definitions>\n";
     }
 
-    public void updateRelease(final Integer release) {
-        this.release = release;
-    }
 
     public void updateMilestone(final Integer milestone) {
         this.milestone = milestone;
     }
 
-    public Integer generateReleaseNumber(final DiagramVersion diagramVersion) {
-        log.warn("Generating Release Number");
-        if (diagramVersion.getSaveType() != null) {
-            if (diagramVersion.getSaveType().equals(SaveTypeEnum.RELEASE)) {
-                if (diagramVersion.getRelease() != null) {
-                    return diagramVersion.getRelease() + 1;
-                } else {
-                    return 1;
-                }
-            } else {
-                if (diagramVersion.getRelease() != null) {
-                    return diagramVersion.getRelease();
-                } else {
-                    return 1;
-                }
-            }
-        } else {
-            return 1;
-        }
-    }
-
-    public Integer generateMilestoneNumber(final DiagramVersion diagramVersion) {
-        if (diagramVersion.getSaveType() != null) {
-            if (diagramVersion.getSaveType().equals(SaveTypeEnum.AUTOSAVE)) {
-                if (diagramVersion.getMilestone() != null) {
-                    return diagramVersion.getMilestone();
-                } else {
-                    return 0;
-                }
-            }
-            if (diagramVersion.getSaveType().equals(SaveTypeEnum.MILESTONE)) {
-                if (diagramVersion.getMilestone() != null) {
-                    return diagramVersion.getMilestone() + 1;
-                }
-            } else {
-                return 0;
-            }
-        } else {
-            return 0;
-        }
-        return 0;
-    }
 
     public void deploy(final String target, final String user) {
         final Deployment deployment = Deployment.builder()

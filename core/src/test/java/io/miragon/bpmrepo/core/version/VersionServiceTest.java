@@ -38,8 +38,7 @@ public class VersionServiceTest {
     private static final String REPOID = "01";
     private static final String COMMENT = "VersionComment";
     private static final String FILESTRING = "somexmlString";
-    private static final Integer RELEASE = 1;
-    private static final Integer MILESTONE = 0;
+    private static final Integer MILESTONE = 1;
     private static final SaveTypeEnum SAVETYPE = SaveTypeEnum.AUTOSAVE;
 
     private static LocalDateTime DATE;
@@ -52,48 +51,47 @@ public class VersionServiceTest {
     @Test
     public void updateVersion() {
         final DiagramVersionEntity diagramVersionEntity = VersionBuilder
-                .buildVersionEntity(VERSIONID, DIAGRAMID, REPOID, COMMENT, RELEASE, MILESTONE, FILESTRING, SAVETYPE);
+                .buildVersionEntity(VERSIONID, DIAGRAMID, REPOID, COMMENT, MILESTONE, FILESTRING, SAVETYPE);
         final DiagramVersion diagramVersion = VersionBuilder
-                .buildVersion(VERSIONID, DIAGRAMID, REPOID, COMMENT, RELEASE, MILESTONE, FILESTRING, SAVETYPE);
+                .buildVersion(VERSIONID, DIAGRAMID, REPOID, COMMENT, MILESTONE, FILESTRING, SAVETYPE);
         final DiagramVersion diagramVersionUpdate = VersionBuilder
-                .buildVersion(VERSIONID, DIAGRAMID, REPOID, COMMENT, RELEASE, MILESTONE, FILESTRING, SAVETYPE);
+                .buildVersion(VERSIONID, DIAGRAMID, REPOID, COMMENT, MILESTONE, FILESTRING, SAVETYPE);
 
         final ArgumentCaptor<DiagramVersionEntity> captor = ArgumentCaptor.forClass(DiagramVersionEntity.class);
-        when(this.diagramVersionJpaRepository.findFirstByDiagramIdOrderByReleaseDescMilestoneDesc(DIAGRAMID))
+        when(this.diagramVersionJpaRepository.findFirstByDiagramIdOrderByMilestoneDesc(DIAGRAMID))
                 .thenReturn(Optional.of(diagramVersionEntity));
         when(this.mapper.mapToModel(diagramVersionEntity)).thenReturn(diagramVersion);
         when(this.mapper.mapToEntity(diagramVersion)).thenReturn(diagramVersionEntity);
         when(this.diagramVersionJpaRepository
-                .findFirstByDiagramIdAndRepositoryIdOrderByReleaseDescMilestoneDesc(DIAGRAMID, REPOID))
+                .findFirstByDiagramIdAndRepositoryIdOrderByMilestoneDesc(DIAGRAMID, REPOID))
                 .thenReturn(diagramVersionEntity);
         when(this.diagramVersionJpaRepository.save(any())).thenReturn(diagramVersionEntity);
 
         this.bpmnDiagramVersionService.updateVersion(diagramVersionUpdate);
-        verify(this.diagramVersionJpaRepository, times(1)).findFirstByDiagramIdOrderByReleaseDescMilestoneDesc(DIAGRAMID);
+        verify(this.diagramVersionJpaRepository, times(1)).findFirstByDiagramIdOrderByMilestoneDesc(DIAGRAMID);
         verify(this.mapper, times(1)).mapToModel(diagramVersionEntity);
         verify(this.diagramVersionJpaRepository, times(1)).save(captor.capture());
         verify(this.diagramVersionJpaRepository, times(1))
-                .findFirstByDiagramIdOrderByReleaseDescMilestoneDesc(DIAGRAMID);
+                .findFirstByDiagramIdOrderByMilestoneDesc(DIAGRAMID);
 
         final DiagramVersionEntity savedVersionEntity = captor.getValue();
         assertNotNull(savedVersionEntity);
         assertEquals(savedVersionEntity.getXml(), FILESTRING);
-        assertEquals(savedVersionEntity.getRelease(), RELEASE);
     }
 
     @Test
     @Disabled
     public void createInitialVersion() {
         final DiagramVersionEntity diagramVersionEntity = VersionBuilder
-                .buildVersionEntity(VERSIONID, DIAGRAMID, REPOID, COMMENT, RELEASE, MILESTONE, FILESTRING, SAVETYPE);
+                .buildVersionEntity(VERSIONID, DIAGRAMID, REPOID, COMMENT, MILESTONE, FILESTRING, SAVETYPE);
         final DiagramVersion diagramVersion = VersionBuilder
-                .buildVersion(VERSIONID, DIAGRAMID, REPOID, COMMENT, RELEASE, MILESTONE, FILESTRING, SAVETYPE);
+                .buildVersion(VERSIONID, DIAGRAMID, REPOID, COMMENT, MILESTONE, FILESTRING, SAVETYPE);
         final DiagramVersion diagramVersionCreation = VersionBuilder
-                .buildVersion(VERSIONID, DIAGRAMID, REPOID, COMMENT, RELEASE, MILESTONE, FILESTRING, SAVETYPE);
+                .buildVersion(VERSIONID, DIAGRAMID, REPOID, COMMENT, MILESTONE, FILESTRING, SAVETYPE);
 
         when(this.mapper.mapToEntity(diagramVersion)).thenReturn(diagramVersionEntity);
         when(this.diagramVersionJpaRepository
-                .findFirstByDiagramIdAndRepositoryIdOrderByReleaseDescMilestoneDesc(DIAGRAMID, REPOID))
+                .findFirstByDiagramIdAndRepositoryIdOrderByMilestoneDesc(DIAGRAMID, REPOID))
                 .thenReturn(diagramVersionEntity);
 
         this.bpmnDiagramVersionService.createInitialVersion(diagramVersionCreation);

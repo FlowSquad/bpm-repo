@@ -20,9 +20,9 @@ public interface DiagramVersionJpaRepository extends JpaRepository<DiagramVersio
 
     List<DiagramVersionEntity> findAllByDiagramId(String bpmnDiagramId);
 
-    Optional<DiagramVersionEntity> findFirstByDiagramIdOrderByReleaseDescMilestoneDesc(String bpmnDiagramId);
+    Optional<DiagramVersionEntity> findFirstByDiagramIdOrderByMilestoneDesc(String bpmnDiagramId);
 
-    DiagramVersionEntity findFirstByDiagramIdAndRepositoryIdOrderByReleaseDescMilestoneDesc(String bpmnDiagramId, String bpmnRepositoryId);
+    DiagramVersionEntity findFirstByDiagramIdAndRepositoryIdOrderByMilestoneDesc(String bpmnDiagramId, String bpmnRepositoryId);
 
     int deleteAllByRepositoryId(String bpmnRepositoryId);
 

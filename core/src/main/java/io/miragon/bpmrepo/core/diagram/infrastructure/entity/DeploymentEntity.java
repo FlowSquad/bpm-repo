@@ -14,22 +14,22 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "Deployment")
+@Entity(name = "Version_Deployment")
 public class DeploymentEntity {
 
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(name = "deployment_id", unique = true, nullable = false, updatable = false, length = 36)
+    @Column(name = "deployment_id_", unique = true, nullable = false, updatable = false, length = 36)
     private String id;
 
-    @Column(name = "target")
+    @Column(name = "target_")
     private String target;
 
-    @Column(name = "user")
+    @Column(name = "user_")
     private String user;
 
-    @Column(name = "timestamp")
+    @Column(name = "timestamp_")
     private LocalDateTime timestamp;
 
 }

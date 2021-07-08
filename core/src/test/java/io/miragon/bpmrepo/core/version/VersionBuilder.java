@@ -9,14 +9,13 @@ import io.miragon.bpmrepo.core.diagram.infrastructure.entity.DiagramVersionEntit
 public class VersionBuilder {
 
     public static DiagramVersion buildVersion(final String versionId, final String diagramId, final String repoId, final String comment,
-            final Integer release, final Integer milestone,
-            final String file, final SaveTypeEnum saveTypeEnum) {
+                                              final Integer milestone,
+                                              final String file, final SaveTypeEnum saveTypeEnum) {
         return DiagramVersion.builder()
                 .id(versionId)
                 .diagramId(diagramId)
                 .repositoryId(repoId)
                 .comment(comment)
-                .release(release)
                 .milestone(milestone)
                 .xml(file)
                 .saveType(saveTypeEnum)
@@ -24,14 +23,13 @@ public class VersionBuilder {
     }
 
     public static DiagramVersionTO buildVersionTO(final String versionId, final String diagramId, final String repoId, final String comment,
-            final Integer release, final Integer milestone,
-            final String file, final SaveTypeEnum saveTypeEnum) {
+                                                  final Integer milestone,
+                                                  final String file, final SaveTypeEnum saveTypeEnum) {
         return DiagramVersionTO.builder()
                 .id(versionId)
                 .diagramId(diagramId)
                 .repositoryId(repoId)
                 .comment(comment)
-                .release(release)
                 .milestone(milestone)
                 .xml(file)
                 .saveType(saveTypeEnum)
@@ -39,14 +37,13 @@ public class VersionBuilder {
     }
 
     public static DiagramVersionEntity buildVersionEntity(
-            final String versionId, final String diagramId, final String repoId, final String comment, final Integer release,
+            final String versionId, final String diagramId, final String repoId, final String comment,
             final Integer milestone, final String file, final SaveTypeEnum saveTypeEnum) {
         return DiagramVersionEntity.builder()
                 .id(versionId)
                 .diagramId(diagramId)
                 .repositoryId(repoId)
                 .comment(comment)
-                .release(release)
                 .milestone(milestone)
                 .xml(file)
                 .saveType(saveTypeEnum)

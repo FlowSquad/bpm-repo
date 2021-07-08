@@ -115,8 +115,6 @@ public class DiagramFacade {
         this.authService.checkIfOperationIsAllowed(diagram.getRepositoryId(), RoleEnum.MEMBER);
         this.lockService.checkIfVersionIsUnlockedOrLockedByActiveUser(diagram);
         this.diagramService.lockDiagram(diagramId, this.userService.getCurrentUser().getUsername());
-        this.diagramService.lockDiagram(diagramId, this.userService.getCurrentUser().getUsername());
-
     }
 
 

@@ -6,6 +6,7 @@ import io.miragon.bpmrepo.core.diagram.api.transport.DiagramVersionUploadTO;
 import io.miragon.bpmrepo.core.diagram.domain.facade.DiagramVersionFacade;
 import io.miragon.bpmrepo.core.diagram.domain.model.DiagramVersion;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -27,6 +28,7 @@ import java.util.List;
 @Transactional
 @Validated
 @RequiredArgsConstructor
+@Tag(name = "Version")
 @RequestMapping("api/version")
 public class DiagramVersionController {
 

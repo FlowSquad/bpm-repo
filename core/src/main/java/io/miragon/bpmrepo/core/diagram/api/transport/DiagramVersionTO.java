@@ -21,9 +21,6 @@ public class DiagramVersionTO {
     private String comment;
 
     @Nullable
-    private Integer release;
-
-    @Nullable
     private Integer milestone;
 
     @NotEmpty

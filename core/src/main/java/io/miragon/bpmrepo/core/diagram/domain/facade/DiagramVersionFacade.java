@@ -66,13 +66,13 @@ public class DiagramVersionFacade {
         this.lockService.checkIfVersionIsLockedByActiveUser(diagram.getLockedBy());
         final String bpmnDiagramVersionId = this.diagramVersionService.createNewVersion(diagramVersion);
         this.diagramService.updateUpdatedDate(diagramId);
-        this.deleteAutosavedVersionsIfReleaseOrMilestoneIsSaved(diagram.getRepositoryId(), diagramId, diagramVersionUpload.getSaveType());
+        this.deleteAutosavedVersionsIfMilestoneIsSaved(diagram.getRepositoryId(), diagramId, diagramVersionUpload.getSaveType());
         return bpmnDiagramVersionId;
     }
 
     //simply deletes all entities that contain the SaveType "AUTOSAVE"
-    private void deleteAutosavedVersionsIfReleaseOrMilestoneIsSaved(final String bpmnRepositoryId, final String bpmnDiagramId,
-                                                                    final SaveTypeEnum saveTypeEnum) {
+    private void deleteAutosavedVersionsIfMilestoneIsSaved(final String bpmnRepositoryId, final String bpmnDiagramId,
+                                                           final SaveTypeEnum saveTypeEnum) {
         if (saveTypeEnum.equals(SaveTypeEnum.AUTOSAVE)) {
             this.diagramVersionService.deleteAutosavedVersions(bpmnRepositoryId, bpmnDiagramId);
         }

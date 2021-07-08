@@ -25,9 +25,6 @@ public class DiagramVersionEntity {
     @Column(name = "version_comment")
     private String comment;
 
-    @Column(name = "version_release", nullable = false)
-    private Integer release;
-
     @Column(name = "version_milestone", nullable = false)
     private Integer milestone;
 
@@ -47,8 +44,8 @@ public class DiagramVersionEntity {
     @Column(name = "bpmn_repository_id", nullable = false)
     private String repositoryId;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "VERSION_ID")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "version_id")
     private List<DeploymentEntity> deployments;
 
 }

@@ -28,22 +28,13 @@ public class DiagramVersionService {
 
     public String createNewVersion(final DiagramVersion diagramVersion) {
         final DiagramVersion latestVersion = this.getLatestVersion(diagramVersion.getDiagramId());
-        if (diagramVersion.getSaveType() == SaveTypeEnum.RELEASE) {
-            diagramVersion.updateRelease(latestVersion.getRelease() + 1);
-            diagramVersion.updateMilestone(0);
-        }
-        if (diagramVersion.getSaveType() == SaveTypeEnum.MILESTONE) {
-            diagramVersion.updateRelease(latestVersion.getRelease());
-            diagramVersion.updateMilestone(latestVersion.getMilestone() + 1);
-
-        }
+        diagramVersion.updateMilestone(latestVersion.getMilestone() + 1);
         return this.saveToDb(diagramVersion);
     }
 
     public String createInitialVersion(final DiagramVersion diagramVersion) {
         diagramVersion.initXml();
-        diagramVersion.updateRelease(1);
-        diagramVersion.updateMilestone(0);
+        diagramVersion.updateMilestone(1);
         return this.saveToDb(diagramVersion);
     }
 
@@ -54,7 +45,7 @@ public class DiagramVersionService {
 
     public DiagramVersion getLatestVersion(final String diagramId) {
         return this.diagramVersionJpaRepository
-                .findFirstByDiagramIdOrderByReleaseDescMilestoneDesc(diagramId)
+                .findFirstByDiagramIdOrderByMilestoneDesc(diagramId)
                 .map(this.mapper::mapToModel)
                 .orElseThrow();
     }

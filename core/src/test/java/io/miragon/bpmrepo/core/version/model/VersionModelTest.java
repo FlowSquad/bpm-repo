@@ -16,39 +16,25 @@ public class VersionModelTest {
     private static final String DIAGRAMID = "001";
     private static final String VERSIONID = "v-01";
     private static final String FILESTRING = "somexmlString";
-    private static final Integer RELEASE = 1;
     private static final Integer MILESTONE = 2;
     private static final String COMMENT = "versionComment";
     private static final String UPDATEDCOMMENT = "new comment";
-    private static final SaveTypeEnum saveTypeRelease = SaveTypeEnum.RELEASE;
     private static final SaveTypeEnum saveTypeMileStone = SaveTypeEnum.MILESTONE;
 
     @Test
     @Disabled
     public void updateVersion() {
         final DiagramVersion version = VersionBuilder
-                .buildVersion(VERSIONID, DIAGRAMID, REPOID, COMMENT, RELEASE, MILESTONE, FILESTRING, saveTypeMileStone);
+                .buildVersion(VERSIONID, DIAGRAMID, REPOID, COMMENT, MILESTONE, FILESTRING, saveTypeMileStone);
         final DiagramVersion diagramVersionUpdate = VersionBuilder
-                .buildVersion(VERSIONID, DIAGRAMID, REPOID, UPDATEDCOMMENT, RELEASE, MILESTONE, FILESTRING, saveTypeMileStone);
+                .buildVersion(VERSIONID, DIAGRAMID, REPOID, UPDATEDCOMMENT, MILESTONE, FILESTRING, saveTypeMileStone);
 
         //first update: MILESTONE - check version numbers
         version.updateVersion(diagramVersionUpdate);
-        assertEquals(version.getRelease(), RELEASE);
         assertEquals(version.getMilestone(), MILESTONE + 1);
         //second update: MILESTONE - check version numbers
         version.updateVersion(diagramVersionUpdate);
-        assertEquals(version.getRelease(), RELEASE);
-        assertEquals(version.getMilestone(), MILESTONE + 3);
-
-        final DiagramVersion newVersion = VersionBuilder
-                .buildVersion(VERSIONID, DIAGRAMID, REPOID, null, RELEASE, MILESTONE, FILESTRING, saveTypeRelease);
-
-        //third update: RELEASE - check version numbers and if the old comment has been adopted
-        version.updateVersion(newVersion);
-        assertEquals(RELEASE + 1, version.getRelease());
-        assertEquals(0, version.getMilestone());
-        assertEquals(UPDATEDCOMMENT, version.getComment());
-
+        assertEquals(version.getMilestone(), MILESTONE + 2);
     }
 
 }
