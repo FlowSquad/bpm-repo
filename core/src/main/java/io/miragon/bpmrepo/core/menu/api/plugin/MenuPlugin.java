@@ -7,4 +7,5 @@ import java.util.List;
 public interface MenuPlugin {
 
     List<MenuItemTO> getMenuItems();
+
 }
