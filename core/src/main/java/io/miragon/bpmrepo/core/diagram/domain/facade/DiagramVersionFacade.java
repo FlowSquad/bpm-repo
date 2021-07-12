@@ -55,7 +55,7 @@ public class DiagramVersionFacade {
 
         //Update current version
         if (diagramVersionUpload.getSaveType() == SaveTypeEnum.AUTOSAVE) {
-            this.lockService.checkIfVersionIsLockedByActiveUser(diagram.getLockedBy());
+            this.lockService.checkIfVersionIsUnlockedOrLockedByActiveUser(diagram);
             final String bpmnDiagramVersionId = this.diagramVersionService.updateVersion(diagramVersion);
             //refresh the updated date in diagramEntity
             this.diagramService.updateUpdatedDate(diagramId);
@@ -63,7 +63,8 @@ public class DiagramVersionFacade {
         }
 
         //Create new Version
-        this.lockService.checkIfVersionIsLockedByActiveUser(diagram.getLockedBy());
+        log.warn("Creating new version");
+        this.lockService.checkIfVersionIsUnlockedOrLockedByActiveUser(diagram);
         final String bpmnDiagramVersionId = this.diagramVersionService.createNewVersion(diagramVersion);
         this.diagramService.updateUpdatedDate(diagramId);
         this.deleteAutosavedVersionsIfMilestoneIsSaved(diagram.getRepositoryId(), diagramId, diagramVersionUpload.getSaveType());
