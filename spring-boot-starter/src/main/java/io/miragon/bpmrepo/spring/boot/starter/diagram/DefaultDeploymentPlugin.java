@@ -3,7 +3,7 @@ package io.miragon.bpmrepo.spring.boot.starter.diagram;
 import io.miragon.bpmrepo.core.diagram.domain.plugin.DeploymentPlugin;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -16,6 +16,11 @@ public class DefaultDeploymentPlugin implements DeploymentPlugin {
 
     @Override
     public List<String> getDeploymentTargets() {
-        return Collections.singletonList("Produktion");
+        final List<String> list = new ArrayList<>();
+        list.add("Produktion");
+        list.add("Review");
+        list.add("Management");
+        
+        return list;
     }
 }

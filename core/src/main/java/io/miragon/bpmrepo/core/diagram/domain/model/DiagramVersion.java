@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -35,7 +34,7 @@ public class DiagramVersion {
 
     private LocalDateTime updatedDate;
 
-    private final List<Deployment> deployments = new ArrayList<>();
+    private final List<Deployment> deployments;
 
     public void updateVersion(final DiagramVersion diagramVersion) {
         if (StringUtils.isNotBlank((diagramVersion.getComment()))) {

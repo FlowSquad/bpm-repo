@@ -31,8 +31,8 @@ public class DiagramVersionDeploymentController {
     public ResponseEntity<Void> deployVersion(
             @PathVariable final String diagramId,
             @PathVariable final String versionId,
-            @RequestBody final DeploymentTO deplyoment) {
-        this.deploymentService.deploy(diagramId, versionId, deplyoment.getTarget(), this.userContext.getUserName());
+            @RequestBody final DeploymentTO deployment) {
+        this.deploymentService.deploy(diagramId, versionId, deployment.getTarget());
         return ResponseEntity.ok().build();
 
     }
@@ -43,5 +43,6 @@ public class DiagramVersionDeploymentController {
         final List<String> deploymentTargets = this.deploymentService.getDeploymentTargets();
         return ResponseEntity.ok(deploymentTargets);
     }
+
 
 }

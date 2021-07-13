@@ -2,10 +2,13 @@ package io.miragon.bpmrepo.core.diagram.api.transport;
 
 import com.sun.istack.Nullable;
 import io.miragon.bpmrepo.core.diagram.domain.enums.SaveTypeEnum;
+import io.miragon.bpmrepo.core.diagram.domain.model.Deployment;
 import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -37,5 +40,9 @@ public class DiagramVersionTO {
 
     @NotEmpty
     private String repositoryId;
+
+    @Nullable
+    private List<Deployment> deployments = new ArrayList<>();
+
 
 }
