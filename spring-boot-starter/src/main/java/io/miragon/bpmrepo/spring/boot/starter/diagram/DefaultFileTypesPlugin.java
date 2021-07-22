@@ -1,7 +1,7 @@
-package io.miragon.bpmrepo.spring.boot.starter.diagram;
+package io.miragon.bpmrepo.spring.boot.starter.artifact;
 
-import io.miragon.bpmrepo.core.diagram.api.plugin.FileTypesPlugin;
-import io.miragon.bpmrepo.core.diagram.api.transport.FileTypesTO;
+import io.miragon.bpmrepo.core.artifact.api.plugin.FileTypesPlugin;
+import io.miragon.bpmrepo.core.artifact.api.transport.FileTypesTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,7 @@ public class DefaultFileTypesPlugin implements FileTypesPlugin {
                         "    \"    </bpmn:endEvent>\\n\" +\n" +
                         "    \"    <bpmn:sequenceFlow id=\\\"Flow_0r4po2g\\\" sourceRef=\\\"Activity_0bawd4n\\\" targetRef=\\\"Event_0lxmzdr\\\" />\\n\" +\n" +
                         "    \"  </bpmn:process>\\n\" +\n" +
-                        "    \"  <bpmndi:BPMNDiagram id=\\\"BPMNDiagram_1\\\">\\n\" +\n" +
+                        "    \"  <bpmndi:BPMNArtifact id=\\\"BPMNArtifact_1\\\">\\n\" +\n" +
                         "    \"    <bpmndi:BPMNPlane id=\\\"BPMNPlane_1\\\" bpmnElement=\\\"Process_0lx73aq\\\">\\n\" +\n" +
                         "    \"      <bpmndi:BPMNEdge id=\\\"Flow_0by8zp2_di\\\" bpmnElement=\\\"Flow_0by8zp2\\\">\\n\" +\n" +
                         "    \"        <di:waypoint x=\\\"215\\\" y=\\\"117\\\" />\\n\" +\n" +
@@ -52,7 +52,7 @@ public class DefaultFileTypesPlugin implements FileTypesPlugin {
                         "    \"        <dc:Bounds x=\\\"432\\\" y=\\\"99\\\" width=\\\"36\\\" height=\\\"36\\\" />\\n\" +\n" +
                         "    \"      </bpmndi:BPMNShape>\\n\" +\n" +
                         "    \"    </bpmndi:BPMNPlane>\\n\" +\n" +
-                        "    \"  </bpmndi:BPMNDiagram>\\n\" +\n" +
+                        "    \"  </bpmndi:BPMNArtifact>\\n\" +\n" +
                         "    \"</bpmn:definitions>\\n\"",
 
                 "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
@@ -77,11 +77,11 @@ public class DefaultFileTypesPlugin implements FileTypesPlugin {
                         "    + \"    </decisionTable>\\n\"\n" +
                         "    + \"  </decision>\\n\"\n" +
                         "    + \"  <dmndi:DMNDI>\\n\"\n" +
-                        "    + \"    <dmndi:DMNDiagram>\\n\"\n" +
+                        "    + \"    <dmndi:DMNArtifact>\\n\"\n" +
                         "    + \"      <dmndi:DMNShape dmnElementRef=\\\"Decision_07746u8\\\">\\n\"\n" +
                         "    + \"        <dc:Bounds height=\\\"80\\\" width=\\\"180\\\" x=\\\"100\\\" y=\\\"100\\\" />\\n\"\n" +
                         "    + \"      </dmndi:DMNShape>\\n\"\n" +
-                        "    + \"    </dmndi:DMNDiagram>\\n\"\n" +
+                        "    + \"    </dmndi:DMNArtifact>\\n\"\n" +
                         "    + \"  </dmndi:DMNDI>\\n\"\n" +
                         "    + \"</definitions>\\n\"",
 

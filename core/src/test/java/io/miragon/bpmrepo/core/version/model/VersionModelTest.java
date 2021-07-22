@@ -1,7 +1,7 @@
 package io.miragon.bpmrepo.core.version.model;
 
-import io.miragon.bpmrepo.core.diagram.domain.enums.SaveTypeEnum;
-import io.miragon.bpmrepo.core.diagram.domain.model.DiagramVersion;
+import io.miragon.bpmrepo.core.artifact.domain.enums.SaveTypeEnum;
+import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactVersion;
 import io.miragon.bpmrepo.core.version.VersionBuilder;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class VersionModelTest {
 
     private static final String REPOID = "42";
-    private static final String DIAGRAMID = "001";
+    private static final String artifactId = "001";
     private static final String VERSIONID = "v-01";
     private static final String FILESTRING = "somexmlString";
     private static final Integer MILESTONE = 2;
@@ -24,16 +24,16 @@ public class VersionModelTest {
     @Test
     @Disabled
     public void updateVersion() {
-        final DiagramVersion version = VersionBuilder
-                .buildVersion(VERSIONID, DIAGRAMID, REPOID, COMMENT, MILESTONE, FILESTRING, saveTypeMileStone);
-        final DiagramVersion diagramVersionUpdate = VersionBuilder
-                .buildVersion(VERSIONID, DIAGRAMID, REPOID, UPDATEDCOMMENT, MILESTONE, FILESTRING, saveTypeMileStone);
+        final ArtifactVersion version = VersionBuilder
+                .buildVersion(VERSIONID, artifactId, REPOID, COMMENT, MILESTONE, FILESTRING, saveTypeMileStone);
+        final ArtifactVersion artifactVersionUpdate = VersionBuilder
+                .buildVersion(VERSIONID, artifactId, REPOID, UPDATEDCOMMENT, MILESTONE, FILESTRING, saveTypeMileStone);
 
         //first update: MILESTONE - check version numbers
-        version.updateVersion(diagramVersionUpdate);
+        version.updateVersion(artifactVersionUpdate);
         assertEquals(version.getMilestone(), MILESTONE + 1);
         //second update: MILESTONE - check version numbers
-        version.updateVersion(diagramVersionUpdate);
+        version.updateVersion(artifactVersionUpdate);
         assertEquals(version.getMilestone(), MILESTONE + 2);
     }
 

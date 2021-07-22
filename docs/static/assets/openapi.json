@@ -12,7 +12,7 @@
           }
         }
       },
-      "DiagramSVGUploadTO": {
+      "ArtifactSVGUploadTO": {
         "type": "object",
         "required": [
           "svgPreview"
@@ -23,7 +23,7 @@
           }
         }
       },
-      "DiagramUpdateTO": {
+      "ArtifactUpdateTO": {
         "type": "object",
         "required": [
           "description",
@@ -44,7 +44,7 @@
           }
         }
       },
-      "DiagramVersionUploadTO": {
+      "ArtifactVersionUploadTO": {
         "type": "object",
         "properties": {
           "saveType": {
@@ -67,7 +67,7 @@
         "required": [
           "assignedUsers",
           "description",
-          "existingDiagrams",
+          "existingArtifacts",
           "id",
           "name"
         ],
@@ -78,7 +78,7 @@
           "description": {
             "type": "string"
           },
-          "existingDiagrams": {
+          "existingArtifacts": {
             "format": "int32",
             "type": "integer"
           },
@@ -106,7 +106,7 @@
           }
         }
       },
-      "DiagramTO": {
+      "ArtifactTO": {
         "type": "object",
         "required": [
           "description",
@@ -187,7 +187,7 @@
           }
         }
       },
-      "NewDiagramTO": {
+      "NewArtifactTO": {
         "type": "object",
         "required": [
           "description",
@@ -268,10 +268,10 @@
           }
         }
       },
-      "DiagramVersionTO": {
+      "ArtifactVersionTO": {
         "type": "object",
         "required": [
-          "diagramId",
+          "artifactId",
           "repositoryId",
           "saveType",
           "updatedDate",
@@ -289,7 +289,7 @@
             "format": "int32",
             "type": "integer"
           },
-          "diagramId": {
+          "artifactId": {
             "type": "string"
           },
           "xml": {
@@ -354,7 +354,7 @@
         ]
       }
     },
-    "/api/version/{diagramId}/all": {
+    "/api/version/{artifactId}/all": {
       "get": {
         "operationId": "getAllVersions",
         "responses": {
@@ -365,7 +365,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/DiagramVersionTO"
+                    "$ref": "#/components/schemas/ArtifactVersionTO"
                   }
                 }
               }
@@ -378,7 +378,7 @@
               "type": "string"
             },
             "in": "path",
-            "name": "diagramId",
+            "name": "artifactId",
             "required": true
           }
         ],
@@ -537,7 +537,7 @@
         ]
       }
     },
-    "/api/diagram/starred": {
+    "/api/artifact/starred": {
       "get": {
         "operationId": "getStarred",
         "responses": {
@@ -548,7 +548,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/DiagramTO"
+                    "$ref": "#/components/schemas/ArtifactTO"
                   }
                 }
               }
@@ -556,30 +556,30 @@
           }
         },
         "tags": [
-          "Diagram"
+          "Artifact"
         ]
       }
     },
-    "/api/diagram/{repositoryId}": {
+    "/api/artifact/{repositoryId}": {
       "post": {
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewDiagramTO"
+                "$ref": "#/components/schemas/NewArtifactTO"
               }
             }
           },
           "required": true
         },
-        "operationId": "createDiagram",
+        "operationId": "createArtifact",
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/DiagramTO"
+                  "$ref": "#/components/schemas/ArtifactTO"
                 }
               }
             }
@@ -596,7 +596,7 @@
           }
         ],
         "tags": [
-          "Diagram"
+          "Artifact"
         ]
       }
     },
@@ -623,13 +623,13 @@
         ]
       }
     },
-    "/api/diagram/previewSVG/{diagramId}": {
+    "/api/artifact/previewSVG/{artifactId}": {
       "post": {
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DiagramSVGUploadTO"
+                "$ref": "#/components/schemas/ArtifactSVGUploadTO"
               }
             }
           },
@@ -647,16 +647,16 @@
               "type": "string"
             },
             "in": "path",
-            "name": "diagramId",
+            "name": "artifactId",
             "required": true
           }
         ],
         "tags": [
-          "Diagram"
+          "Artifact"
         ]
       }
     },
-    "/api/version/{diagramId}/{versionId}/download": {
+    "/api/version/{artifactId}/{versionId}/download": {
       "get": {
         "operationId": "downloadVersion",
         "responses": {
@@ -678,7 +678,7 @@
               "type": "string"
             },
             "in": "path",
-            "name": "diagramId",
+            "name": "artifactId",
             "required": true
           },
           {
@@ -695,7 +695,7 @@
         ]
       }
     },
-    "/api/version/{diagramId}/{versionId}": {
+    "/api/version/{artifactId}/{versionId}": {
       "get": {
         "operationId": "getVersion",
         "responses": {
@@ -704,7 +704,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/DiagramVersionTO"
+                  "$ref": "#/components/schemas/ArtifactVersionTO"
                 }
               }
             }
@@ -716,7 +716,7 @@
               "type": "string"
             },
             "in": "path",
-            "name": "diagramId",
+            "name": "artifactId",
             "required": true
           },
           {
@@ -733,9 +733,9 @@
         ]
       }
     },
-    "/api/diagram/{diagramId}/unlock": {
+    "/api/artifact/{artifactId}/unlock": {
       "post": {
-        "operationId": "unlockDiagram",
+        "operationId": "unlockArtifact",
         "responses": {
           "200": {
             "description": "OK"
@@ -747,25 +747,25 @@
               "type": "string"
             },
             "in": "path",
-            "name": "diagramId",
+            "name": "artifactId",
             "required": true
           }
         ],
         "tags": [
-          "Diagram"
+          "Artifact"
         ]
       }
     },
-    "/api/diagram/{diagramId}": {
+    "/api/artifact/{artifactId}": {
       "get": {
-        "operationId": "getDiagram",
+        "operationId": "getArtifact",
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/DiagramTO"
+                  "$ref": "#/components/schemas/ArtifactTO"
                 }
               }
             }
@@ -777,17 +777,17 @@
               "type": "string"
             },
             "in": "path",
-            "name": "diagramId",
+            "name": "artifactId",
             "required": true
           }
         ],
         "tags": [
-          "Diagram"
+          "Artifact"
         ]
       },
       "delete": {
-        "summary": "Delete one Diagram and all of its versions",
-        "operationId": "deleteDiagram",
+        "summary": "Delete one Artifact and all of its versions",
+        "operationId": "deleteArtifact",
         "responses": {
           "200": {
             "description": "OK"
@@ -799,12 +799,12 @@
               "type": "string"
             },
             "in": "path",
-            "name": "diagramId",
+            "name": "artifactId",
             "required": true
           }
         ],
         "tags": [
-          "Diagram"
+          "Artifact"
         ]
       },
       "put": {
@@ -812,20 +812,20 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DiagramUpdateTO"
+                "$ref": "#/components/schemas/ArtifactUpdateTO"
               }
             }
           },
           "required": true
         },
-        "operationId": "updateDiagram",
+        "operationId": "updateArtifact",
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/DiagramTO"
+                  "$ref": "#/components/schemas/ArtifactTO"
                 }
               }
             }
@@ -837,12 +837,12 @@
               "type": "string"
             },
             "in": "path",
-            "name": "diagramId",
+            "name": "artifactId",
             "required": true
           }
         ],
         "tags": [
-          "Diagram"
+          "Artifact"
         ]
       }
     },
@@ -886,9 +886,9 @@
         ]
       }
     },
-    "/api/diagram/search/{typedTitle}": {
+    "/api/artifact/search/{typedTitle}": {
       "get": {
-        "operationId": "searchDiagrams",
+        "operationId": "searchArtifacts",
         "responses": {
           "200": {
             "description": "OK",
@@ -897,7 +897,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/DiagramTO"
+                    "$ref": "#/components/schemas/ArtifactTO"
                   }
                 }
               }
@@ -915,11 +915,11 @@
           }
         ],
         "tags": [
-          "Diagram"
+          "Artifact"
         ]
       }
     },
-    "/api/diagram/recent": {
+    "/api/artifact/recent": {
       "get": {
         "operationId": "getRecent",
         "responses": {
@@ -930,7 +930,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/DiagramTO"
+                    "$ref": "#/components/schemas/ArtifactTO"
                   }
                 }
               }
@@ -938,17 +938,17 @@
           }
         },
         "tags": [
-          "Diagram"
+          "Artifact"
         ]
       }
     },
-    "/api/version/{diagramId}": {
+    "/api/version/{artifactId}": {
       "post": {
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DiagramVersionUploadTO"
+                "$ref": "#/components/schemas/ArtifactVersionUploadTO"
               }
             }
           },
@@ -966,7 +966,7 @@
               "type": "string"
             },
             "in": "path",
-            "name": "diagramId",
+            "name": "artifactId",
             "required": true
           }
         ],
@@ -1021,9 +1021,9 @@
         ]
       }
     },
-    "/api/diagram/{diagramId}/lock": {
+    "/api/artifact/{artifactId}/lock": {
       "post": {
-        "operationId": "lockDiagram",
+        "operationId": "lockArtifact",
         "responses": {
           "200": {
             "description": "OK"
@@ -1035,18 +1035,18 @@
               "type": "string"
             },
             "in": "path",
-            "name": "diagramId",
+            "name": "artifactId",
             "required": true
           }
         ],
         "tags": [
-          "Diagram"
+          "Artifact"
         ]
       }
     },
-    "/api/diagram/repository/{repositoryId}": {
+    "/api/artifact/repository/{repositoryId}": {
       "get": {
-        "operationId": "getDiagramsFromRepo",
+        "operationId": "getArtifactsFromRepo",
         "responses": {
           "200": {
             "description": "OK",
@@ -1055,7 +1055,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/DiagramTO"
+                    "$ref": "#/components/schemas/ArtifactTO"
                   }
                 }
               }
@@ -1073,7 +1073,7 @@
           }
         ],
         "tags": [
-          "Diagram"
+          "Artifact"
         ]
       }
     },
@@ -1101,7 +1101,7 @@
         ]
       }
     },
-    "/api/diagram/starred/{diagramId}": {
+    "/api/artifact/starred/{artifactId}": {
       "post": {
         "operationId": "setStarred",
         "responses": {
@@ -1115,16 +1115,16 @@
               "type": "string"
             },
             "in": "path",
-            "name": "diagramId",
+            "name": "artifactId",
             "required": true
           }
         ],
         "tags": [
-          "Diagram"
+          "Artifact"
         ]
       }
     },
-    "/api/deploy/{diagramId}/{versionId}": {
+    "/api/deploy/{artifactId}/{versionId}": {
       "post": {
         "requestBody": {
           "content": {
@@ -1136,7 +1136,7 @@
           },
           "required": true
         },
-        "description": "Deploy diagram version",
+        "description": "Deploy artifact version",
         "operationId": "deployVersion",
         "responses": {
           "200": {
@@ -1149,7 +1149,7 @@
               "type": "string"
             },
             "in": "path",
-            "name": "diagramId",
+            "name": "artifactId",
             "required": true
           },
           {
@@ -1203,9 +1203,9 @@
         ]
       }
     },
-    "/api/version/{diagramId}/latest": {
+    "/api/version/{artifactId}/latest": {
       "get": {
-        "summary": "Return the latest version of the requested diagram",
+        "summary": "Return the latest version of the requested artifact",
         "operationId": "getLatestVersion",
         "responses": {
           "200": {
@@ -1213,7 +1213,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/DiagramVersionTO"
+                  "$ref": "#/components/schemas/ArtifactVersionTO"
                 }
               }
             }
@@ -1225,7 +1225,7 @@
               "type": "string"
             },
             "in": "path",
-            "name": "diagramId",
+            "name": "artifactId",
             "required": true
           }
         ],

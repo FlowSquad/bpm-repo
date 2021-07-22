@@ -1,6 +1,6 @@
-package io.miragon.bpmrepo.spring.boot.starter.diagram;
+package io.miragon.bpmrepo.spring.boot.starter.artifact;
 
-import io.miragon.bpmrepo.core.diagram.domain.plugin.DeploymentPlugin;
+import io.miragon.bpmrepo.core.artifact.domain.plugin.DeploymentPlugin;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class DefaultDeploymentPlugin implements DeploymentPlugin {
         list.add("Produktion");
         list.add("Review");
         list.add("Management");
-        
+
         return list;
     }
 }
