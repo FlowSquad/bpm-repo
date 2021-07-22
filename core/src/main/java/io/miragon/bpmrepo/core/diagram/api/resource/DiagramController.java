@@ -1,10 +1,8 @@
 package io.miragon.bpmrepo.core.diagram.api.resource;
 
 import io.miragon.bpmrepo.core.diagram.api.mapper.DiagramApiMapper;
-import io.miragon.bpmrepo.core.diagram.api.transport.DiagramSVGUploadTO;
-import io.miragon.bpmrepo.core.diagram.api.transport.DiagramTO;
-import io.miragon.bpmrepo.core.diagram.api.transport.DiagramUpdateTO;
-import io.miragon.bpmrepo.core.diagram.api.transport.NewDiagramTO;
+import io.miragon.bpmrepo.core.diagram.api.plugin.FileTypesPlugin;
+import io.miragon.bpmrepo.core.diagram.api.transport.*;
 import io.miragon.bpmrepo.core.diagram.domain.facade.DiagramFacade;
 import io.miragon.bpmrepo.core.user.domain.business.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,6 +32,8 @@ public class DiagramController {
     private final UserService userService;
 
     private final DiagramApiMapper apiMapper;
+
+    private final FileTypesPlugin fileTypesPlugin;
 
     /**
      * Create a diagram
@@ -191,5 +191,17 @@ public class DiagramController {
         log.debug(String.format("Unlocking Diagram %s", diagramId));
         this.diagramFacade.unlockDiagram(diagramId);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Get all available file types
+     *
+     * @return file types
+     */
+    @GetMapping
+    public ResponseEntity<List<FileTypesTO>> getAllFileTypes() {
+        log.warn("Fetching File Types");
+        val fileTypes = this.fileTypesPlugin.getFileTypes();
+        return ResponseEntity.ok(fileTypes);
     }
 }

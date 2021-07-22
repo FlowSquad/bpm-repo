@@ -19,7 +19,7 @@ public class NewDiagramTO {
     @NotNull
     private String description;
 
-    @Nullable
+    @NotNull
     private String fileType;
 
     @Nullable

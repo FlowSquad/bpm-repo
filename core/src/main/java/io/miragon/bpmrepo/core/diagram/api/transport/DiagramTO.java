@@ -35,7 +35,7 @@ public class DiagramTO {
     @Nullable
     private String svgPreview;
 
-    @Nullable
+    @NotNull
     private String fileType;
 
     //
