@@ -10,10 +10,11 @@ public class DefaultMenuPlugin implements MenuPlugin {
 
     @Override
     public List<MenuItemTO> getMenuItems() {
+
         //Define the URL where the tools are hosted
         //Pass a List of FileTypes, which can be opened by the corresponding tool
         // -> The name of the filetypes matches the names from the DefaultFileTypesPlugin
-        //
+        
         final List<MenuItemTO> menuItems = new ArrayList<>();
         MenuItemTO item = new MenuItemTO("Home", "", "folder", 1, List.of(""));
         menuItems.add(item);
@@ -23,6 +24,7 @@ public class DefaultMenuPlugin implements MenuPlugin {
         menuItems.add(item);
         item = new MenuItemTO("Modeller", "https://modeler.miragon.cloud/#/", "web", 4, List.of("BPMN", "DMN"));
         menuItems.add(item);
+      
         return menuItems;
     }
 }
