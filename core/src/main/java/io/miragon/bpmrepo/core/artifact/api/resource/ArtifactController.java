@@ -4,6 +4,7 @@ import io.miragon.bpmrepo.core.artifact.api.mapper.ArtifactApiMapper;
 import io.miragon.bpmrepo.core.artifact.api.plugin.FileTypesPlugin;
 import io.miragon.bpmrepo.core.artifact.api.transport.*;
 import io.miragon.bpmrepo.core.artifact.domain.facade.ArtifactFacade;
+import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
 import io.miragon.bpmrepo.core.user.domain.business.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,6 +19,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Validated
@@ -216,5 +218,28 @@ public class ArtifactController {
         log.debug("Copying artifact to other repository");
         this.artifactFacade.copyToRepository(repositoryId, artifactId);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Share an Artifact with other Repositories
+     *
+     * @param artifactId    Id of the artifact to be shared
+     * @param repositoryIds List of Ids of Repositories
+     */
+    @Operation(description = "Share an Artifact with all members of another Repository")
+    @PostMapping("/share/{artifactId}")
+    public ResponseEntity<Void> shareWithRepository(@PathVariable @NotBlank final String artifactId,
+                                                    @RequestBody @Valid final List<String> repositoryIds) {
+        log.debug("Sharing Artifact with Repository");
+        this.artifactFacade.shareWithRepository(repositoryIds, artifactId);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(description = "Get all shared Artifacts")
+    @GetMapping("/shared")
+    public ResponseEntity<List<ArtifactTO>> getAllSharedArtifacts() {
+        log.debug("Fetching all Artifacts that are shared with current user");
+        final List<Artifact> sharedArtifacts = this.artifactFacade.getAllSharedArtifacts();
+        return ResponseEntity.ok(sharedArtifacts.stream().map(this.apiMapper::mapToTO).collect(Collectors.toList()));
     }
 }

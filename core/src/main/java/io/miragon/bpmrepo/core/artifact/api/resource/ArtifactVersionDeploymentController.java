@@ -2,7 +2,6 @@ package io.miragon.bpmrepo.core.artifact.api.resource;
 
 import io.miragon.bpmrepo.core.artifact.api.transport.NewDeploymentTO;
 import io.miragon.bpmrepo.core.artifact.domain.business.ArtifactVersionDeploymentService;
-import io.miragon.bpmrepo.core.security.UserContext;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,6 @@ import java.util.List;
 public class ArtifactVersionDeploymentController {
 
     private final ArtifactVersionDeploymentService deploymentService;
-    private final UserContext userContext;
 
     @Operation(description = "Deploy artifact version")
     @PostMapping("/{artifactId}/{versionId}")

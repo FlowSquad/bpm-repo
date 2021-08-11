@@ -47,5 +47,4 @@ public class ArtifactVersionEntity {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "version_id")
     private List<DeploymentEntity> deployments;
-
 }

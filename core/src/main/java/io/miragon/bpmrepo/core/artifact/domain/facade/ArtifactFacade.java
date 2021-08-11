@@ -13,6 +13,8 @@ import io.miragon.bpmrepo.core.artifact.infrastructure.entity.StarredEntity;
 import io.miragon.bpmrepo.core.repository.domain.business.AssignmentService;
 import io.miragon.bpmrepo.core.repository.domain.business.AuthService;
 import io.miragon.bpmrepo.core.repository.domain.business.RepositoryService;
+import io.miragon.bpmrepo.core.repository.domain.facade.RepositoryFacade;
+import io.miragon.bpmrepo.core.repository.domain.model.Repository;
 import io.miragon.bpmrepo.core.shared.enums.RoleEnum;
 import io.miragon.bpmrepo.core.user.domain.business.UserService;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ public class ArtifactFacade {
     private final UserService userService;
 
     private final ArtifactVersionFacade artifactVersionFacade;
+    private final RepositoryFacade repositoryFacade;
 
     private final ArtifactService artifactService;
     private final ArtifactVersionService artifactVersionService;
@@ -125,20 +128,36 @@ public class ArtifactFacade {
     }
 
     public void copyToRepository(final String repositoryId, final String artifactId) {
-        Artifact artifact = this.artifactService.getArtifactsById(artifactId);
-        ArtifactVersion artifactVersion = this.artifactVersionService.getLatestVersion(artifactId);
+        final Artifact artifact = this.artifactService.getArtifactsById(artifactId);
+        final ArtifactVersion artifactVersion = this.artifactVersionService.getLatestVersion(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.MEMBER);
         this.authService.checkIfOperationIsAllowed(repositoryId, RoleEnum.MEMBER);
-        Artifact newArtifact = new Artifact();
+        final Artifact newArtifact = new Artifact();
         newArtifact.copy(artifact);
         newArtifact.setRepositoryId(repositoryId);
 
-        ArtifactVersionUpload newArtifactVersion = new ArtifactVersionUpload();
+        final ArtifactVersionUpload newArtifactVersion = new ArtifactVersionUpload();
         newArtifactVersion.setXml(artifactVersion.getXml());
         newArtifactVersion.setSaveType(SaveTypeEnum.MILESTONE);
-        
-        Artifact createdArtifact = artifactService.createArtifact(newArtifact);
-        artifactVersionFacade.createOrUpdateVersion(createdArtifact.getId(), newArtifactVersion);
+
+        final Artifact createdArtifact = this.artifactService.createArtifact(newArtifact);
+        this.artifactVersionFacade.createOrUpdateVersion(createdArtifact.getId(), newArtifactVersion);
     }
 
+    public void shareWithRepository(final List<String> repositoryIds, final String artifactId) {
+        final Artifact artifact = this.artifactService.getArtifactsById(artifactId);
+        this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.ADMIN);
+
+        repositoryIds.forEach(repositoryId -> {
+            this.authService.checkIfOperationIsAllowed(repositoryId, RoleEnum.ADMIN);
+            final Repository repository = this.repositoryService.getRepository(repositoryId);
+            repository.addSharedArtifact(artifact);
+            //artifact.shareWithRepository(repositoryId);
+        });
+    }
+
+    public List<Artifact> getAllSharedArtifacts() {
+        final List<Artifact> artifacts = this.repositoryFacade.getAllRepositories().stream().map(repository -> this.artifactService.getArtifactsById(repository.getId())).collect(Collectors.toList());
+        return artifacts;
+    }
 }
