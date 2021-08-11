@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FileTypesTO {
+public class ArtifactTypeTO {
 
     @NotBlank
     private String name;

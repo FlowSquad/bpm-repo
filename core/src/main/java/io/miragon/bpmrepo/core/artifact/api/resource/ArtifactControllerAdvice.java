@@ -1,5 +1,7 @@
-package io.miragon.bpmrepo.core.shared.exception;
+package io.miragon.bpmrepo.core.artifact.api.resource;
 
+import io.miragon.bpmrepo.core.artifact.domain.exception.ArtifactNameAlreadyInUseException;
+import io.miragon.bpmrepo.core.shared.exception.NameConflictException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,17 +10,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @Slf4j
 @ControllerAdvice
-public class SharedControlerAdvice {
+public class ArtifactControllerAdvice {
 
-    @ExceptionHandler({ NameConflictException.class })
+    @ExceptionHandler({ ArtifactNameAlreadyInUseException.class })
     public ResponseEntity<String> handleOperationNotAllowed(final NameConflictException exception) {
-        log.error("Client error", exception);
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("EXC_NAME_CONFLICT");
-    }
-
-    @ExceptionHandler({ AccessRightException.class })
-    public ResponseEntity<String> handleAccessRight(final AccessRightException exception) {
-        log.error("Client error", exception);
+        log.warn("Client error", exception);
         return ResponseEntity.status(HttpStatus.CONFLICT).body("EXC_NAME_CONFLICT");
     }
 

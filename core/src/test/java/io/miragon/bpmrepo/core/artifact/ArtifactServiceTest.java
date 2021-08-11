@@ -1,9 +1,9 @@
 package io.miragon.bpmrepo.core.artifact;
 
-import io.miragon.bpmrepo.core.artifact.domain.business.ArtifactService;
 import io.miragon.bpmrepo.core.artifact.domain.mapper.ArtifactMapper;
 import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
 import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactUpdate;
+import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactService;
 import io.miragon.bpmrepo.core.artifact.infrastructure.entity.ArtifactEntity;
 import io.miragon.bpmrepo.core.artifact.infrastructure.repository.ArtifactJpaRepository;
 import org.junit.jupiter.api.BeforeAll;

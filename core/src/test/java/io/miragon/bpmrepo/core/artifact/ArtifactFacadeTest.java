@@ -1,9 +1,9 @@
 package io.miragon.bpmrepo.core.artifact;
 
-import io.miragon.bpmrepo.core.artifact.domain.business.ArtifactService;
-import io.miragon.bpmrepo.core.artifact.domain.business.ArtifactVersionService;
 import io.miragon.bpmrepo.core.artifact.domain.facade.ArtifactFacade;
 import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
+import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactService;
+import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactVersionService;
 import io.miragon.bpmrepo.core.repository.domain.business.AuthService;
 import io.miragon.bpmrepo.core.repository.domain.business.RepositoryService;
 import io.miragon.bpmrepo.core.shared.enums.RoleEnum;

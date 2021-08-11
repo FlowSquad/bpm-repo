@@ -1,8 +1,8 @@
-package io.miragon.bpmrepo.core.artifact.domain.business;
+package io.miragon.bpmrepo.core.artifact.domain.service;
 
 import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
 import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactVersion;
-import io.miragon.bpmrepo.core.artifact.domain.plugin.DeploymentPlugin;
+import io.miragon.bpmrepo.core.artifact.plugin.DeploymentPlugin;
 import io.miragon.bpmrepo.core.repository.domain.business.AuthService;
 import io.miragon.bpmrepo.core.shared.enums.RoleEnum;
 import io.miragon.bpmrepo.core.user.domain.business.UserService;
@@ -31,7 +31,7 @@ public class ArtifactVersionDeploymentService {
         final User user = this.userService.getCurrentUser();
         log.debug("Deploy artifact version {} on target {} by user {}", versionId, target, user);
         final ArtifactVersion version = this.artifactVersionService.getVersion(versionId);
-        this.deploymentPlugin.deploy(artifact.getName(), version.getXml(), target);
+        this.deploymentPlugin.deploy(artifact.getFileType(), artifact.getName(), version.getXml(), target);
         version.deploy(target, user.getUsername());
         this.artifactVersionService.saveToDb(version);
     }

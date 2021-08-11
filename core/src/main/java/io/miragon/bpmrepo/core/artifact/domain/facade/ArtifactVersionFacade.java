@@ -1,13 +1,13 @@
 package io.miragon.bpmrepo.core.artifact.domain.facade;
 
-import io.miragon.bpmrepo.core.artifact.domain.business.ArtifactService;
-import io.miragon.bpmrepo.core.artifact.domain.business.ArtifactVersionService;
-import io.miragon.bpmrepo.core.artifact.domain.business.LockService;
-import io.miragon.bpmrepo.core.artifact.domain.business.VerifyRelationService;
 import io.miragon.bpmrepo.core.artifact.domain.enums.SaveTypeEnum;
 import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
 import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactVersion;
 import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactVersionUpload;
+import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactService;
+import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactVersionService;
+import io.miragon.bpmrepo.core.artifact.domain.service.LockService;
+import io.miragon.bpmrepo.core.artifact.domain.service.VerifyRelationService;
 import io.miragon.bpmrepo.core.repository.domain.business.AuthService;
 import io.miragon.bpmrepo.core.shared.enums.RoleEnum;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +52,6 @@ public class ArtifactVersionFacade {
             return bpmnArtifactVersionId;
         }
 
-
         //Update current version
         if (artifactVersionUpload.getSaveType() == SaveTypeEnum.AUTOSAVE) {
             this.lockService.checkIfVersionIsUnlockedOrLockedByActiveUser(artifact);
@@ -72,7 +71,7 @@ public class ArtifactVersionFacade {
 
     //simply deletes all entities that contain the SaveType "AUTOSAVE"
     private void deleteAutosavedVersionsIfMilestoneIsSaved(final String bpmnRepositoryId, final String bpmnartifactId,
-                                                           final SaveTypeEnum saveTypeEnum) {
+            final SaveTypeEnum saveTypeEnum) {
         if (saveTypeEnum.equals(SaveTypeEnum.AUTOSAVE)) {
             this.artifactVersionService.deleteAutosavedVersions(bpmnRepositoryId, bpmnartifactId);
         }
@@ -103,6 +102,7 @@ public class ArtifactVersionFacade {
         return this.artifactVersionService.downloadVersion(artifact.getName(), artifactVersionId);
     }
 
+    //TODO Remove this method
     public HttpHeaders getHeaders(final String artifactId) {
         final Artifact artifact = this.artifactService.getArtifactsById(artifactId);
         final String fileName = String.format("%s.%s", artifact.getName(), artifact.getFileType());

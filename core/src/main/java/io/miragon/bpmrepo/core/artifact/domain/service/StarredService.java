@@ -1,4 +1,4 @@
-package io.miragon.bpmrepo.core.artifact.domain.business;
+package io.miragon.bpmrepo.core.artifact.domain.service;
 
 import io.miragon.bpmrepo.core.artifact.domain.mapper.StarredMapper;
 import io.miragon.bpmrepo.core.artifact.infrastructure.entity.StarredEntity;
@@ -22,9 +22,9 @@ public class StarredService {
         final StarredEntity starredEntity = this.starredJpa.findById_artifactIdAndId_UserId(artifactId, userId);
         if (starredEntity == null) {
             this.createStarred(artifactId, userId);
-        } else {
-            this.deleteStarred(artifactId, userId);
+            return;
         }
+        this.deleteStarred(artifactId, userId);
     }
 
     public void createStarred(final String artifactId, final String userId) {

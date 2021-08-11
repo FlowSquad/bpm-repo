@@ -1,4 +1,4 @@
-package io.miragon.bpmrepo.core.artifact.domain.business;
+package io.miragon.bpmrepo.core.artifact.domain.service;
 
 import io.miragon.bpmrepo.core.artifact.domain.mapper.ArtifactMapper;
 import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
@@ -89,7 +89,8 @@ public class ArtifactService {
     }
 
     public List<Artifact> searchArtifacts(final List<String> assignedRepoIds, final String typedTitle) {
-        final List<ArtifactEntity> assignedArtifacts = this.artifactJpaRepository.findAllByRepositoryIdInAndNameStartsWithIgnoreCase(assignedRepoIds, typedTitle);
+        final List<ArtifactEntity> assignedArtifacts = this.artifactJpaRepository
+                .findAllByRepositoryIdInAndNameStartsWithIgnoreCase(assignedRepoIds, typedTitle);
         return this.mapper.mapToModel(assignedArtifacts);
     }
 

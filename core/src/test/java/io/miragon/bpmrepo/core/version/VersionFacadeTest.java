@@ -1,13 +1,13 @@
 package io.miragon.bpmrepo.core.version;
 
 import io.miragon.bpmrepo.core.artifact.ArtifactBuilder;
-import io.miragon.bpmrepo.core.artifact.domain.business.ArtifactService;
-import io.miragon.bpmrepo.core.artifact.domain.business.ArtifactVersionService;
-import io.miragon.bpmrepo.core.artifact.domain.business.VerifyRelationService;
 import io.miragon.bpmrepo.core.artifact.domain.enums.SaveTypeEnum;
 import io.miragon.bpmrepo.core.artifact.domain.facade.ArtifactVersionFacade;
 import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
 import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactVersionUpload;
+import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactService;
+import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactVersionService;
+import io.miragon.bpmrepo.core.artifact.domain.service.VerifyRelationService;
 import io.miragon.bpmrepo.core.repository.domain.business.AuthService;
 import io.miragon.bpmrepo.core.shared.enums.RoleEnum;
 import org.junit.jupiter.api.BeforeAll;

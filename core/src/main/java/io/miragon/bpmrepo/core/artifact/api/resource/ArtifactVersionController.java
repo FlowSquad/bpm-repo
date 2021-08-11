@@ -42,12 +42,13 @@ public class ArtifactVersionController {
      * @param artifactVersionUploadTO Update object
      */
     @PostMapping("/{artifactId}")
-    public ResponseEntity<Void> createOrUpdateVersion(
+    public ResponseEntity<String> createOrUpdateVersion(
             @PathVariable @NotBlank final String artifactId,
             @RequestBody @Valid final ArtifactVersionUploadTO artifactVersionUploadTO) {
+        //TODO trennen POST und PUT
         log.debug("Creating new Version. Savetype: " + artifactVersionUploadTO.getSaveType());
         final String artifactVersionId = this.artifactVersionFacade.createOrUpdateVersion(artifactId, this.apiMapper.mapUploadToModel(artifactVersionUploadTO));
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(artifactVersionId);
     }
 
     /**
@@ -56,7 +57,7 @@ public class ArtifactVersionController {
      * @param artifactId Id of the artifact
      * @return latest version
      */
-    @GetMapping("/{artifactId}/latest")
+    @GetMapping("/{artifactId}/version/latest")
     @Operation(summary = "Return the latest version of the requested artifact")
     public ResponseEntity<ArtifactVersionTO> getLatestVersion(@PathVariable @NotBlank final String artifactId) {
         log.debug("Returning latest version");
@@ -70,7 +71,7 @@ public class ArtifactVersionController {
      * @param artifactId Id of the artifact
      * @return all versions
      */
-    @GetMapping("/{artifactId}/all")
+    @GetMapping("/{artifactId}/version")
     public ResponseEntity<List<ArtifactVersionTO>> getAllVersions(@PathVariable @NotBlank final String artifactId) {
         log.debug("Returning all Versions");
         val versions = this.artifactVersionFacade.getAllVersions(artifactId);
@@ -84,7 +85,7 @@ public class ArtifactVersionController {
      * @param versionId  Id of the version
      * @return
      */
-    @GetMapping("/{artifactId}/{versionId}")
+    @GetMapping("/{artifactId}/version/{versionId}")
     public ResponseEntity<ArtifactVersionTO> getVersion(
             @PathVariable @NotBlank final String artifactId,
             @PathVariable @NotBlank final String versionId) {
@@ -100,7 +101,7 @@ public class ArtifactVersionController {
      * @param versionId  Id of the version
      * @return
      */
-    @GetMapping("/{artifactId}/{versionId}/download")
+    @GetMapping("/{artifactId}/version/{versionId}/download")
     public ResponseEntity<Resource> downloadVersion(@PathVariable @NotBlank final String artifactId, @PathVariable @NotBlank final String versionId) {
         log.debug("Returning File for Download");
         final ByteArrayResource resource = this.artifactVersionFacade.downloadVersion(artifactId, versionId);

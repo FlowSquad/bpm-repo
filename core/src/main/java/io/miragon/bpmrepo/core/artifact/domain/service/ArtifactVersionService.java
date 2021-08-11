@@ -1,4 +1,4 @@
-package io.miragon.bpmrepo.core.artifact.domain.business;
+package io.miragon.bpmrepo.core.artifact.domain.service;
 
 import io.miragon.bpmrepo.core.artifact.domain.enums.SaveTypeEnum;
 import io.miragon.bpmrepo.core.artifact.domain.mapper.VersionMapper;
@@ -74,6 +74,7 @@ public class ArtifactVersionService {
         this.artifactVersionJpaRepository.deleteAllByRepositoryIdAndArtifactIdAndSaveType(bpmnRepositoryId, bpmnartifactId, SaveTypeEnum.AUTOSAVE);
     }
 
+    //TODO warum hier?
     public ByteArrayResource downloadVersion(final String artifactName, final String artifactVersionId) {
         final ArtifactVersion artifactVersion = this.getVersion(artifactVersionId);
         final ByteArrayResource resource = new ByteArrayResource(artifactVersion.getXml().getBytes());

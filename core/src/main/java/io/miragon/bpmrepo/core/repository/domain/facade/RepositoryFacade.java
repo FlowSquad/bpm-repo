@@ -1,8 +1,8 @@
 package io.miragon.bpmrepo.core.repository.domain.facade;
 
-import io.miragon.bpmrepo.core.artifact.domain.business.ArtifactService;
-import io.miragon.bpmrepo.core.artifact.domain.business.ArtifactVersionService;
-import io.miragon.bpmrepo.core.artifact.domain.business.StarredService;
+import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactService;
+import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactVersionService;
+import io.miragon.bpmrepo.core.artifact.domain.service.StarredService;
 import io.miragon.bpmrepo.core.repository.domain.business.AssignmentService;
 import io.miragon.bpmrepo.core.repository.domain.business.AuthService;
 import io.miragon.bpmrepo.core.repository.domain.business.RepositoryService;
@@ -69,7 +69,8 @@ public class RepositoryFacade {
         this.authService.checkIfOperationIsAllowed(repositoryId, RoleEnum.OWNER);
         this.artifactVersionService.deleteAllByRepositoryId(repositoryId);
 
-        final List<String> artifactIds = this.artifactService.getArtifactsByRepo(repositoryId).stream().map(artifact -> artifact.getId()).collect(Collectors.toList());
+        final List<String> artifactIds = this.artifactService.getArtifactsByRepo(repositoryId).stream().map(artifact -> artifact.getId())
+                .collect(Collectors.toList());
         this.starredService.deleteAllByArtifactIds(artifactIds);
         this.artifactService.deleteAllByRepositoryId(repositoryId);
         this.repositoryService.deleteRepository(repositoryId);

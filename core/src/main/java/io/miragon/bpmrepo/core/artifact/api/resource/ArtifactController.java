@@ -1,9 +1,9 @@
 package io.miragon.bpmrepo.core.artifact.api.resource;
 
 import io.miragon.bpmrepo.core.artifact.api.mapper.ArtifactApiMapper;
-import io.miragon.bpmrepo.core.artifact.api.plugin.FileTypesPlugin;
 import io.miragon.bpmrepo.core.artifact.api.transport.*;
 import io.miragon.bpmrepo.core.artifact.domain.facade.ArtifactFacade;
+import io.miragon.bpmrepo.core.artifact.plugin.ArtifactTypesPlugin;
 import io.miragon.bpmrepo.core.user.domain.business.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,7 +33,8 @@ public class ArtifactController {
 
     private final ArtifactApiMapper apiMapper;
 
-    private final FileTypesPlugin fileTypesPlugin;
+    //TODO über Service
+    private final ArtifactTypesPlugin fileTypesPlugin;
 
     /**
      * Create a artifact
@@ -57,7 +58,8 @@ public class ArtifactController {
      * @return updated artifact
      */
     @PutMapping("/{artifactId}")
-    public ResponseEntity<ArtifactTO> updateArtifact(@PathVariable @NotBlank final String artifactId, @RequestBody @Valid final ArtifactUpdateTO artifactUpdateTO) {
+    public ResponseEntity<ArtifactTO> updateArtifact(@PathVariable @NotBlank final String artifactId,
+            @RequestBody @Valid final ArtifactUpdateTO artifactUpdateTO) {
         log.debug("Creating or updating Artifact");
         val artifact = this.artifactFacade.updateArtifact(artifactId, this.apiMapper.mapUpdateToModel(artifactUpdateTO));
         return ResponseEntity.ok(this.apiMapper.mapToTO(artifact));
@@ -199,9 +201,9 @@ public class ArtifactController {
      * @return file types
      */
     @GetMapping
-    public ResponseEntity<List<FileTypesTO>> getAllFileTypes() {
+    public ResponseEntity<List<ArtifactTypeTO>> getAllFileTypes() {
         log.debug("Fetching File Types");
-        val fileTypes = this.fileTypesPlugin.getFileTypes();
+        val fileTypes = this.fileTypesPlugin.getArtifactTypes();
         return ResponseEntity.ok(fileTypes);
     }
 

@@ -1,6 +1,6 @@
 package io.miragon.bpmrepo.core.version;
 
-import io.miragon.bpmrepo.core.artifact.domain.business.ArtifactVersionService;
+import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactVersionService;
 import io.miragon.bpmrepo.core.artifact.domain.enums.SaveTypeEnum;
 import io.miragon.bpmrepo.core.artifact.domain.mapper.VersionMapper;
 import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactVersion;
