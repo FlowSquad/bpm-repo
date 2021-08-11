@@ -13,8 +13,6 @@ import io.miragon.bpmrepo.core.artifact.infrastructure.entity.StarredEntity;
 import io.miragon.bpmrepo.core.repository.domain.business.AssignmentService;
 import io.miragon.bpmrepo.core.repository.domain.business.AuthService;
 import io.miragon.bpmrepo.core.repository.domain.business.RepositoryService;
-import io.miragon.bpmrepo.core.repository.domain.facade.RepositoryFacade;
-import io.miragon.bpmrepo.core.repository.domain.model.Repository;
 import io.miragon.bpmrepo.core.shared.enums.RoleEnum;
 import io.miragon.bpmrepo.core.user.domain.business.UserService;
 import lombok.RequiredArgsConstructor;
@@ -44,16 +42,17 @@ public class ArtifactFacade {
     private final RepositoryService repositoryService;
 
     public Artifact createArtifact(final String repositoryId, final Artifact artifact) {
+        log.debug("Create Artefact in repository {}", repositoryId);
         this.authService.checkIfOperationIsAllowed(repositoryId, RoleEnum.MEMBER);
         artifact.updateRepositoryId(repositoryId);
         val result = this.artifactService.createArtifact(artifact);
         final Integer existingArtifacts = this.artifactService.countExistingArtifacts(repositoryId);
         this.repositoryService.updateExistingArtifacts(repositoryId, existingArtifacts);
-        log.debug("Artifact created");
         return result;
     }
 
     public Artifact updateArtifact(final String artifactId, final ArtifactUpdate artifactUpdate) {
+        log.debug("Artifact updated with id {}", artifactId);
         final Artifact artifact = this.artifactService.getArtifactsById(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.MEMBER);
         val result = this.artifactService.updateArtifact(artifactId, artifactUpdate);

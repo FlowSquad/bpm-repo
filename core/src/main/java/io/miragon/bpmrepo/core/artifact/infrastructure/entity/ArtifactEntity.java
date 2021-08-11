@@ -20,16 +20,16 @@ public class ArtifactEntity {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(name = "artifact_id", unique = true, nullable = false, updatable = false, length = 36)
+    @Column(name = "id_", unique = true, nullable = false, updatable = false, length = 36)
     private String id;
 
-    @Column(name = "repository_id")
+    @Column(name = "repository_id_")
     private String repositoryId;
 
-    @Column(name = "artifact_name")
+    @Column(name = "name_")
     private String name;
 
-    @Column(name = "artifact_description")
+    @Column(name = "description_")
     private String description;
 
     @Column(name = "created_date")
