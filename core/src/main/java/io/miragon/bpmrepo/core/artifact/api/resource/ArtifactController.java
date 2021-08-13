@@ -1,9 +1,10 @@
 package io.miragon.bpmrepo.core.artifact.api.resource;
 
 import io.miragon.bpmrepo.core.artifact.api.mapper.ArtifactApiMapper;
-import io.miragon.bpmrepo.core.artifact.api.plugin.FileTypesPlugin;
 import io.miragon.bpmrepo.core.artifact.api.transport.*;
 import io.miragon.bpmrepo.core.artifact.domain.facade.ArtifactFacade;
+import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
+import io.miragon.bpmrepo.core.artifact.plugin.ArtifactTypesPlugin;
 import io.miragon.bpmrepo.core.user.domain.business.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,6 +19,8 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Validated
@@ -34,7 +37,7 @@ public class ArtifactController {
     private final ArtifactApiMapper apiMapper;
 
     //TODO über Service
-    private final ArtifactTypesPlugin fileTypesPlugin;
+    private final ArtifactTypesPlugin artifactTypesPlugin;
 
     /**
      * Create a artifact
@@ -59,7 +62,7 @@ public class ArtifactController {
      */
     @PutMapping("/{artifactId}")
     public ResponseEntity<ArtifactTO> updateArtifact(@PathVariable @NotBlank final String artifactId,
-            @RequestBody @Valid final ArtifactUpdateTO artifactUpdateTO) {
+                                                     @RequestBody @Valid final ArtifactUpdateTO artifactUpdateTO) {
         log.debug("Creating or updating Artifact");
         val artifact = this.artifactFacade.updateArtifact(artifactId, this.apiMapper.mapUpdateToModel(artifactUpdateTO));
         return ResponseEntity.ok(this.apiMapper.mapToTO(artifact));
@@ -203,7 +206,7 @@ public class ArtifactController {
     @GetMapping
     public ResponseEntity<List<ArtifactTypeTO>> getAllFileTypes() {
         log.debug("Fetching File Types");
-        val fileTypes = this.fileTypesPlugin.getArtifactTypes();
+        val fileTypes = this.artifactTypesPlugin.getArtifactTypes();
         return ResponseEntity.ok(fileTypes);
     }
 
@@ -239,7 +242,18 @@ public class ArtifactController {
     @GetMapping("/shared")
     public ResponseEntity<List<ArtifactTO>> getAllSharedArtifacts() {
         log.debug("Fetching all Artifacts that are shared with current user");
-        final List<Artifact> sharedArtifacts = this.artifactFacade.getAllSharedArtifacts();
+        //TODO: Throw custom Error if no shared Artifacts could be found
+        final List<Artifact> sharedArtifacts = this.artifactFacade.getAllSharedArtifacts().orElseThrow();
         return ResponseEntity.ok(sharedArtifacts.stream().map(this.apiMapper::mapToTO).collect(Collectors.toList()));
+    }
+
+    @Operation
+    @GetMapping("{repositoryId}/{type}")
+    public ResponseEntity<List<ArtifactTO>> getByRepoIdAndType(@PathVariable @NotBlank final String repositoryId,
+                                                               @PathVariable @NotBlank final String type) {
+        log.debug("Returning Artifacts of type {} from Repository {}", type, repositoryId);
+        final Optional<List<Artifact>> artifacts = this.artifactFacade.getByRepoIdAndType(repositoryId, type);
+        //TODO: Throw custom Error if no file of type x is present
+        return ResponseEntity.ok(artifacts.map(this.apiMapper::mapToTO).orElseThrow());
     }
 }

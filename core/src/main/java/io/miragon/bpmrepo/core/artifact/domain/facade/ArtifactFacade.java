@@ -1,18 +1,20 @@
 package io.miragon.bpmrepo.core.artifact.domain.facade;
 
-import io.miragon.bpmrepo.core.artifact.domain.business.ArtifactService;
-import io.miragon.bpmrepo.core.artifact.domain.business.ArtifactVersionService;
-import io.miragon.bpmrepo.core.artifact.domain.business.LockService;
-import io.miragon.bpmrepo.core.artifact.domain.business.StarredService;
 import io.miragon.bpmrepo.core.artifact.domain.enums.SaveTypeEnum;
 import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
 import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactUpdate;
 import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactVersion;
 import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactVersionUpload;
+import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactService;
+import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactVersionService;
+import io.miragon.bpmrepo.core.artifact.domain.service.LockService;
+import io.miragon.bpmrepo.core.artifact.domain.service.StarredService;
 import io.miragon.bpmrepo.core.artifact.infrastructure.entity.StarredEntity;
 import io.miragon.bpmrepo.core.repository.domain.business.AssignmentService;
 import io.miragon.bpmrepo.core.repository.domain.business.AuthService;
 import io.miragon.bpmrepo.core.repository.domain.business.RepositoryService;
+import io.miragon.bpmrepo.core.repository.domain.facade.RepositoryFacade;
+import io.miragon.bpmrepo.core.repository.domain.model.Repository;
 import io.miragon.bpmrepo.core.shared.enums.RoleEnum;
 import io.miragon.bpmrepo.core.user.domain.business.UserService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import lombok.val;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -53,7 +56,7 @@ public class ArtifactFacade {
 
     public Artifact updateArtifact(final String artifactId, final ArtifactUpdate artifactUpdate) {
         log.debug("Artifact updated with id {}", artifactId);
-        final Artifact artifact = this.artifactService.getArtifactsById(artifactId);
+        final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.MEMBER);
         val result = this.artifactService.updateArtifact(artifactId, artifactUpdate);
         log.debug("Artifact updated");
@@ -66,7 +69,7 @@ public class ArtifactFacade {
     }
 
     public Artifact getArtifact(final String artifactId) {
-        final Artifact artifact = this.artifactService.getArtifactsById(artifactId);
+        final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.VIEWER);
         return artifact;
     }
@@ -77,13 +80,13 @@ public class ArtifactFacade {
     }
 
     public void updatePreviewSVG(final String artifactId, final String svgPreview) {
-        final Artifact artifact = this.artifactService.getArtifactsById(artifactId);
+        final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.MEMBER);
         this.artifactService.updatePreviewSVG(artifactId, svgPreview);
     }
 
     public void deleteArtifact(final String artifactId) {
-        final Artifact artifact = this.artifactService.getArtifactsById(artifactId);
+        final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.ADMIN);
         this.artifactVersionService.deleteAllByArtifactId(artifactId);
         this.artifactService.deleteArtifact(artifactId);
@@ -92,7 +95,7 @@ public class ArtifactFacade {
     }
 
     public void setStarred(final String artifactId, final String userId) {
-        final Artifact artifact = this.artifactService.getArtifactsById(artifactId);
+        final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.VIEWER);
         this.starredService.setStarred(artifactId, userId);
     }
@@ -101,7 +104,7 @@ public class ArtifactFacade {
         final String currentUserId = this.userService.getUserIdOfCurrentUser();
         final List<StarredEntity> starredList = this.starredService.getStarred(currentUserId);
         return starredList.stream()
-                .map(starredEntity -> this.artifactService.getArtifactsById(starredEntity.getId().getArtifactId()))
+                .map(starredEntity -> this.artifactService.getArtifactById(starredEntity.getId().getArtifactId()))
                 .collect(Collectors.toList());
     }
 
@@ -113,21 +116,21 @@ public class ArtifactFacade {
     }
 
     public void lockArtifact(final String artifactId) {
-        final Artifact artifact = this.artifactService.getArtifactsById(artifactId);
+        final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.MEMBER);
         this.lockService.checkIfVersionIsUnlockedOrLockedByActiveUser(artifact);
         this.artifactService.lockArtifact(artifactId, this.userService.getCurrentUser().getUsername());
     }
 
     public void unlockArtifact(final String artifactId) {
-        final Artifact artifact = this.artifactService.getArtifactsById(artifactId);
+        final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.MEMBER);
         this.lockService.checkIfVersionIsUnlockedOrLockedByActiveUser(artifact);
         this.artifactService.unlockArtifact(artifactId);
     }
 
     public void copyToRepository(final String repositoryId, final String artifactId) {
-        final Artifact artifact = this.artifactService.getArtifactsById(artifactId);
+        final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         final ArtifactVersion artifactVersion = this.artifactVersionService.getLatestVersion(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.MEMBER);
         this.authService.checkIfOperationIsAllowed(repositoryId, RoleEnum.MEMBER);
@@ -144,7 +147,7 @@ public class ArtifactFacade {
     }
 
     public void shareWithRepository(final List<String> repositoryIds, final String artifactId) {
-        final Artifact artifact = this.artifactService.getArtifactsById(artifactId);
+        final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.ADMIN);
 
         repositoryIds.forEach(repositoryId -> {
@@ -155,8 +158,15 @@ public class ArtifactFacade {
         });
     }
 
-    public List<Artifact> getAllSharedArtifacts() {
-        final List<Artifact> artifacts = this.repositoryFacade.getAllRepositories().stream().map(repository -> this.artifactService.getArtifactsById(repository.getId())).collect(Collectors.toList());
+    public Optional<List<Artifact>> getAllSharedArtifacts() {
+        final List<Repository> repositories = this.repositoryFacade.getAllRepositories();
+        final Optional<List<Artifact>> artifacts = this.artifactService.getAllByRepositoryIds(repositories.stream().map(repository -> repository.getId()).collect(Collectors.toList()));
         return artifacts;
+    }
+
+    public Optional<List<Artifact>> getByRepoIdAndType(final String repositoryId, final String type) {
+        log.debug("Authorization for Repository {}", repositoryId);
+        this.authService.checkIfOperationIsAllowed(repositoryId, RoleEnum.VIEWER);
+        return this.artifactService.getByRepoIdAndType(repositoryId, type);
     }
 }

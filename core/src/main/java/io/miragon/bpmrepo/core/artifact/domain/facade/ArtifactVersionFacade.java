@@ -33,7 +33,7 @@ public class ArtifactVersionFacade {
     public String createOrUpdateVersion(final String artifactId, final ArtifactVersionUpload artifactVersionUpload) {
         //TODO refactoring - to complicated
 
-        final Artifact artifact = this.artifactService.getArtifactsById(artifactId);
+        final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.MEMBER);
 
         final ArtifactVersion artifactVersion = ArtifactVersion.builder()
@@ -71,40 +71,40 @@ public class ArtifactVersionFacade {
 
     //simply deletes all entities that contain the SaveType "AUTOSAVE"
     private void deleteAutosavedVersionsIfMilestoneIsSaved(final String bpmnRepositoryId, final String bpmnartifactId,
-            final SaveTypeEnum saveTypeEnum) {
+                                                           final SaveTypeEnum saveTypeEnum) {
         if (saveTypeEnum.equals(SaveTypeEnum.AUTOSAVE)) {
             this.artifactVersionService.deleteAutosavedVersions(bpmnRepositoryId, bpmnartifactId);
         }
     }
 
     public List<ArtifactVersion> getAllVersions(final String artifactId) {
-        final Artifact artifact = this.artifactService.getArtifactsById(artifactId);
+        final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.VIEWER);
         return this.artifactVersionService.getAllVersions(artifactId);
     }
 
     public ArtifactVersion getLatestVersion(final String artifactId) {
-        final Artifact artifact = this.artifactService.getArtifactsById(artifactId);
+        final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.VIEWER);
         return this.artifactVersionService.getLatestVersion(artifactId);
     }
 
     public ArtifactVersion getVersion(final String artifactId, final String artifactVersionId) {
-        final Artifact artifact = this.artifactService.getArtifactsById(artifactId);
+        final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.VIEWER);
         this.lockService.checkIfVersionIsUnlockedOrLockedByActiveUser(artifact);
         return this.artifactVersionService.getVersion(artifactVersionId);
     }
 
     public ByteArrayResource downloadVersion(final String artifactId, final String artifactVersionId) {
-        final Artifact artifact = this.artifactService.getArtifactsById(artifactId);
+        final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.MEMBER);
         return this.artifactVersionService.downloadVersion(artifact.getName(), artifactVersionId);
     }
 
     //TODO Remove this method
     public HttpHeaders getHeaders(final String artifactId) {
-        final Artifact artifact = this.artifactService.getArtifactsById(artifactId);
+        final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         final String fileName = String.format("%s.%s", artifact.getName(), artifact.getFileType());
 
         final HttpHeaders headers = new HttpHeaders();

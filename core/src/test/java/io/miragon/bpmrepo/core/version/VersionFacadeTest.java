@@ -59,7 +59,7 @@ public class VersionFacadeTest {
     public void createOrUpdateVersion() {
         final Artifact artifact = ArtifactBuilder.buildArtifact(artifactId, REPOID, "artifactName", "DIAGRAMDESC", LocalDateTime.now(), LocalDateTime.now());
         doNothing().when(this.authService).checkIfOperationIsAllowed(any(), any());
-        when(this.artifactService.getArtifactsById(artifactId)).thenReturn(artifact);
+        when(this.artifactService.getArtifactById(artifactId)).thenReturn(artifact);
         when(this.verifyRelationService.checkIfVersionIsInitialVersion(any())).thenReturn(true);
 
         final ArtifactVersionUpload bpmnArtifactVersionUploadTO = VersionBuilder.buildVersionUpload(COMMENT, FILESTRING, saveType);
@@ -72,7 +72,7 @@ public class VersionFacadeTest {
     public void getAllVersion() {
         final Artifact artifact = ArtifactBuilder.buildArtifact(artifactId, REPOID, "artifactName", "DIAGRAMDESC", LocalDateTime.now(), LocalDateTime.now());
         doNothing().when(this.authService).checkIfOperationIsAllowed(any(), any());
-        when(this.artifactService.getArtifactsById(artifactId)).thenReturn(artifact);
+        when(this.artifactService.getArtifactById(artifactId)).thenReturn(artifact);
 
         this.artifactVersionFacade.getAllVersions(artifactId);
         verify(this.authService, times(1)).checkIfOperationIsAllowed(REPOID, RoleEnum.VIEWER);
@@ -83,7 +83,7 @@ public class VersionFacadeTest {
     public void getLatestVersion() {
         final Artifact artifact = ArtifactBuilder.buildArtifact(artifactId, REPOID, "artifactName", "DIAGRAMDESC", LocalDateTime.now(), LocalDateTime.now());
         doNothing().when(this.authService).checkIfOperationIsAllowed(any(), any());
-        when(this.artifactService.getArtifactsById(artifactId)).thenReturn(artifact);
+        when(this.artifactService.getArtifactById(artifactId)).thenReturn(artifact);
 
         this.artifactVersionFacade.getLatestVersion(artifactId);
         verify(this.authService, times(1)).checkIfOperationIsAllowed(REPOID, RoleEnum.VIEWER);
@@ -94,7 +94,7 @@ public class VersionFacadeTest {
     public void getSingleVersion() {
         final Artifact artifact = ArtifactBuilder.buildArtifact(artifactId, REPOID, "artifactName", "DIAGRAMDESC", LocalDateTime.now(), LocalDateTime.now());
         doNothing().when(this.authService).checkIfOperationIsAllowed(any(), any());
-        when(this.artifactService.getArtifactsById(artifactId)).thenReturn(artifact);
+        when(this.artifactService.getArtifactById(artifactId)).thenReturn(artifact);
 
         this.artifactVersionFacade.getVersion(artifactId, VERSIONID);
         verify(this.authService, times(1)).checkIfOperationIsAllowed(REPOID, RoleEnum.VIEWER);

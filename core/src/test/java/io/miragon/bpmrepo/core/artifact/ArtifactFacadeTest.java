@@ -58,11 +58,11 @@ public class ArtifactFacadeTest {
     public void getSingleArtifact() {
         final Artifact artifact = ArtifactBuilder.buildArtifact(artifactId, REPOID, artifactName, DIAGRAMDESC, LocalDateTime.now(), LocalDateTime.now());
         doNothing().when(this.authService).checkIfOperationIsAllowed(any(), any());
-        when(this.artifactService.getArtifactsById(artifactId)).thenReturn(artifact);
+        when(this.artifactService.getArtifactById(artifactId)).thenReturn(artifact);
 
         this.artifactFacade.getArtifact(artifactId);
         verify(this.authService, times(1)).checkIfOperationIsAllowed(REPOID, RoleEnum.VIEWER);
-        verify(this.artifactService, times(1)).getArtifactsById(artifactId);
+        verify(this.artifactService, times(1)).getArtifactById(artifactId);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class ArtifactFacadeTest {
 
         when(this.artifactService.countExistingArtifacts(REPOID)).thenReturn(EXISTINGDIAGRAMS);
         doNothing().when(this.authService).checkIfOperationIsAllowed(any(), any());
-        when(this.artifactService.getArtifactsById(artifactId)).thenReturn(artifact);
+        when(this.artifactService.getArtifactById(artifactId)).thenReturn(artifact);
 
         this.artifactFacade.deleteArtifact(artifactId);
 

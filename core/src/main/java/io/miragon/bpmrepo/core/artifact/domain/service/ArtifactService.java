@@ -11,10 +11,7 @@ import lombok.val;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -30,7 +27,7 @@ public class ArtifactService {
     }
 
     public Artifact updateArtifact(final String artifactId, final ArtifactUpdate artifactUpdate) {
-        final Artifact artifact = this.getArtifactsById(artifactId);
+        final Artifact artifact = this.getArtifactById(artifactId);
         artifact.updateArtifact(artifactUpdate);
         return this.saveArtifact(artifact);
     }
@@ -40,14 +37,22 @@ public class ArtifactService {
         return this.mapper.mapToModel(artifacts);
     }
 
-    public Artifact getArtifactsById(final String artifactId) {
+    public Artifact getArtifactById(final String artifactId) {
         return this.artifactJpaRepository.findById(artifactId)
                 .map(this.mapper::mapToModel)
                 .orElseThrow();
     }
 
+    public Optional<List<Artifact>> getAllArtifactsById(final List<String> artifactIds) {
+        return this.artifactJpaRepository.findAllByIdIn(artifactIds).map(this.mapper::mapToModel);
+    }
+
+    public Optional<List<Artifact>> getAllByRepositoryIds(final List<String> repositoryIds) {
+        return this.artifactJpaRepository.findAllByRepositoryIdIn(repositoryIds).map(this.mapper::mapToModel);
+    }
+
     public void updateUpdatedDate(final String artifactId) {
-        final Artifact artifact = this.getArtifactsById(artifactId);
+        final Artifact artifact = this.getArtifactById(artifactId);
         artifact.updateDate();
         this.saveArtifact(artifact);
     }
@@ -83,7 +88,7 @@ public class ArtifactService {
     }
 
     public void updatePreviewSVG(final String artifactId, final String svgPreview) {
-        final Artifact artifact = this.getArtifactsById(artifactId);
+        final Artifact artifact = this.getArtifactById(artifactId);
         artifact.updateSvgPreview(svgPreview);
         this.saveArtifact(artifact);
     }
@@ -95,14 +100,19 @@ public class ArtifactService {
     }
 
     public void lockArtifact(final String artifactId, final String username) {
-        final Artifact artifact = this.getArtifactsById(artifactId);
+        final Artifact artifact = this.getArtifactById(artifactId);
         artifact.lock(username);
         this.saveArtifact(artifact);
     }
 
     public void unlockArtifact(final String artifactId) {
-        final Artifact artifact = this.getArtifactsById(artifactId);
+        final Artifact artifact = this.getArtifactById(artifactId);
         artifact.unlock();
         ArtifactService.this.saveArtifact(artifact);
+    }
+
+    public Optional<List<Artifact>> getByRepoIdAndType(final String repositoryId, final String type) {
+        log.debug("Querying artifacts of Type {} from Repository {}", type, repositoryId);
+        return this.artifactJpaRepository.findAllByRepositoryIdAndFileTypeIgnoreCase(repositoryId, type).map(this.mapper::mapToModel);
     }
 }

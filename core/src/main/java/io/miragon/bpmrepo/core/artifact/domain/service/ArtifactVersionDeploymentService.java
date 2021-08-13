@@ -26,7 +26,7 @@ public class ArtifactVersionDeploymentService {
     private final DeploymentPlugin deploymentPlugin;
 
     public void deploy(final String artifactId, final String versionId, final String target) {
-        final Artifact artifact = this.artifactService.getArtifactsById(artifactId);
+        final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.ADMIN);
         final User user = this.userService.getCurrentUser();
         log.debug("Deploy artifact version {} on target {} by user {}", versionId, target, user);

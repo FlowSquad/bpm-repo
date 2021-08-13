@@ -96,7 +96,7 @@ public class ArtifactServiceTest {
         when(this.artifactJpaRepository.findById(artifactId)).thenReturn(Optional.of(artifactEntity));
         when(this.mapper.mapToModel(artifactEntity)).thenReturn(artifact);
 
-        this.artifactService.getArtifactsById(artifactId);
+        this.artifactService.getArtifactById(artifactId);
         verify(this.artifactJpaRepository, times(1)).findById(artifactId);
         verify(this.mapper, times(1)).mapToModel(artifactEntity);
     }
