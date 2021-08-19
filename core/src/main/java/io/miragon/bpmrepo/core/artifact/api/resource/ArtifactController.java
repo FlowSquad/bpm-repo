@@ -35,8 +35,6 @@ public class ArtifactController {
     private final UserService userService;
 
     private final ArtifactApiMapper apiMapper;
-
-    //TODO über Service
     private final ArtifactTypesPlugin artifactTypesPlugin;
 
     /**

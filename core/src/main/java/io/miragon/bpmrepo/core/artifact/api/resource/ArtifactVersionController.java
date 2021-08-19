@@ -47,7 +47,6 @@ public class ArtifactVersionController {
     public ResponseEntity<ArtifactVersionTO> createVersion(
             @PathVariable @NotBlank final String artifactId,
             @RequestBody @Valid final ArtifactVersionUploadTO artifactVersionUploadTO) {
-        //TODO trennen POST und PUT
         log.debug("Creating new Version of Artifact {}", artifactId);
         final ArtifactVersion artifactVersion = this.artifactVersionFacade.createVersion(artifactId, this.apiMapper.mapUploadToModel(artifactVersionUploadTO));
         return ResponseEntity.ok(this.apiMapper.mapToTO(artifactVersion));

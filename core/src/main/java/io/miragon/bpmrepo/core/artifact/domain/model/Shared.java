@@ -20,11 +20,13 @@ public class Shared {
     public Shared(final ShareWithRepositoryTO shareWithRepositoryTO) {
         this.artifactId = shareWithRepositoryTO.getArtifactId();
         this.repositoryId = shareWithRepositoryTO.getRepositoryId();
+        this.teamId = "0";
         this.role = shareWithRepositoryTO.getRole();
     }
 
     public Shared(final ShareWithTeamTO shareWithTeamTO) {
         this.artifactId = shareWithTeamTO.getArtifactId();
+        this.repositoryId = "0";
         this.teamId = shareWithTeamTO.getTeamId();
         this.role = shareWithTeamTO.getRole();
     }

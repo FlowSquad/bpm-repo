@@ -22,6 +22,6 @@ public class SharedId implements Serializable {
     @Column(name = "repository_id")
     private String repositoryId;
 
-    @Column(name = "team_id", nullable = true)
+    @Column(name = "team_id", nullable = true, columnDefinition = "int default 0")
     private String teamId;
 }

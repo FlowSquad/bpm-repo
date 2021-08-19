@@ -5,7 +5,6 @@ import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
 import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactUpdate;
 import io.miragon.bpmrepo.core.artifact.infrastructure.entity.ArtifactEntity;
 import io.miragon.bpmrepo.core.artifact.infrastructure.repository.ArtifactJpaRepository;
-import io.miragon.bpmrepo.core.repository.domain.model.Repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -58,11 +57,7 @@ public class ArtifactService {
         log.debug("Querying all Artifacts in List of Repositories");
         return this.artifactJpaRepository.findAllByRepositoryIdIn(repositoryIds).map(this.mapper::mapToModel);
     }
-
-    public List<Artifact> getSharedArtifactsFromRepository(final Repository repository) {
-        log.debug("Querying all shared Artifacts from Repository");
-        return repository.getSharedArtifacts();
-    }
+    
 
     public void updateUpdatedDate(final String artifactId) {
         final Artifact artifact = this.getArtifactById(artifactId);

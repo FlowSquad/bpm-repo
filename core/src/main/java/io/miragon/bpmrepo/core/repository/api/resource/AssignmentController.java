@@ -33,9 +33,9 @@ public class AssignmentController {
      * @param assignmentUpdateTO Assignment update
      * @return updated Assignment
      */
-    @PostMapping
+    @PutMapping()
     @Operation(summary = "Update user assignment")
-    public ResponseEntity<AssignmentTO> createOrUpdateUserAssignment(@RequestBody @Valid final AssignmentUpdateTO assignmentUpdateTO) {
+    public ResponseEntity<AssignmentTO> updateUserAssignment(@RequestBody @Valid final AssignmentUpdateTO assignmentUpdateTO) {
         log.debug("Creating new Assignment for " + assignmentUpdateTO.getUsername());
         final Assignment assignment = this.assignmentService.updateAssignment(this.assignmentApiMapper.mapUpdate(assignmentUpdateTO));
         return ResponseEntity.ok().body(this.assignmentApiMapper.mapToTO(assignment));

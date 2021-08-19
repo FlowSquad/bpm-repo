@@ -25,49 +25,43 @@ public class ShareService {
 
     public Shared shareWithRepository(final ShareWithRepositoryTO shareWithRepositoryTO) {
         final Shared shared = new Shared(shareWithRepositoryTO);
-        return this.saveShareWithRepository(shared);
+        return this.saveShare(shared);
     }
 
     public Shared updateShareWithRepository(final ShareWithRepositoryTO shareWithRepositoryTO) {
         final Shared shared = this.getSharedWithRepoById(shareWithRepositoryTO.getArtifactId(), shareWithRepositoryTO.getRepositoryId());
         shared.updateRole(shareWithRepositoryTO.getRole());
-        return this.saveShareWithRepository(shared);
+        return this.saveShare(shared);
     }
 
     public Shared shareWithTeam(final ShareWithTeamTO shareWithTeamTO) {
         final Shared shared = new Shared(shareWithTeamTO);
-        return this.saveShareWithTeam(shared);
+        return this.saveShare(shared);
     }
 
     public Shared updateShareWithTeam(final ShareWithTeamTO shareWithTeamTO) {
         final Shared shared = this.getSharedWithRepoById(shareWithTeamTO.getArtifactId(), shareWithTeamTO.getTeamId());
         shared.updateRole(shareWithTeamTO.getRole());
-        return this.saveShareWithTeam(shared);
+        return this.saveShare(shared);
     }
 
-    private Shared saveShareWithRepository(final Shared shared) {
+    private Shared saveShare(final Shared shared) {
         log.debug("Persisting share-relation");
-        final SharedId sharedId = this.mapper.mapRepoToEmbeddable(shared.getArtifactId(), shared.getRepositoryId());
+        final SharedId sharedId = this.mapper.mapToEmbeddable(shared.getArtifactId(), shared.getRepositoryId(), shared.getTeamId());
         final SharedEntity sharedEntity = this.sharedJpaRepository.save(this.mapper.mapToEntity(shared, sharedId));
         return this.mapper.mapToModel(sharedEntity);
     }
 
-    private Shared saveShareWithTeam(final Shared shared) {
-        log.debug("Persisting share-relation");
-        final SharedId sharedId = this.mapper.mapTeamToEmbeddable(shared.getArtifactId(), shared.getTeamId());
-        final SharedEntity sharedEntity = this.sharedJpaRepository.save(this.mapper.mapToEntity(shared, sharedId));
-        return this.mapper.mapToModel(sharedEntity);
-    }
 
     private Shared getSharedWithRepoById(final String artifactId, final String repositoryId) {
         log.debug("Querying single SharedEntity");
-        return this.sharedJpaRepository.findById_ArtifactIdAndId_RepositoryId(artifactId, repositoryId).map(this.mapper::mapToModel)
+        return this.sharedJpaRepository.findBySharedId_ArtifactIdAndSharedId_RepositoryId(artifactId, repositoryId).map(this.mapper::mapToModel)
                 .orElseThrow();
     }
 
     public void deleteShareWithRepository(final String artifactId, final String repositoryId) {
         log.debug("Deleting share-relation");
-        final int deletedRelations = this.sharedJpaRepository.deleteById_ArtifactIdAndId_RepositoryId(artifactId, repositoryId);
+        final int deletedRelations = this.sharedJpaRepository.deleteBySharedId_ArtifactIdAndSharedId_RepositoryId(artifactId, repositoryId);
         if (deletedRelations != 1) {
             //TODO Throw custom error
             throw new RuntimeException();
@@ -76,11 +70,17 @@ public class ShareService {
 
     public void deleteShareWithTeam(final String artifactId, final String teamId) {
         log.debug("Deleting share-relation");
-        final int deletedRelations = this.sharedJpaRepository.deleteById_ArtifactIdAndId_TeamId(artifactId, teamId);
+        final int deletedRelations = this.sharedJpaRepository.deleteBySharedId_ArtifactIdAndSharedId_TeamId(artifactId, teamId);
         if (deletedRelations != 1) {
             //TODO Throw custom error
             throw new RuntimeException();
         }
+    }
+
+    public List<Shared> getSharedArtifactsFromRepository(final String repositoryId) {
+        log.debug("Querying Ids of artifacts shared with repository");
+        return this.sharedJpaRepository.findBySharedId_RepositoryId(repositoryId).map(this.mapper::mapToModel)
+                .orElseThrow();
     }
 
 
@@ -89,6 +89,12 @@ public class ShareService {
         return repositories.stream()
                 .flatMap(repository -> repository.getSharedArtifacts().stream())
                 .collect(Collectors.toList());
+    }
+
+    public List<Shared> getSharedRepositories(final String artifactId) {
+        log.debug("Querying all repositories that can access the artifact");
+        return this.sharedJpaRepository.findBySharedId_ArtifactIdAndSharedId_RepositoryIdNotNull(artifactId).map(this.mapper::mapToModel)
+                .orElseThrow();
     }
 
 }

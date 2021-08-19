@@ -4,7 +4,6 @@ import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
 import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactService;
 import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactVersionService;
 import io.miragon.bpmrepo.core.artifact.domain.service.StarredService;
-import io.miragon.bpmrepo.core.artifact.infrastructure.entity.ArtifactEntity;
 import io.miragon.bpmrepo.core.repository.domain.business.AssignmentService;
 import io.miragon.bpmrepo.core.repository.domain.business.AuthService;
 import io.miragon.bpmrepo.core.repository.domain.business.RepositoryService;
@@ -66,12 +65,6 @@ public class RepositoryFacade {
         log.debug("Checking Assignments");
         final List<String> repositoryIds = this.assignmentService.getManageableRepositoryIds(userId);
         return this.repositoryService.getRepositories(repositoryIds);
-    }
-
-    public List<Repository> getSharedRepositories(final String artifactId) {
-        log.debug("Checking Permissions");
-        final ArtifactEntity artifactEntity = this.artifactService.getArtifactEntityById(artifactId);
-        return this.repositoryService.getRepositoriesBySharedArtifact(artifactEntity);
     }
 
     public List<Repository> getAllRepositories(final String userId) {

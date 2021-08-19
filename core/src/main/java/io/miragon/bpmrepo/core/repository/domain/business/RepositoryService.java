@@ -1,7 +1,5 @@
 package io.miragon.bpmrepo.core.repository.domain.business;
 
-import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
-import io.miragon.bpmrepo.core.artifact.infrastructure.entity.ArtifactEntity;
 import io.miragon.bpmrepo.core.repository.domain.mapper.RepositoryMapper;
 import io.miragon.bpmrepo.core.repository.domain.model.NewRepository;
 import io.miragon.bpmrepo.core.repository.domain.model.Repository;
@@ -49,25 +47,6 @@ public class RepositoryService {
                 .orElseThrow();
     }
 
-    public void addSharedArtifact(final String repositoryId, final Artifact artifact) {
-        final Repository repository = this.getRepository(repositoryId);
-        repository.addSharedArtifact(artifact);
-        this.saveToDb(repository);
-    }
-
-    public void removeSharedArtifact(final String repositoryId, final Artifact artifact) {
-        final Repository repository = this.getRepository(repositoryId);
-        System.out.println(repository.getSharedArtifacts());
-        repository.removeSharedArtifact(artifact);
-        System.out.println(repository.getSharedArtifacts());
-        this.saveToDb(repository);
-    }
-
-    public List<Repository> getRepositoriesBySharedArtifact(final ArtifactEntity artifactEntity) {
-        return this.repoJpaRepository.findAllBySharedArtifactsContains(artifactEntity)
-                .map(this.mapper::mapToModel)
-                .orElseThrow();
-    }
 
     public void updateAssignedUsers(final String repositoryId, final Integer assignedUsers) {
         final Repository repository = this.getRepository(repositoryId);

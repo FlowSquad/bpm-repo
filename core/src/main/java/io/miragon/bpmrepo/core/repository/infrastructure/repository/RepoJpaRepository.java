@@ -1,6 +1,5 @@
 package io.miragon.bpmrepo.core.repository.infrastructure.repository;
 
-import io.miragon.bpmrepo.core.artifact.infrastructure.entity.ArtifactEntity;
 import io.miragon.bpmrepo.core.repository.infrastructure.entity.RepositoryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -12,7 +11,6 @@ public interface RepoJpaRepository extends JpaRepository<RepositoryEntity, Strin
 
     Optional<List<RepositoryEntity>> findAllByIdIn(List<String> repositoryIds);
 
-    Optional<List<RepositoryEntity>> findAllBySharedArtifactsContains(ArtifactEntity artifactEntity);
 
     RepositoryEntity findByIdAndName(String repositoryId, String repositoryName);
 }

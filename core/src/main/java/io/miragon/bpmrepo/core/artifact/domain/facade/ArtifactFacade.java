@@ -5,11 +5,13 @@ import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
 import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactUpdate;
 import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactVersion;
 import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactVersionUpload;
-import io.miragon.bpmrepo.core.artifact.domain.service.*;
+import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactService;
+import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactVersionService;
+import io.miragon.bpmrepo.core.artifact.domain.service.LockService;
+import io.miragon.bpmrepo.core.artifact.domain.service.StarredService;
 import io.miragon.bpmrepo.core.repository.domain.business.AssignmentService;
 import io.miragon.bpmrepo.core.repository.domain.business.AuthService;
 import io.miragon.bpmrepo.core.repository.domain.business.RepositoryService;
-import io.miragon.bpmrepo.core.repository.domain.facade.RepositoryFacade;
 import io.miragon.bpmrepo.core.shared.enums.RoleEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,12 +29,10 @@ public class ArtifactFacade {
     private final LockService lockService;
 
     private final ArtifactVersionFacade artifactVersionFacade;
-    private final RepositoryFacade repositoryFacade;
 
     private final ArtifactService artifactService;
     private final ArtifactVersionService artifactVersionService;
     private final StarredService starredService;
-    private final ShareService shareService;
 
     private final AssignmentService assignmentService;
     private final RepositoryService repositoryService;

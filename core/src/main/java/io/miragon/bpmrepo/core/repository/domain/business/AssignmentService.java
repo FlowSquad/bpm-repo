@@ -53,7 +53,6 @@ public class AssignmentService {
         this.authService.checkIfOperationIsAllowed(assignmentUpdate.getRepositoryId(), RoleEnum.ADMIN);
         final Assignment assignment = new Assignment(assignmentUpdate);
 
-        final String newAssignmentUserId = this.userService.getUserIdByUsername(assignmentUpdate.getUsername());
         final String currentUserId = this.userService.getUserIdOfCurrentUser();
         final RoleEnum currentUserRole = this.getUserRole(assignment.getRepositoryId(), currentUserId);
 
@@ -98,7 +97,7 @@ public class AssignmentService {
         final List<RoleEnum> roles = new ArrayList<>();
         roles.add(RoleEnum.ADMIN);
         roles.add(RoleEnum.OWNER);
-        final Optional<List<Assignment>> assignments = this.assignmentJpaRepository.findByAssignmentId_UserIdAndRoleEnumIn(userId, roles).map(this.mapper::mapToModel);
+        final Optional<List<Assignment>> assignments = this.assignmentJpaRepository.findByAssignmentId_UserIdAndRoleIn(userId, roles).map(this.mapper::mapToModel);
         if (assignments.isEmpty()) {
             throw new ObjectNotFoundException();
         }

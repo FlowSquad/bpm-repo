@@ -23,6 +23,11 @@ public interface SharedMapper {
     @Mapping(source = "teamId", target = "teamId")
     SharedId mapTeamToEmbeddable(String artifactId, String teamId);
 
+    @Mapping(source = "artifactId", target = "artifactId")
+    @Mapping(source = "repositoryId", target = "repositoryId")
+    @Mapping(source = "teamId", target = "teamId")
+    SharedId mapToEmbeddable(String artifactId, String repositoryId, String teamId);
+
     @Mapping(target = "artifactId", expression = "java(sharedEntity.getSharedId().getArtifactId())")
     @Mapping(target = "repositoryId", expression = "java(sharedEntity.getSharedId().getRepositoryId())")
     @Mapping(target = "teamId", expression = "java(sharedEntity.getSharedId().getTeamId())")

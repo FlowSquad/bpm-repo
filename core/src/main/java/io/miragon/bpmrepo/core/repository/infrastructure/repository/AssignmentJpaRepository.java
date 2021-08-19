@@ -13,7 +13,7 @@ public interface AssignmentJpaRepository extends JpaRepository<AssignmentEntity,
 
     Optional<AssignmentEntity> findByAssignmentId_RepositoryIdAndAssignmentId_UserId(String repositoryId, String userId);
 
-    Optional<List<AssignmentEntity>> findByAssignmentId_UserIdAndRoleEnumIn(String userId, List<RoleEnum> roles);
+    Optional<List<AssignmentEntity>> findByAssignmentId_UserIdAndRoleIn(String userId, List<RoleEnum> roles);
 
     List<AssignmentEntity> findByAssignmentId_RepositoryId(String repositoryId);
 

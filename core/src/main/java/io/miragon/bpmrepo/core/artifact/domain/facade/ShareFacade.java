@@ -7,6 +7,7 @@ import io.miragon.bpmrepo.core.artifact.domain.model.Shared;
 import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactService;
 import io.miragon.bpmrepo.core.artifact.domain.service.ShareService;
 import io.miragon.bpmrepo.core.repository.domain.business.AuthService;
+import io.miragon.bpmrepo.core.repository.domain.business.RepositoryService;
 import io.miragon.bpmrepo.core.repository.domain.facade.RepositoryFacade;
 import io.miragon.bpmrepo.core.repository.domain.model.Repository;
 import io.miragon.bpmrepo.core.shared.enums.RoleEnum;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -24,7 +26,7 @@ public class ShareFacade {
     private final AuthService authService;
     private final ArtifactService artifactService;
     private final ShareService shareService;
-
+    private final RepositoryService repositoryService;
     private final RepositoryFacade repositoryFacade;
 
     public Shared shareWithRepository(final ShareWithRepositoryTO shareWithRepositoryTO) {
@@ -87,7 +89,19 @@ public class ShareFacade {
     public List<Artifact> getSharedArtifacts(final String repositoryId) {
         log.debug("Checking Permissions");
         this.authService.checkIfOperationIsAllowed(repositoryId, RoleEnum.MEMBER);
+
         final Repository repository = this.repositoryFacade.getRepository(repositoryId);
-        return this.artifactService.getSharedArtifactsFromRepository(repository);
+        final List<String> sharedArtifactIds = this.shareService.getSharedArtifactsFromRepository(repositoryId).stream().map(Shared::getArtifactId).collect(Collectors.toList());
+        return this.artifactService.getAllArtifactsById(sharedArtifactIds)
+                .orElseThrow();
+    }
+
+    public List<Repository> getSharedRepositories(final String artifactId) {
+        log.debug("Checking Permissions");
+        final Artifact artifact = this.artifactService.getArtifactById(artifactId);
+        this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.ADMIN);
+        final List<Shared> shareds = this.shareService.getSharedRepositories(artifactId);
+        final List<String> repositoryIds = shareds.stream().map(Shared::getRepositoryId).collect(Collectors.toList());
+        return this.repositoryService.getRepositories(repositoryIds);
     }
 }

@@ -104,19 +104,6 @@ public class RepositoryController {
         return ResponseEntity.ok().body(this.apiMapper.mapToTO(repositories));
     }
 
-    /**
-     * Returns all repositories that can access the specified artifact
-     *
-     * @param artifactId Id of the artifact
-     * @return List of repositories
-     */
-    @GetMapping("/share/{artifactId}")
-    @Operation(summary = "Get all repositories that can access a specific artifact")
-    public ResponseEntity<List<RepositoryTO>> getSharedRepositories(@PathVariable @NotBlank final String artifactId) {
-        log.debug("Returning all repositories that can access artifact {}", artifactId);
-        final List<Repository> repositories = this.repositoryFacade.getSharedRepositories(artifactId);
-        return ResponseEntity.ok().body(this.apiMapper.mapToTO(repositories));
-    }
 
     /**
      * Delete a repository (only callable by Repository owner)

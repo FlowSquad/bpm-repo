@@ -8,6 +8,9 @@ import io.miragon.bpmrepo.core.artifact.api.transport.ShareWithTeamTO;
 import io.miragon.bpmrepo.core.artifact.domain.facade.ShareFacade;
 import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
 import io.miragon.bpmrepo.core.artifact.domain.model.Shared;
+import io.miragon.bpmrepo.core.repository.api.mapper.RepositoryApiMapper;
+import io.miragon.bpmrepo.core.repository.api.transport.RepositoryTO;
+import io.miragon.bpmrepo.core.repository.domain.model.Repository;
 import io.miragon.bpmrepo.core.user.domain.business.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,11 +37,12 @@ public class ShareController {
 
     private final ShareFacade shareFacade;
     private final SharedApiMapper apiMapper;
+    private final RepositoryApiMapper repositoryApiMapper;
     private final ArtifactApiMapper artifactApiMapper;
 
     private final UserService userService;
 
-    
+
     /**
      * Share an artifact with another repository
      *
@@ -75,8 +79,8 @@ public class ShareController {
      */
     @Operation(summary = "Delete the sharing-relation to a specific repository")
     @DeleteMapping("/repository/unshare/{artifactId}/{repositoryId}")
-    public ResponseEntity<Void> unshareArtifactWithRepository(@RequestParam @Valid final String artifactId,
-                                                              @RequestParam @Valid final String repositoryId) {
+    public ResponseEntity<Void> unshareArtifactWithRepository(@PathVariable @Valid final String artifactId,
+                                                              @PathVariable @Valid final String repositoryId) {
         log.debug("Removing share-relation of artifact {} with repository {}", artifactId, repositoryId);
         this.shareFacade.unshareWithRepository(artifactId, repositoryId);
         return ResponseEntity.ok().build();
@@ -104,7 +108,7 @@ public class ShareController {
      * @return created share-object
      */
     @Operation(summary = "Update the share-role of a relation with a team")
-    @PutMapping("/repository")
+    @PutMapping("/team")
     public ResponseEntity<ShareWithTeamTO> UpdateShareWithTeam(@RequestBody @Valid final ShareWithTeamTO shareWithTeamTO) {
         log.debug("Sharing Artifact {} with repository {}", shareWithTeamTO.getArtifactId(), shareWithTeamTO.getTeamId());
         final Shared shared = this.shareFacade.updateShareWithTeam(shareWithTeamTO);
@@ -119,8 +123,8 @@ public class ShareController {
      */
     @Operation(summary = "Delete the sharing-relation to a specific repository")
     @DeleteMapping("/team/unshare/{artifactId}/{teamId}")
-    public ResponseEntity<Void> unshareArtifactWithTeam(@RequestParam @Valid final String artifactId,
-                                                        @RequestParam @Valid final String teamId) {
+    public ResponseEntity<Void> unshareArtifactWithTeam(@PathVariable @Valid final String artifactId,
+                                                        @PathVariable @Valid final String teamId) {
         log.debug("Removing share-relation of artifact {} with team {}", artifactId, teamId);
         this.shareFacade.unshareWithTeam(artifactId, teamId);
         return ResponseEntity.ok().build();
@@ -153,6 +157,20 @@ public class ShareController {
         log.debug("Returning Artifacts shared with Repository {}", repositoryId);
         final List<Artifact> sharedArtifacts = this.shareFacade.getSharedArtifacts(repositoryId);
         return ResponseEntity.ok().body(sharedArtifacts.stream().map(this.artifactApiMapper::mapToTO).collect(Collectors.toList()));
+    }
+
+    /**
+     * Returns all repositories that can access the specified artifact
+     *
+     * @param artifactId Id of the artifact
+     * @return List of repositories
+     */
+    @GetMapping("/repository/{artifactId}")
+    @Operation(summary = "Get all repositories that can access a specific artifact")
+    public ResponseEntity<List<RepositoryTO>> getSharedRepositories(@PathVariable @NotBlank final String artifactId) {
+        log.debug("Returning all repositories that can access artifact {}", artifactId);
+        final List<Repository> repositories = this.shareFacade.getSharedRepositories(artifactId);
+        return ResponseEntity.ok().body(this.repositoryApiMapper.mapToTO(repositories));
     }
 
 }
