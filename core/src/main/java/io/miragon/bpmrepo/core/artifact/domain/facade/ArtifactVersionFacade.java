@@ -3,6 +3,7 @@ package io.miragon.bpmrepo.core.artifact.domain.facade;
 import io.miragon.bpmrepo.core.artifact.domain.enums.SaveTypeEnum;
 import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
 import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactVersion;
+import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactVersionUpdate;
 import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactVersionUpload;
 import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactService;
 import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactVersionService;
@@ -30,16 +31,15 @@ public class ArtifactVersionFacade {
     private final ArtifactVersionService artifactVersionService;
     private final ArtifactService artifactService;
 
-    public String createOrUpdateVersion(final String artifactId, final ArtifactVersionUpload artifactVersionUpload) {
-        //TODO refactoring - to complicated
 
+    public ArtifactVersion createVersion(final String artifactId, final ArtifactVersionUpload artifactVersionUpload) {
         final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.MEMBER);
 
         final ArtifactVersion artifactVersion = ArtifactVersion.builder()
                 .repositoryId(artifact.getRepositoryId())
                 .artifactId(artifactId)
-                .comment(artifactVersionUpload.getVersionComment())
+                .comment(artifactVersionUpload.getComment())
                 .xml(artifactVersionUpload.getXml())
                 .saveType(artifactVersionUpload.getSaveType())
                 .updatedDate(LocalDateTime.now())
@@ -47,33 +47,39 @@ public class ArtifactVersionFacade {
 
         //initial version
         if (this.verifyRelationService.checkIfVersionIsInitialVersion(artifactId)) {
-            final String bpmnArtifactVersionId = this.artifactVersionService.createInitialVersion(artifactVersion);
+            final ArtifactVersion createdArtifactVersion = this.artifactVersionService.createInitialVersion(artifactVersion);
             this.artifactService.updateUpdatedDate(artifactId);
-            return bpmnArtifactVersionId;
+            return createdArtifactVersion;
         }
 
-        //Update current version
-        if (artifactVersionUpload.getSaveType() == SaveTypeEnum.AUTOSAVE) {
-            this.lockService.checkIfVersionIsUnlockedOrLockedByActiveUser(artifact);
-            final String bpmnArtifactVersionId = this.artifactVersionService.updateVersion(artifactVersion);
-            //refresh the updated date in artifactEntity
-            this.artifactService.updateUpdatedDate(artifactId);
-            return bpmnArtifactVersionId;
-        }
-
-        //Create new Version
+        //Create new Version - additional Check for Locking
         this.lockService.checkIfVersionIsUnlockedOrLockedByActiveUser(artifact);
-        final String bpmnArtifactVersionId = this.artifactVersionService.createNewVersion(artifactVersion);
+        final ArtifactVersion createdArtifactVersion = this.artifactVersionService.createNewVersion(artifactVersion);
         this.artifactService.updateUpdatedDate(artifactId);
         this.deleteAutosavedVersionsIfMilestoneIsSaved(artifact.getRepositoryId(), artifactId, artifactVersionUpload.getSaveType());
-        return bpmnArtifactVersionId;
+        return createdArtifactVersion;
     }
 
-    //simply deletes all entities that contain the SaveType "AUTOSAVE"
-    private void deleteAutosavedVersionsIfMilestoneIsSaved(final String bpmnRepositoryId, final String bpmnartifactId,
+
+    public ArtifactVersion updateVersion(final String artifactId, final ArtifactVersionUpdate artifactVersionUpdate) {
+        final Artifact artifact = this.artifactService.getArtifactById(artifactId);
+        this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.MEMBER);
+        final ArtifactVersion requestedArtifactVersion = this.artifactVersionService.getVersion(artifactVersionUpdate.getVersionId());
+        final ArtifactVersion latestVersion = this.artifactVersionService.getLatestVersion(artifactId);
+        if (!requestedArtifactVersion.getId().equals(latestVersion.getId())) {
+            //TODO: Throw custom error "Cant edit historical data"
+            throw new RuntimeException();
+        }
+
+        return this.artifactVersionService.updateVersion(artifactVersionUpdate);
+    }
+
+
+    //deletes all entities that contain the SaveType "AUTOSAVE"
+    private void deleteAutosavedVersionsIfMilestoneIsSaved(final String repositoryId, final String artifactId,
                                                            final SaveTypeEnum saveTypeEnum) {
-        if (saveTypeEnum.equals(SaveTypeEnum.AUTOSAVE)) {
-            this.artifactVersionService.deleteAutosavedVersions(bpmnRepositoryId, bpmnartifactId);
+        if (saveTypeEnum.equals(SaveTypeEnum.MILESTONE)) {
+            this.artifactVersionService.deleteAutosavedVersions(repositoryId, artifactId);
         }
     }
 

@@ -78,7 +78,7 @@ public class ArtifactServiceTest {
         when(this.mapper.mapToModel(artifactEntity)).thenReturn(artifact);
         when(this.mapper.mapToEntity(artifact)).thenReturn(artifactEntity);
 
-        this.artifactService.updateArtifact(artifactId, artifactUpdate);
+        this.artifactService.updateArtifact(artifact, artifactUpdate);
         verify(this.artifactJpaRepository, times(1)).findById(artifactId);
         verify(this.artifactJpaRepository, times(1)).save(captor.capture());
 

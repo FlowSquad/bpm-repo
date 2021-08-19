@@ -9,7 +9,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class ArtifactVersionUpload {
+public class ArtifactVersionUpdate {
+
+    private String versionId;
 
     private String comment;
 

@@ -5,14 +5,13 @@ import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
 import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactUpdate;
 import io.miragon.bpmrepo.core.artifact.infrastructure.entity.ArtifactEntity;
 import io.miragon.bpmrepo.core.artifact.infrastructure.repository.ArtifactJpaRepository;
+import io.miragon.bpmrepo.core.repository.domain.model.Repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -26,29 +25,43 @@ public class ArtifactService {
         return this.saveArtifact(artifact);
     }
 
-    public Artifact updateArtifact(final String artifactId, final ArtifactUpdate artifactUpdate) {
-        final Artifact artifact = this.getArtifactById(artifactId);
+    public Artifact updateArtifact(final Artifact artifact, final ArtifactUpdate artifactUpdate) {
+        log.debug("Persisting Update");
         artifact.updateArtifact(artifactUpdate);
         return this.saveArtifact(artifact);
     }
 
-    public List<Artifact> getArtifactsByRepo(final String repositoryId) {
-        final List<ArtifactEntity> artifacts = this.artifactJpaRepository.findAllByRepositoryIdOrderByUpdatedDateDesc(repositoryId);
-        return this.mapper.mapToModel(artifacts);
+    public Optional<List<Artifact>> getArtifactsByRepo(final String repositoryId) {
+        log.debug("Querying Artifacts in Repository");
+        return this.artifactJpaRepository.findAllByRepositoryIdOrderByUpdatedDateDesc(repositoryId)
+                .map(this.mapper::mapToModel);
     }
 
     public Artifact getArtifactById(final String artifactId) {
+        log.debug("Querying single Artifact");
+        return this.artifactJpaRepository.findById(artifactId).map(this.mapper::mapToModel)
+                .orElseThrow();
+    }
+
+    public ArtifactEntity getArtifactEntityById(final String artifactId) {
+        log.debug("Querying single Artifact");
         return this.artifactJpaRepository.findById(artifactId)
-                .map(this.mapper::mapToModel)
                 .orElseThrow();
     }
 
     public Optional<List<Artifact>> getAllArtifactsById(final List<String> artifactIds) {
+        log.debug("Querying List of Artifacts");
         return this.artifactJpaRepository.findAllByIdIn(artifactIds).map(this.mapper::mapToModel);
     }
 
     public Optional<List<Artifact>> getAllByRepositoryIds(final List<String> repositoryIds) {
+        log.debug("Querying all Artifacts in List of Repositories");
         return this.artifactJpaRepository.findAllByRepositoryIdIn(repositoryIds).map(this.mapper::mapToModel);
+    }
+
+    public List<Artifact> getSharedArtifactsFromRepository(final Repository repository) {
+        log.debug("Querying all shared Artifacts from Repository");
+        return repository.getSharedArtifacts();
     }
 
     public void updateUpdatedDate(final String artifactId) {
@@ -57,58 +70,59 @@ public class ArtifactService {
         this.saveArtifact(artifact);
     }
 
-    private Artifact saveArtifact(final Artifact bpmnArtifact) {
-        val savedArtifact = this.artifactJpaRepository.save(this.mapper.mapToEntity(bpmnArtifact));
+    private Artifact saveArtifact(final Artifact artifact) {
+        log.debug("Persisting Artifact");
+        final ArtifactEntity savedArtifact = this.artifactJpaRepository.save(this.mapper.mapToEntity(artifact));
         return this.mapper.mapToModel(savedArtifact);
     }
 
     public Integer countExistingArtifacts(final String repositoryId) {
+        log.debug("Querying number of existing Artifacts");
         return this.artifactJpaRepository.countAllByRepositoryId(repositoryId);
     }
 
     public void deleteArtifact(final String artifactId) {
         this.artifactJpaRepository.deleteById(artifactId);
-        log.info(String.format("Deleted %s Artifact", artifactId));
+        log.info(String.format("Deleted Artifact with ID %s", artifactId));
     }
 
-    public void deleteAllByRepositoryId(final String bpmnRepositoryId) {
-        final int deletedArtifacts = this.artifactJpaRepository.deleteAllByRepositoryId(bpmnRepositoryId);
+    public void deleteAllByRepositoryId(final String repositoryId) {
+        final int deletedArtifacts = this.artifactJpaRepository.deleteAllByRepositoryId(repositoryId);
         log.debug(String.format("Deleted %s artifacts", deletedArtifacts));
     }
 
-    public List<Artifact> getRecent(final List<String> assignments) {
+    public Optional<List<Artifact>> getRecent(final List<String> assignedRepositoryIds) {
+        log.debug("Querying recent Artifacts");
         //TODO Improve performance -> save in separate db
-        final List<ArtifactEntity> artifacts = assignments.stream()
-                .map(this.artifactJpaRepository::findAllByRepositoryIdOrderByUpdatedDateDesc)
-                .flatMap(Collection::stream)
-                .sorted(Comparator.comparing(a -> Timestamp.valueOf(a.getUpdatedDate())))
-                .collect(Collectors.toList());
-        Collections.reverse(artifacts);
-        return this.mapper.mapToModel(artifacts.subList(0, Math.min(artifacts.size(), 10)));
+        return this.artifactJpaRepository.findTop10ByRepositoryIdInOrderByUpdatedDateDesc(assignedRepositoryIds)
+                .map(this.mapper::mapToModel);
     }
 
-    public void updatePreviewSVG(final String artifactId, final String svgPreview) {
+    public Artifact updatePreviewSVG(final String artifactId, final String svgPreview) {
+        log.debug("Persisting Update");
         final Artifact artifact = this.getArtifactById(artifactId);
         artifact.updateSvgPreview(svgPreview);
-        this.saveArtifact(artifact);
+        return this.saveArtifact(artifact);
     }
 
-    public List<Artifact> searchArtifacts(final List<String> assignedRepoIds, final String typedTitle) {
-        final List<ArtifactEntity> assignedArtifacts = this.artifactJpaRepository
-                .findAllByRepositoryIdInAndNameStartsWithIgnoreCase(assignedRepoIds, typedTitle);
-        return this.mapper.mapToModel(assignedArtifacts);
+    public Optional<List<Artifact>> searchArtifacts(final List<String> assignedRepoIds, final String typedTitle) {
+        log.debug("Querying Artifacts that match the search string");
+        return this.artifactJpaRepository
+                .findAllByRepositoryIdInAndNameStartsWithIgnoreCase(assignedRepoIds, typedTitle).map(this.mapper::mapToModel);
     }
 
-    public void lockArtifact(final String artifactId, final String username) {
+    public Artifact lockArtifact(final String artifactId, final String username) {
+        log.debug("Persisting Artifact-Lock for Artifact {} for User {}", artifactId, username);
         final Artifact artifact = this.getArtifactById(artifactId);
         artifact.lock(username);
-        this.saveArtifact(artifact);
+        return this.saveArtifact(artifact);
     }
 
-    public void unlockArtifact(final String artifactId) {
+    public Artifact unlockArtifact(final String artifactId) {
+        log.debug("Releasing Artifact-Lock for Artifact {}", artifactId);
         final Artifact artifact = this.getArtifactById(artifactId);
         artifact.unlock();
-        ArtifactService.this.saveArtifact(artifact);
+        return ArtifactService.this.saveArtifact(artifact);
     }
 
     public Optional<List<Artifact>> getByRepoIdAndType(final String repositoryId, final String type) {

@@ -1,4 +1,4 @@
-package io.miragon.bpmrepo.core.repository.infrastructure.entity;
+package io.miragon.bpmrepo.core.artifact.infrastructure.entity;
 
 import io.miragon.bpmrepo.core.shared.enums.RoleEnum;
 import lombok.*;
@@ -10,17 +10,14 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "assignment")
-public class AssignmentEntity {
+@Entity(name = "shared")
+public class SharedEntity {
 
     @EmbeddedId
-    private AssignmentId assignmentId;
-
-    @Column(name = "user_name_")
-    private String username;
+    private SharedId sharedId;
 
     //0: OWNER - 1:ADMIN - 2:MEMBER - 3:VIEWER
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "role_")
+    @Column(name = "role", nullable = false)
     private RoleEnum role;
 }

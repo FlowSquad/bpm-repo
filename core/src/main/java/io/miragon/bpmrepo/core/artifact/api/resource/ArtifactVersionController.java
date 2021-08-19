@@ -2,6 +2,7 @@ package io.miragon.bpmrepo.core.artifact.api.resource;
 
 import io.miragon.bpmrepo.core.artifact.api.mapper.ArtifactVersionApiMapper;
 import io.miragon.bpmrepo.core.artifact.api.transport.ArtifactVersionTO;
+import io.miragon.bpmrepo.core.artifact.api.transport.ArtifactVersionUpdateTO;
 import io.miragon.bpmrepo.core.artifact.api.transport.ArtifactVersionUploadTO;
 import io.miragon.bpmrepo.core.artifact.domain.facade.ArtifactVersionFacade;
 import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactVersion;
@@ -36,20 +37,40 @@ public class ArtifactVersionController {
     private final ArtifactVersionApiMapper apiMapper;
 
     /**
-     * Create a new version of the artifact. No Write permission if artifact is not locked by requesting user
+     * Create a new version of the artifact. (The artifact has to be locked by the user to use this endpoint)
      *
      * @param artifactId              Id of the artifact
-     * @param artifactVersionUploadTO Update object
+     * @param artifactVersionUploadTO Upload object
+     * @return created version
      */
     @PostMapping("/{artifactId}")
-    public ResponseEntity<String> createOrUpdateVersion(
+    public ResponseEntity<ArtifactVersionTO> createVersion(
             @PathVariable @NotBlank final String artifactId,
             @RequestBody @Valid final ArtifactVersionUploadTO artifactVersionUploadTO) {
         //TODO trennen POST und PUT
-        log.debug("Creating new Version. Savetype: " + artifactVersionUploadTO.getSaveType());
-        final String artifactVersionId = this.artifactVersionFacade.createOrUpdateVersion(artifactId, this.apiMapper.mapUploadToModel(artifactVersionUploadTO));
-        return ResponseEntity.ok(artifactVersionId);
+        log.debug("Creating new Version of Artifact {}", artifactId);
+        final ArtifactVersion artifactVersion = this.artifactVersionFacade.createVersion(artifactId, this.apiMapper.mapUploadToModel(artifactVersionUploadTO));
+        return ResponseEntity.ok(this.apiMapper.mapToTO(artifactVersion));
     }
+
+
+    /**
+     * Update version of the artifact. (The artifact has to be locked by the user to use this endpoint)
+     *
+     * @param artifactId              Id of the artifact
+     * @param artifactVersionUpdateTO Update object
+     * @return updated version
+     */
+    @PutMapping("/{artifactId}")
+    public ResponseEntity<ArtifactVersionTO> updateVersion(
+            @PathVariable @NotBlank final String artifactId,
+            @RequestBody @Valid final ArtifactVersionUpdateTO artifactVersionUpdateTO) {
+        //TODO trennen POST und PUT
+        log.debug("Creating new Version of Artifact {}", artifactId);
+        final ArtifactVersion artifactVersion = this.artifactVersionFacade.updateVersion(artifactId, this.apiMapper.mapUpdateToModel(artifactVersionUpdateTO));
+        return ResponseEntity.ok(this.apiMapper.mapToTO(artifactVersion));
+    }
+
 
     /**
      * Get latest version

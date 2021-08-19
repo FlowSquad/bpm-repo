@@ -26,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -87,10 +88,10 @@ public class RepositoryFacadeTest {
         assignmentList.add(assignment);
 
         when(this.userService.getUserIdOfCurrentUser()).thenReturn(USERID);
-        when(this.assignmentJpa.findAssignmentEntitiesByAssignmentId_UserIdEquals(USERID)).thenReturn(assignmentList);
+        when(this.assignmentJpa.findAssignmentEntitiesByAssignmentId_UserIdEquals(USERID)).thenReturn(Optional.of(assignmentList));
         when(this.repositoryService.createRepository(this.newRepository)).thenReturn(repository);
 
-        this.repositoryFacade.createRepository(this.newRepository);
+        this.repositoryFacade.createRepository(this.newRepository, USERID);
         verify(this.repositoryService, times(1)).createRepository(any());
         verify(this.assignmentService, times(1)).createInitialAssignment(any());
     }

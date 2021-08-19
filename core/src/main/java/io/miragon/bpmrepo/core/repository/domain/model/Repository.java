@@ -48,8 +48,9 @@ public class Repository {
         this.sharedArtifacts.add(artifact);
     }
 
+
     public void removeSharedArtifact(final Artifact artifact) {
-        this.sharedArtifacts.remove(artifact);
+        this.sharedArtifacts.remove(this.sharedArtifacts);
     }
 
     public void updateAssingedUsers(final Integer users) {

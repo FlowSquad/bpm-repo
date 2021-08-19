@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,12 +35,17 @@ public class ArtifactVersion {
 
     private final List<Deployment> deployments;
 
-    public void updateVersion(final ArtifactVersion artifactVersion) {
-        if (StringUtils.isNotBlank((artifactVersion.getComment()))) {
-            this.comment = artifactVersion.getComment();
-        }
+
+    public void increaseVersion(final ArtifactVersion artifactVersion) {
+        this.comment = artifactVersion.getComment();
         this.milestone++;
         this.xml = artifactVersion.getXml();
+        this.updatedDate = LocalDateTime.now();
+    }
+
+    public void updateVersion(final ArtifactVersionUpdate artifactVersionUpdate) {
+        this.comment = artifactVersionUpdate.getComment();
+        this.xml = artifactVersionUpdate.getXml();
         this.updatedDate = LocalDateTime.now();
     }
 
@@ -57,5 +61,4 @@ public class ArtifactVersion {
                 .build();
         this.deployments.add(deployment);
     }
-
 }

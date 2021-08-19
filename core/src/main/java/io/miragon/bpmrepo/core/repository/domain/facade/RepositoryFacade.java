@@ -1,8 +1,10 @@
 package io.miragon.bpmrepo.core.repository.domain.facade;
 
+import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
 import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactService;
 import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactVersionService;
 import io.miragon.bpmrepo.core.artifact.domain.service.StarredService;
+import io.miragon.bpmrepo.core.artifact.infrastructure.entity.ArtifactEntity;
 import io.miragon.bpmrepo.core.repository.domain.business.AssignmentService;
 import io.miragon.bpmrepo.core.repository.domain.business.AuthService;
 import io.miragon.bpmrepo.core.repository.domain.business.RepositoryService;
@@ -11,12 +13,12 @@ import io.miragon.bpmrepo.core.repository.domain.model.NewRepository;
 import io.miragon.bpmrepo.core.repository.domain.model.Repository;
 import io.miragon.bpmrepo.core.repository.domain.model.RepositoryUpdate;
 import io.miragon.bpmrepo.core.shared.enums.RoleEnum;
-import io.miragon.bpmrepo.core.user.domain.business.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -26,25 +28,26 @@ public class RepositoryFacade {
     private final RepositoryService repositoryService;
     private final ArtifactService artifactService;
     private final AssignmentService assignmentService;
-    private final UserService userService;
     private final AuthService authService;
     private final ArtifactVersionService artifactVersionService;
     private final StarredService starredService;
 
-    public Repository createRepository(final NewRepository newRepository) {
-        this.checkIfRepositoryNameIsAvailable(newRepository.getName());
+    public Repository createRepository(final NewRepository newRepository, final String userId) {
+        log.debug("Checking if name is available");
+        this.checkIfRepositoryNameIsAvailable(newRepository.getName(), userId);
         final Repository repository = this.repositoryService.createRepository(newRepository);
         this.assignmentService.createInitialAssignment(repository.getId());
         return repository;
     }
 
-    public void updateRepository(final String repositoryId, final RepositoryUpdate repositoryUpdate) {
+    public Repository updateRepository(final String repositoryId, final RepositoryUpdate repositoryUpdate) {
+        log.debug("Checking permissions");
         this.authService.checkIfOperationIsAllowed(repositoryId, RoleEnum.ADMIN);
-        this.repositoryService.updateRepository(repositoryId, repositoryUpdate);
+        return this.repositoryService.updateRepository(repositoryId, repositoryUpdate);
     }
 
-    private void checkIfRepositoryNameIsAvailable(final String repositoryName) {
-        final List<String> assignedRepositoryIds = this.assignmentService.getAllAssignedRepositoryIds(this.userService.getUserIdOfCurrentUser());
+    private void checkIfRepositoryNameIsAvailable(final String repositoryName, final String userId) {
+        final List<String> assignedRepositoryIds = this.assignmentService.getAllAssignedRepositoryIds(userId);
         for (final String repositoryId : assignedRepositoryIds) {
             final Repository repository = this.repositoryService.getRepository(repositoryId);
             if (repository.getName().equals(repositoryName)) {
@@ -54,27 +57,40 @@ public class RepositoryFacade {
     }
 
     public Repository getRepository(final String repositoryId) {
+        log.debug("Checking Permissions");
         this.authService.checkIfOperationIsAllowed(repositoryId, RoleEnum.VIEWER);
         return this.repositoryService.getRepository(repositoryId);
     }
 
-    public List<Repository> getAllRepositories() {
-        final String userId = this.userService.getUserIdOfCurrentUser();
+    public List<Repository> getManageableRepositories(final String userId) {
+        log.debug("Checking Assignments");
+        final List<String> repositoryIds = this.assignmentService.getManageableRepositoryIds(userId);
+        return this.repositoryService.getRepositories(repositoryIds);
+    }
+
+    public List<Repository> getSharedRepositories(final String artifactId) {
+        log.debug("Checking Permissions");
+        final ArtifactEntity artifactEntity = this.artifactService.getArtifactEntityById(artifactId);
+        return this.repositoryService.getRepositoriesBySharedArtifact(artifactEntity);
+    }
+
+    public List<Repository> getAllRepositories(final String userId) {
+        log.debug("Fetching all assigned Repositories");
         return this.assignmentService.getAllAssignedRepositoryIds(userId).stream()
                 .map(this.repositoryService::getRepository)
                 .collect(Collectors.toList());
     }
 
     public void deleteRepository(final String repositoryId) {
+        log.debug("Checking Permissions");
         this.authService.checkIfOperationIsAllowed(repositoryId, RoleEnum.OWNER);
         this.artifactVersionService.deleteAllByRepositoryId(repositoryId);
-
-        final List<String> artifactIds = this.artifactService.getArtifactsByRepo(repositoryId).stream().map(artifact -> artifact.getId())
-                .collect(Collectors.toList());
-        this.starredService.deleteAllByArtifactIds(artifactIds);
+        final Optional<List<Artifact>> artifacts = this.artifactService.getArtifactsByRepo(repositoryId);
+        if (artifacts.isPresent()) {
+            this.starredService.deleteAllByArtifactIds(artifacts.get().stream().map(Artifact::getId).collect(Collectors.toList()));
+        }
         this.artifactService.deleteAllByRepositoryId(repositoryId);
         this.repositoryService.deleteRepository(repositoryId);
         this.assignmentService.deleteAllByRepositoryId(repositoryId);
-        log.debug("Deleted repository including related artifacts and assignments");
     }
 }

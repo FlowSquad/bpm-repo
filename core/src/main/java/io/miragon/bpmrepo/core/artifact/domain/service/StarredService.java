@@ -19,6 +19,7 @@ public class StarredService {
     private final StarredMapper mapper;
 
     public void setStarred(final String artifactId, final String userId) {
+        log.debug("Persisting the starred-relation");
         final StarredEntity starredEntity = this.starredJpa.findById_artifactIdAndId_UserId(artifactId, userId);
         if (starredEntity == null) {
             this.createStarred(artifactId, userId);

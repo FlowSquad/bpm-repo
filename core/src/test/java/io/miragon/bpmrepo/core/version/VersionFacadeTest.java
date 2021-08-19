@@ -62,9 +62,9 @@ public class VersionFacadeTest {
         when(this.artifactService.getArtifactById(artifactId)).thenReturn(artifact);
         when(this.verifyRelationService.checkIfVersionIsInitialVersion(any())).thenReturn(true);
 
-        final ArtifactVersionUpload bpmnArtifactVersionUploadTO = VersionBuilder.buildVersionUpload(COMMENT, FILESTRING, saveType);
+        final ArtifactVersionUpload artifactVersionUploadTO = VersionBuilder.buildVersionUpload(COMMENT, FILESTRING, saveType);
 
-        this.artifactVersionFacade.createOrUpdateVersion(artifactId, bpmnArtifactVersionUploadTO);
+        this.artifactVersionFacade.createVersion(artifactId, artifactVersionUploadTO);
         verify(this.authService, times(1)).checkIfOperationIsAllowed(REPOID, RoleEnum.MEMBER);
     }
 

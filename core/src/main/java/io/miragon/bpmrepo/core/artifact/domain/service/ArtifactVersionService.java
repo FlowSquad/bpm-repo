@@ -3,6 +3,7 @@ package io.miragon.bpmrepo.core.artifact.domain.service;
 import io.miragon.bpmrepo.core.artifact.domain.enums.SaveTypeEnum;
 import io.miragon.bpmrepo.core.artifact.domain.mapper.VersionMapper;
 import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactVersion;
+import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactVersionUpdate;
 import io.miragon.bpmrepo.core.artifact.infrastructure.entity.ArtifactVersionEntity;
 import io.miragon.bpmrepo.core.artifact.infrastructure.repository.ArtifactVersionJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,19 +21,19 @@ public class ArtifactVersionService {
     private final ArtifactVersionJpaRepository artifactVersionJpaRepository;
     private final VersionMapper mapper;
 
-    public String updateVersion(final ArtifactVersion artifactVersion) {
-        final ArtifactVersion latestVersion = this.getLatestVersion(artifactVersion.getArtifactId());
-        latestVersion.updateVersion(artifactVersion);
-        return this.saveToDb(latestVersion);
+    public ArtifactVersion updateVersion(final ArtifactVersionUpdate artifactVersionUpdate) {
+        final ArtifactVersion updatedVersion = this.getVersion(artifactVersionUpdate.getVersionId());
+        updatedVersion.updateVersion(artifactVersionUpdate);
+        return this.saveToDb(updatedVersion);
     }
 
-    public String createNewVersion(final ArtifactVersion artifactVersion) {
+    public ArtifactVersion createNewVersion(final ArtifactVersion artifactVersion) {
         final ArtifactVersion latestVersion = this.getLatestVersion(artifactVersion.getArtifactId());
         artifactVersion.updateMilestone(latestVersion.getMilestone() + 1);
         return this.saveToDb(artifactVersion);
     }
 
-    public String createInitialVersion(final ArtifactVersion artifactVersion) {
+    public ArtifactVersion createInitialVersion(final ArtifactVersion artifactVersion) {
         artifactVersion.updateMilestone(1);
         return this.saveToDb(artifactVersion);
     }
@@ -55,9 +56,9 @@ public class ArtifactVersionService {
                 .orElseThrow();
     }
 
-    public String saveToDb(final ArtifactVersion bpmnArtifactVersion) {
-        final ArtifactVersionEntity savedVersion = this.artifactVersionJpaRepository.save(this.mapper.mapToEntity(bpmnArtifactVersion));
-        return (savedVersion.getId());
+    public ArtifactVersion saveToDb(final ArtifactVersion artifactVersion) {
+        final ArtifactVersionEntity savedVersion = this.artifactVersionJpaRepository.save(this.mapper.mapToEntity(artifactVersion));
+        return (this.mapper.mapToModel(savedVersion));
     }
 
     public void deleteAllByArtifactId(final String artifactId) {
@@ -70,8 +71,8 @@ public class ArtifactVersionService {
         log.debug(String.format("Deleted %s versions", deletedVersions));
     }
 
-    public void deleteAutosavedVersions(final String bpmnRepositoryId, final String bpmnartifactId) {
-        this.artifactVersionJpaRepository.deleteAllByRepositoryIdAndArtifactIdAndSaveType(bpmnRepositoryId, bpmnartifactId, SaveTypeEnum.AUTOSAVE);
+    public void deleteAutosavedVersions(final String repositoryId, final String artifactId) {
+        this.artifactVersionJpaRepository.deleteAllByRepositoryIdAndArtifactIdAndSaveType(repositoryId, artifactId, SaveTypeEnum.AUTOSAVE);
     }
 
     //TODO warum hier?

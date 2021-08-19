@@ -8,13 +8,15 @@ import java.util.Optional;
 
 public interface ArtifactJpaRepository extends JpaRepository<ArtifactEntity, String> {
 
-    List<ArtifactEntity> findAllByRepositoryIdOrderByUpdatedDateDesc(String bpmnArtifactRepositoryId);
+    Optional<List<ArtifactEntity>> findAllByRepositoryIdOrderByUpdatedDateDesc(String artifactRepositoryId);
 
-    int countAllByRepositoryId(String bpmnRepositoryId);
+    Optional<List<ArtifactEntity>> findTop10ByRepositoryIdInOrderByUpdatedDateDesc(List<String> repositoryIds);
 
-    int deleteAllByRepositoryId(String bpmnRepositoryId);
+    int countAllByRepositoryId(String repositoryId);
 
-    List<ArtifactEntity> findAllByRepositoryIdInAndNameStartsWithIgnoreCase(List<String> bpmnRepositoryIds, String title);
+    int deleteAllByRepositoryId(String repositoryId);
+
+    Optional<List<ArtifactEntity>> findAllByRepositoryIdInAndNameStartsWithIgnoreCase(List<String> repositoryIds, String title);
 
     Optional<List<ArtifactEntity>> findAllByRepositoryIdAndFileTypeIgnoreCase(String repositoryId, String type);
 

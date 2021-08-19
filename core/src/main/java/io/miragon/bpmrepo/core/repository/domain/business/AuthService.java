@@ -22,13 +22,13 @@ public class AuthService {
         final AssignmentEntity assignmentEntity = this.assignmentJpa.findByAssignmentId_RepositoryIdAndAssignmentId_UserId(repositoryId, userId)
                 .orElseThrow(() -> new AccessRightException("authorization failed - You are not assigned to this repository"));
 
-        final RoleEnum roleEnum = assignmentEntity.getRoleEnum();
+        final RoleEnum role = assignmentEntity.getRole();
         //0: OWNER - 1: ADMIN 2: MEMBER 3: VIEWER
-        if (minimumRequiredRole.ordinal() >= roleEnum.ordinal()) {
+        if (minimumRequiredRole.ordinal() >= role.ordinal()) {
             log.debug("AUTHORIZATION: ok");
         } else {
             throw new AccessRightException(
-                    "authorization failed - Required role for this operation: \"" + minimumRequiredRole + "\" - Your role is: \"" + roleEnum.toString()
+                    "authorization failed - Required role for this operation: \"" + minimumRequiredRole + "\" - Your role is: \"" + role.toString()
                             + "\"");
         }
 

@@ -5,6 +5,7 @@ import io.miragon.bpmrepo.core.artifact.api.transport.*;
 import io.miragon.bpmrepo.core.artifact.domain.facade.ArtifactFacade;
 import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
 import io.miragon.bpmrepo.core.artifact.plugin.ArtifactTypesPlugin;
+import io.miragon.bpmrepo.core.shared.exception.ObjectNotFoundException;
 import io.miragon.bpmrepo.core.user.domain.business.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,7 +21,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Validated
@@ -40,7 +40,7 @@ public class ArtifactController {
     private final ArtifactTypesPlugin artifactTypesPlugin;
 
     /**
-     * Create a artifact
+     * Create an artifact
      *
      * @param repositoryId  Id of the repository
      * @param newArtifactTO artifact that should be created or updated
@@ -48,13 +48,13 @@ public class ArtifactController {
      */
     @PostMapping("/{repositoryId}")
     public ResponseEntity<ArtifactTO> createArtifact(@PathVariable @NotBlank final String repositoryId, @RequestBody @Valid final NewArtifactTO newArtifactTO) {
-        log.debug("Creating or updating Artifact");
-        val artifact = this.artifactFacade.createArtifact(repositoryId, this.apiMapper.mapToModel(newArtifactTO));
+        log.debug("Creating Artifact in Repository {}", repositoryId);
+        final Artifact artifact = this.artifactFacade.createArtifact(repositoryId, this.apiMapper.mapToModel(newArtifactTO));
         return ResponseEntity.ok().body(this.apiMapper.mapToTO(artifact));
     }
 
     /**
-     * Update a artifact
+     * Update an artifact
      *
      * @param artifactId       Id of the artifact
      * @param artifactUpdateTO artifact that should be created or updated
@@ -63,13 +63,13 @@ public class ArtifactController {
     @PutMapping("/{artifactId}")
     public ResponseEntity<ArtifactTO> updateArtifact(@PathVariable @NotBlank final String artifactId,
                                                      @RequestBody @Valid final ArtifactUpdateTO artifactUpdateTO) {
-        log.debug("Creating or updating Artifact");
+        log.debug("Updating Artifact with ID {}", artifactId);
         val artifact = this.artifactFacade.updateArtifact(artifactId, this.apiMapper.mapUpdateToModel(artifactUpdateTO));
         return ResponseEntity.ok(this.apiMapper.mapToTO(artifact));
     }
 
     /**
-     * Delete artifact
+     * Delete an artifact
      *
      * @param artifactId Id of the artifact
      */
@@ -82,16 +82,20 @@ public class ArtifactController {
     }
 
     /**
-     * All artifacts of the given repository
+     * Get all artifacts of the given repository
      *
      * @param repositoryId Id of the repository
-     * @return artifacts
+     * @return List of artifact
      */
     @GetMapping("/repository/{repositoryId}")
     public ResponseEntity<List<ArtifactTO>> getArtifactsFromRepo(@PathVariable @NotBlank final String repositoryId) {
-        log.debug(String.format("Returning artifacts from repository %s", repositoryId));
+        log.debug(String.format("Returning all Artifacts from Repository with ID %s", repositoryId));
         val artifacts = this.artifactFacade.getArtifactsFromRepo(repositoryId);
-        return ResponseEntity.ok(this.apiMapper.mapToTO(artifacts));
+        if (artifacts.isPresent()) {
+            return ResponseEntity.ok(this.apiMapper.mapToTO(artifacts.get()));
+        } else {
+            throw new ObjectNotFoundException();
+        }
     }
 
     /**
@@ -108,18 +112,19 @@ public class ArtifactController {
     }
 
     /**
-     * Update the preview svg of a artifact
+     * Update the preview svg of an artifact
      *
      * @param artifactId          Id of the artifact
      * @param artifactSVGUploadTO Svg upload
+     * @return artifact
      */
     @PostMapping("/previewSVG/{artifactId}")
-    public ResponseEntity<Void> updatePreviewSVG(
+    public ResponseEntity<ArtifactTO> updatePreviewSVG(
             @PathVariable @NotBlank final String artifactId,
             @RequestBody @Valid final ArtifactSVGUploadTO artifactSVGUploadTO) {
         log.debug("Updating SVG-preview picture");
-        this.artifactFacade.updatePreviewSVG(artifactId, artifactSVGUploadTO.getSvgPreview());
-        return ResponseEntity.ok().build();
+        final Artifact artifact = this.artifactFacade.updatePreviewSVG(artifactId, artifactSVGUploadTO.getSvgPreview());
+        return ResponseEntity.ok().body(this.apiMapper.mapToTO(artifact));
     }
 
     /**
@@ -142,8 +147,12 @@ public class ArtifactController {
     @GetMapping("/starred")
     public ResponseEntity<List<ArtifactTO>> getStarred() {
         log.debug("Returning starred artifacts");
-        val artifacts = this.artifactFacade.getStarred();
-        return ResponseEntity.ok(this.apiMapper.mapToTO(artifacts));
+        val artifacts = this.artifactFacade.getStarred(this.userService.getUserIdOfCurrentUser());
+        if (artifacts.isPresent()) {
+            return ResponseEntity.ok(this.apiMapper.mapToTO(artifacts.get()));
+        } else {
+            throw new ObjectNotFoundException();
+        }
     }
 
     /**
@@ -154,21 +163,29 @@ public class ArtifactController {
     @GetMapping("/recent")
     public ResponseEntity<List<ArtifactTO>> getRecent() {
         log.debug("Returning 10 most recent artifacts from all repos");
-        val artifacts = this.artifactFacade.getRecent();
-        return ResponseEntity.ok(this.apiMapper.mapToTO(artifacts));
+        val artifacts = this.artifactFacade.getRecent(this.userService.getUserIdOfCurrentUser());
+        if (artifacts.isPresent()) {
+            return ResponseEntity.ok(this.apiMapper.mapToTO(artifacts.get()));
+        } else {
+            throw new ObjectNotFoundException();
+        }
     }
 
     /**
      * Search artifacts by title.
      *
      * @param typedTitle Title to search for
-     * @return artifacts
+     * @return List of artifacts
      */
     @GetMapping("/search/{typedTitle}")
     public ResponseEntity<List<ArtifactTO>> searchArtifacts(@PathVariable final String typedTitle) {
-        log.debug(String.format("Searching for Artifacts \"%s\"", typedTitle));
-        val artifacts = this.artifactFacade.searchArtifacts(typedTitle);
-        return ResponseEntity.ok(this.apiMapper.mapToTO(artifacts));
+        log.debug("Searching for Artifacts \"{}\"", typedTitle);
+        val artifacts = this.artifactFacade.searchArtifacts(typedTitle, this.userService.getUserIdOfCurrentUser());
+        if (artifacts.isPresent()) {
+            return ResponseEntity.ok(this.apiMapper.mapToTO(artifacts.get()));
+        } else {
+            throw new ObjectNotFoundException();
+        }
     }
 
     /**
@@ -176,78 +193,63 @@ public class ArtifactController {
      * Has to be called before "getSingleVersion" and "createOrUpdateVersion"
      *
      * @param artifactId Id of the artifact
-     * @return the userName of the user who has locked the artifact
+     * @return Locked artifact
      */
     @PostMapping("/{artifactId}/lock")
-    public ResponseEntity<Void> lockArtifact(@PathVariable @NotBlank final String artifactId) {
-        log.debug(String.format("Locking Artifact %s", artifactId));
-        this.artifactFacade.lockArtifact(artifactId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ArtifactTO> lockArtifact(@PathVariable @NotBlank final String artifactId) {
+        log.debug("Locking Artifact {}", artifactId);
+        val artifact = this.artifactFacade.lockArtifact(artifactId, this.userService.getCurrentUser().getUsername());
+        return ResponseEntity.ok().body(this.apiMapper.mapToTO(artifact));
     }
 
     /**
      * Unlock a artifact after editing is finished
      *
      * @param artifactId Id of the artifact
-     * @return the userName of the user who has locked the artifact
+     * @return Unlocked artifact
      */
     @PostMapping("/{artifactId}/unlock")
-    public ResponseEntity<Void> unlockArtifact(@PathVariable @NotBlank final String artifactId) {
-        log.debug(String.format("Unlocking Artifact %s", artifactId));
-        this.artifactFacade.unlockArtifact(artifactId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ArtifactTO> unlockArtifact(@PathVariable @NotBlank final String artifactId) {
+        log.debug("Unlocking Artifact {}", artifactId);
+        val artifact = this.artifactFacade.unlockArtifact(artifactId);
+        return ResponseEntity.ok().body(this.apiMapper.mapToTO(artifact));
     }
 
     /**
      * Get all available file types
      *
-     * @return file types
+     * @return List of file types
      */
     @GetMapping
     public ResponseEntity<List<ArtifactTypeTO>> getAllFileTypes() {
-        log.debug("Fetching File Types");
+        log.debug("Returning File Types");
         val fileTypes = this.artifactTypesPlugin.getArtifactTypes();
         return ResponseEntity.ok(fileTypes);
     }
 
     /**
-     * Copy File to other Repository
+     * Copy file to other repository
      *
      * @param repositoryId Id of the target repository
      * @param artifactId   Id of the artifact
+     * @return copied artifact in the provided repository
      */
     @PostMapping("/copy/{repositoryId}/{artifactId}")
-    public ResponseEntity<Void> copyToRepository(@PathVariable @NotBlank final String repositoryId, @PathVariable @NotBlank final String artifactId) {
-        log.debug("Copying artifact to other repository");
-        this.artifactFacade.copyToRepository(repositoryId, artifactId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ArtifactTO> copyToRepository(@PathVariable @NotBlank final String repositoryId, @PathVariable @NotBlank final String artifactId) {
+        log.debug("Copying artifact to repository {}", repositoryId);
+        val artifact = this.artifactFacade.copyToRepository(repositoryId, artifactId);
+        return ResponseEntity.ok().body(this.apiMapper.mapToTO(artifact));
     }
+
 
     /**
-     * Share an Artifact with other Repositories
+     * Get all artifacts of a specific type from a repository
      *
-     * @param artifactId    Id of the artifact to be shared
-     * @param repositoryIds List of Ids of Repositories
+     * @param repositoryId Id of the repository
+     * @param type         artifact type
+     * @return List of artifacts
      */
-    @Operation(description = "Share an Artifact with all members of another Repository")
-    @PostMapping("/share/{artifactId}")
-    public ResponseEntity<Void> shareWithRepository(@PathVariable @NotBlank final String artifactId,
-                                                    @RequestBody @Valid final List<String> repositoryIds) {
-        log.debug("Sharing Artifact with Repository");
-        this.artifactFacade.shareWithRepository(repositoryIds, artifactId);
-        return ResponseEntity.ok().build();
-    }
-
-    @Operation(description = "Get all shared Artifacts")
-    @GetMapping("/shared")
-    public ResponseEntity<List<ArtifactTO>> getAllSharedArtifacts() {
-        log.debug("Fetching all Artifacts that are shared with current user");
-        //TODO: Throw custom Error if no shared Artifacts could be found
-        final List<Artifact> sharedArtifacts = this.artifactFacade.getAllSharedArtifacts().orElseThrow();
-        return ResponseEntity.ok(sharedArtifacts.stream().map(this.apiMapper::mapToTO).collect(Collectors.toList()));
-    }
-
-    @Operation
+    @Operation(summary = "Get artifacts by providing repositoryId and fileType")
     @GetMapping("{repositoryId}/{type}")
     public ResponseEntity<List<ArtifactTO>> getByRepoIdAndType(@PathVariable @NotBlank final String repositoryId,
                                                                @PathVariable @NotBlank final String type) {

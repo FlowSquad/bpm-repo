@@ -21,7 +21,7 @@ public interface ArtifactVersionJpaRepository extends JpaRepository<ArtifactVers
 
     int deleteAllByArtifactId(String artifactId);
 
-    int deleteAllByRepositoryIdAndArtifactIdAndSaveType(String bpmnRepositoryId, String bpmnartifactId, SaveTypeEnum saveTypeEnum);
+    int deleteAllByRepositoryIdAndArtifactIdAndSaveType(String repositoryId, String artifactId, SaveTypeEnum saveTypeEnum);
 
     ArtifactVersionEntity save(ArtifactVersionEntity entity);
 }
