@@ -11,6 +11,7 @@ public interface RepoJpaRepository extends JpaRepository<RepositoryEntity, Strin
 
     Optional<List<RepositoryEntity>> findAllByIdIn(List<String> repositoryIds);
 
-
     RepositoryEntity findByIdAndName(String repositoryId, String repositoryName);
+
+    List<RepositoryEntity> findAllByNameStartsWithIgnoreCase(String typedName);
 }

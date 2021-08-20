@@ -1,4 +1,4 @@
-package io.miragon.bpmrepo.core.repository.domain.business;
+package io.miragon.bpmrepo.core.repository.domain.service;
 
 import io.miragon.bpmrepo.core.repository.domain.mapper.AssignmentMapper;
 import io.miragon.bpmrepo.core.repository.domain.model.Assignment;
@@ -8,8 +8,8 @@ import io.miragon.bpmrepo.core.repository.infrastructure.repository.AssignmentJp
 import io.miragon.bpmrepo.core.shared.enums.RoleEnum;
 import io.miragon.bpmrepo.core.shared.exception.AccessRightException;
 import io.miragon.bpmrepo.core.shared.exception.ObjectNotFoundException;
-import io.miragon.bpmrepo.core.user.domain.business.UserService;
 import io.miragon.bpmrepo.core.user.domain.model.User;
+import io.miragon.bpmrepo.core.user.domain.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,6 +32,7 @@ public class AssignmentService {
 
 
     public Assignment updateAssignment(final AssignmentUpdate assignmentUpdate) {
+        log.debug("Persisting assignment update");
         this.authService.checkIfOperationIsAllowed(assignmentUpdate.getRepositoryId(), RoleEnum.ADMIN);
         final Assignment assignment = new Assignment(assignmentUpdate);
 
@@ -50,6 +51,7 @@ public class AssignmentService {
 
 
     public Assignment createAssignment(final AssignmentUpdate assignmentUpdate) {
+        log.debug("Persisting new assignment");
         this.authService.checkIfOperationIsAllowed(assignmentUpdate.getRepositoryId(), RoleEnum.ADMIN);
         final Assignment assignment = new Assignment(assignmentUpdate);
 
@@ -70,6 +72,7 @@ public class AssignmentService {
 
 
     public void createInitialAssignment(final String repositoryId) {
+        log.debug("Persisting initial assignment");
         final User currentUser = this.userService.getCurrentUser();
 
         final Assignment assignment = Assignment.builder()
@@ -84,7 +87,7 @@ public class AssignmentService {
 
     //receive all AssignmentEntities related to the user
     public List<String> getAllAssignedRepositoryIds(final String userId) {
-        log.debug("Querying Assignments");
+        log.debug("Querying assignments");
         final Optional<List<Assignment>> assignments = this.assignmentJpaRepository.findAssignmentEntitiesByAssignmentId_UserIdEquals(userId).map(this.mapper::mapToModel);
         if (assignments.isEmpty()) {
             throw new ObjectNotFoundException();
@@ -93,7 +96,7 @@ public class AssignmentService {
     }
 
     public List<String> getManageableRepositoryIds(final String userId) {
-        log.debug("Querying ADMIN and OWNER Assignments");
+        log.debug("Querying ADMIN and OWNER assignments");
         final List<RoleEnum> roles = new ArrayList<>();
         roles.add(RoleEnum.ADMIN);
         roles.add(RoleEnum.OWNER);
@@ -105,6 +108,7 @@ public class AssignmentService {
     }
 
     public AssignmentEntity getAssignmentEntity(final String repositoryId, final String userId) {
+        log.debug("Querying assignment");
         return this.assignmentJpaRepository.findByAssignmentId_RepositoryIdAndAssignmentId_UserId(repositoryId, userId)
                 .orElseThrow();
     }
@@ -115,12 +119,14 @@ public class AssignmentService {
     }
 
     public List<Assignment> getAllAssignedUsers(final String repositoryId) {
+        log.debug("Querying all assigned users");
         this.authService.checkIfOperationIsAllowed(repositoryId, RoleEnum.VIEWER);
         final List<AssignmentEntity> assignments = this.assignmentJpaRepository.findByAssignmentId_RepositoryId(repositoryId);
         return this.mapper.mapToModel(assignments);
     }
 
     public void deleteAssignment(final String repositoryId, final String deletedUsername) {
+        log.debug("Deleting assignment");
         final String deletedUserId = this.userService.getUserIdByUsername(deletedUsername);
         final String currentUserId = this.userService.getUserIdOfCurrentUser();
         this.authService.checkIfOperationIsAllowed(repositoryId, RoleEnum.ADMIN);
@@ -143,7 +149,7 @@ public class AssignmentService {
 
     public void deleteAllByRepositoryId(final String repositoryId) {
         final int deletedAssignments = this.assignmentJpaRepository.deleteAllByAssignmentId_RepositoryId(repositoryId);
-        log.debug(String.format("Deleted Assignments for all %s users", deletedAssignments));
+        log.debug("Deleted Assignments for all {} users", deletedAssignments);
     }
 
 

@@ -1,5 +1,6 @@
 package io.miragon.bpmrepo.core.artifact.domain.facade;
 
+import io.miragon.bpmrepo.core.artifact.api.transport.ArtifactTypeTO;
 import io.miragon.bpmrepo.core.artifact.domain.enums.SaveTypeEnum;
 import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
 import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactVersion;
@@ -9,7 +10,8 @@ import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactService;
 import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactVersionService;
 import io.miragon.bpmrepo.core.artifact.domain.service.LockService;
 import io.miragon.bpmrepo.core.artifact.domain.service.VerifyRelationService;
-import io.miragon.bpmrepo.core.repository.domain.business.AuthService;
+import io.miragon.bpmrepo.core.artifact.plugin.ArtifactTypesPlugin;
+import io.miragon.bpmrepo.core.repository.domain.service.AuthService;
 import io.miragon.bpmrepo.core.shared.enums.RoleEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,11 +33,13 @@ public class ArtifactVersionFacade {
     private final ArtifactVersionService artifactVersionService;
     private final ArtifactService artifactService;
 
+    private final ArtifactTypesPlugin artifactTypesPlugin;
+
 
     public ArtifactVersion createVersion(final String artifactId, final ArtifactVersionUpload artifactVersionUpload) {
+        log.debug("Checking permissions");
         final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.MEMBER);
-
         final ArtifactVersion artifactVersion = ArtifactVersion.builder()
                 .repositoryId(artifact.getRepositoryId())
                 .artifactId(artifactId)
@@ -43,6 +47,7 @@ public class ArtifactVersionFacade {
                 .xml(artifactVersionUpload.getXml())
                 .saveType(artifactVersionUpload.getSaveType())
                 .updatedDate(LocalDateTime.now())
+                .latestVersion(true)
                 .build();
 
         //initial version
@@ -54,6 +59,8 @@ public class ArtifactVersionFacade {
 
         //Create new Version - additional Check for Locking
         this.lockService.checkIfVersionIsUnlockedOrLockedByActiveUser(artifact);
+        final ArtifactVersion oldArtifactVersion = this.artifactVersionService.getLatestVersion(artifactId);
+        this.artifactVersionService.setVersionOutdated(oldArtifactVersion);
         final ArtifactVersion createdArtifactVersion = this.artifactVersionService.createNewVersion(artifactVersion);
         this.artifactService.updateUpdatedDate(artifactId);
         this.deleteAutosavedVersionsIfMilestoneIsSaved(artifact.getRepositoryId(), artifactId, artifactVersionUpload.getSaveType());
@@ -62,6 +69,7 @@ public class ArtifactVersionFacade {
 
 
     public ArtifactVersion updateVersion(final String artifactId, final ArtifactVersionUpdate artifactVersionUpdate) {
+        log.debug("Checking permissions");
         final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.MEMBER);
         final ArtifactVersion requestedArtifactVersion = this.artifactVersionService.getVersion(artifactVersionUpdate.getVersionId());
@@ -84,18 +92,21 @@ public class ArtifactVersionFacade {
     }
 
     public List<ArtifactVersion> getAllVersions(final String artifactId) {
+        log.debug("Checking permissions");
         final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.VIEWER);
         return this.artifactVersionService.getAllVersions(artifactId);
     }
 
     public ArtifactVersion getLatestVersion(final String artifactId) {
+        log.debug("Checking permissions");
         final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.VIEWER);
         return this.artifactVersionService.getLatestVersion(artifactId);
     }
 
     public ArtifactVersion getVersion(final String artifactId, final String artifactVersionId) {
+        log.debug("Checking permissions");
         final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.VIEWER);
         this.lockService.checkIfVersionIsUnlockedOrLockedByActiveUser(artifact);
@@ -103,15 +114,17 @@ public class ArtifactVersionFacade {
     }
 
     public ByteArrayResource downloadVersion(final String artifactId, final String artifactVersionId) {
+        log.debug("Checking permissions");
         final Artifact artifact = this.artifactService.getArtifactById(artifactId);
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.MEMBER);
-        return this.artifactVersionService.downloadVersion(artifact.getName(), artifactVersionId);
+        return this.artifactVersionService.downloadVersion(artifactVersionId);
     }
 
-    //TODO Remove this method
     public HttpHeaders getHeaders(final String artifactId) {
         final Artifact artifact = this.artifactService.getArtifactById(artifactId);
-        final String fileName = String.format("%s.%s", artifact.getName(), artifact.getFileType());
+        final List<ArtifactTypeTO> artifactTypes = this.artifactTypesPlugin.getArtifactTypes();
+        final ArtifactTypeTO artifactType = artifactTypes.stream().filter(type -> type.getName().equals(artifact.getFileType())).findFirst().orElseThrow();
+        final String fileName = String.format("%s.%s", artifact.getName(), artifactType.getFileExtension());
 
         final HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; fileName=%s", fileName));

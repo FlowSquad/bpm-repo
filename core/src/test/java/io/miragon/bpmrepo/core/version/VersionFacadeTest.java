@@ -8,7 +8,7 @@ import io.miragon.bpmrepo.core.artifact.domain.model.ArtifactVersionUpload;
 import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactService;
 import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactVersionService;
 import io.miragon.bpmrepo.core.artifact.domain.service.VerifyRelationService;
-import io.miragon.bpmrepo.core.repository.domain.business.AuthService;
+import io.miragon.bpmrepo.core.repository.domain.service.AuthService;
 import io.miragon.bpmrepo.core.shared.enums.RoleEnum;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

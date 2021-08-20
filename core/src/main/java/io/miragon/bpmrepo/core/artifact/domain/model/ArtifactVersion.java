@@ -31,6 +31,8 @@ public class ArtifactVersion {
 
     private String comment;
 
+    private boolean latestVersion;
+
     private LocalDateTime updatedDate;
 
     private final List<Deployment> deployments;
@@ -41,6 +43,10 @@ public class ArtifactVersion {
         this.milestone++;
         this.xml = artifactVersion.getXml();
         this.updatedDate = LocalDateTime.now();
+    }
+
+    public void setOutdated() {
+        this.latestVersion = false;
     }
 
     public void updateVersion(final ArtifactVersionUpdate artifactVersionUpdate) {

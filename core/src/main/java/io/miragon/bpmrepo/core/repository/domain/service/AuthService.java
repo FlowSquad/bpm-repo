@@ -1,10 +1,10 @@
-package io.miragon.bpmrepo.core.repository.domain.business;
+package io.miragon.bpmrepo.core.repository.domain.service;
 
 import io.miragon.bpmrepo.core.repository.infrastructure.entity.AssignmentEntity;
 import io.miragon.bpmrepo.core.repository.infrastructure.repository.AssignmentJpaRepository;
 import io.miragon.bpmrepo.core.shared.enums.RoleEnum;
 import io.miragon.bpmrepo.core.shared.exception.AccessRightException;
-import io.miragon.bpmrepo.core.user.domain.business.UserService;
+import io.miragon.bpmrepo.core.user.domain.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

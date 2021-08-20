@@ -2,8 +2,8 @@ package io.miragon.bpmrepo.core.artifact.domain.service;
 
 import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
 import io.miragon.bpmrepo.core.shared.exception.AccessRightException;
-import io.miragon.bpmrepo.core.user.domain.business.UserService;
 import io.miragon.bpmrepo.core.user.domain.model.User;
+import io.miragon.bpmrepo.core.user.domain.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

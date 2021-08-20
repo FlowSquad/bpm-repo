@@ -4,13 +4,13 @@ import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
 import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactService;
 import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactVersionService;
 import io.miragon.bpmrepo.core.artifact.domain.service.StarredService;
-import io.miragon.bpmrepo.core.repository.domain.business.AssignmentService;
-import io.miragon.bpmrepo.core.repository.domain.business.AuthService;
-import io.miragon.bpmrepo.core.repository.domain.business.RepositoryService;
 import io.miragon.bpmrepo.core.repository.domain.exception.RepositoryNameAlreadyInUseException;
 import io.miragon.bpmrepo.core.repository.domain.model.NewRepository;
 import io.miragon.bpmrepo.core.repository.domain.model.Repository;
 import io.miragon.bpmrepo.core.repository.domain.model.RepositoryUpdate;
+import io.miragon.bpmrepo.core.repository.domain.service.AssignmentService;
+import io.miragon.bpmrepo.core.repository.domain.service.AuthService;
+import io.miragon.bpmrepo.core.repository.domain.service.RepositoryService;
 import io.miragon.bpmrepo.core.shared.enums.RoleEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +68,7 @@ public class RepositoryFacade {
     }
 
     public List<Repository> getAllRepositories(final String userId) {
-        log.debug("Fetching all assigned Repositories");
+        log.debug("Checking Assignments");
         return this.assignmentService.getAllAssignedRepositoryIds(userId).stream()
                 .map(this.repositoryService::getRepository)
                 .collect(Collectors.toList());
@@ -85,5 +85,9 @@ public class RepositoryFacade {
         this.artifactService.deleteAllByRepositoryId(repositoryId);
         this.repositoryService.deleteRepository(repositoryId);
         this.assignmentService.deleteAllByRepositoryId(repositoryId);
+    }
+
+    public List<Repository> searchRepositories(final String typedName) {
+        return this.repositoryService.searchRepositories(typedName);
     }
 }

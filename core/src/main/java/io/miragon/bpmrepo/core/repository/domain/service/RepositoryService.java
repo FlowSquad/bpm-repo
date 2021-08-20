@@ -1,4 +1,4 @@
-package io.miragon.bpmrepo.core.repository.domain.business;
+package io.miragon.bpmrepo.core.repository.domain.service;
 
 import io.miragon.bpmrepo.core.repository.domain.mapper.RepositoryMapper;
 import io.miragon.bpmrepo.core.repository.domain.model.NewRepository;
@@ -64,6 +64,11 @@ public class RepositoryService {
     public void deleteRepository(final String repositoryId) {
         log.debug("Deleting repository");
         this.repoJpaRepository.deleteById(repositoryId);
+    }
+
+    public List<Repository> searchRepositories(final String typedName) {
+        log.debug("Querying repositories that match the search string");
+        return this.mapper.mapToModel(this.repoJpaRepository.findAllByNameStartsWithIgnoreCase(typedName));
     }
 
     public Repository saveToDb(final Repository repository) {

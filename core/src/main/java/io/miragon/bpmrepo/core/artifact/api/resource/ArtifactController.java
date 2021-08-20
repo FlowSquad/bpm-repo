@@ -6,7 +6,7 @@ import io.miragon.bpmrepo.core.artifact.domain.facade.ArtifactFacade;
 import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
 import io.miragon.bpmrepo.core.artifact.plugin.ArtifactTypesPlugin;
 import io.miragon.bpmrepo.core.shared.exception.ObjectNotFoundException;
-import io.miragon.bpmrepo.core.user.domain.business.UserService;
+import io.miragon.bpmrepo.core.user.domain.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -120,7 +120,7 @@ public class ArtifactController {
     public ResponseEntity<ArtifactTO> updatePreviewSVG(
             @PathVariable @NotBlank final String artifactId,
             @RequestBody @Valid final ArtifactSVGUploadTO artifactSVGUploadTO) {
-        log.debug("Updating SVG-preview picture");
+        log.debug("Updating SVG-preview picture for artifact {}", artifactId);
         final Artifact artifact = this.artifactFacade.updatePreviewSVG(artifactId, artifactSVGUploadTO.getSvgPreview());
         return ResponseEntity.ok().body(this.apiMapper.mapToTO(artifact));
     }

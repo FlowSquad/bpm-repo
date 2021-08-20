@@ -19,12 +19,13 @@ public class StarredService {
     private final StarredMapper mapper;
 
     public void setStarred(final String artifactId, final String userId) {
-        log.debug("Persisting the starred-relation");
         final StarredEntity starredEntity = this.starredJpa.findById_artifactIdAndId_UserId(artifactId, userId);
         if (starredEntity == null) {
+            log.debug("Persisting the starred-relation");
             this.createStarred(artifactId, userId);
             return;
         }
+        log.debug("Deleting the starred-relation");
         this.deleteStarred(artifactId, userId);
     }
 
@@ -39,11 +40,12 @@ public class StarredService {
     }
 
     public List<StarredEntity> getStarred(final String userId) {
+        log.debug("Querying all starred objects");
         return this.starredJpa.findAllById_UserId(userId);
     }
 
     public void deleteAllByArtifactIds(final List<String> artifactIds) {
         final int deletedRelations = this.starredJpa.deleteAllById_artifactIdIn(artifactIds);
-        log.debug(String.format("Deleted %s favorite-relations", deletedRelations));
+        log.debug(String.format("Deleted %s starred-relations", deletedRelations));
     }
 }

@@ -64,7 +64,6 @@ public class ArtifactVersionController {
     public ResponseEntity<ArtifactVersionTO> updateVersion(
             @PathVariable @NotBlank final String artifactId,
             @RequestBody @Valid final ArtifactVersionUpdateTO artifactVersionUpdateTO) {
-        //TODO trennen POST und PUT
         log.debug("Creating new Version of Artifact {}", artifactId);
         final ArtifactVersion artifactVersion = this.artifactVersionFacade.updateVersion(artifactId, this.apiMapper.mapUpdateToModel(artifactVersionUpdateTO));
         return ResponseEntity.ok(this.apiMapper.mapToTO(artifactVersion));
@@ -123,7 +122,7 @@ public class ArtifactVersionController {
      */
     @GetMapping("/{artifactId}/version/{versionId}/download")
     public ResponseEntity<Resource> downloadVersion(@PathVariable @NotBlank final String artifactId, @PathVariable @NotBlank final String versionId) {
-        log.debug("Returning File for Download");
+        log.debug("Returning File of artifact-version {} for Download", versionId);
         final ByteArrayResource resource = this.artifactVersionFacade.downloadVersion(artifactId, versionId);
         final HttpHeaders headers = this.artifactVersionFacade.getHeaders(artifactId);
         return ResponseEntity.ok()

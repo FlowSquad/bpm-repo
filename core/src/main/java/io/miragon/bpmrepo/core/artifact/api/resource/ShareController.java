@@ -11,7 +11,7 @@ import io.miragon.bpmrepo.core.artifact.domain.model.Shared;
 import io.miragon.bpmrepo.core.repository.api.mapper.RepositoryApiMapper;
 import io.miragon.bpmrepo.core.repository.api.transport.RepositoryTO;
 import io.miragon.bpmrepo.core.repository.domain.model.Repository;
-import io.miragon.bpmrepo.core.user.domain.business.UserService;
+import io.miragon.bpmrepo.core.user.domain.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

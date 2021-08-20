@@ -44,6 +44,9 @@ public class ArtifactVersionEntity {
     @Column(name = "repository_id_", nullable = false)
     private String repositoryId;
 
+    @Column(name = "latest_version", nullable = false)
+    private boolean latestVersion;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "version_id_")
     private List<DeploymentEntity> deployments;
