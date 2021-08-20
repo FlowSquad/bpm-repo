@@ -52,6 +52,8 @@ public class ShareService {
     private Shared saveShare(final Shared shared) {
         final SharedId sharedId = this.mapper.mapToEmbeddable(shared.getArtifactId(), shared.getRepositoryId(), shared.getTeamId());
         final SharedEntity sharedEntity = this.sharedJpaRepository.save(this.mapper.mapToEntity(shared, sharedId));
+        System.out.println("Saving");
+
         return this.mapper.mapToModel(sharedEntity);
     }
 
