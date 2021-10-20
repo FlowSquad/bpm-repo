@@ -6,6 +6,7 @@ import io.miragon.bpmrepo.core.artifact.domain.model.Artifact;
 import io.miragon.bpmrepo.core.sharing.api.transport.ShareWithRepositoryTO;
 import io.miragon.bpmrepo.core.sharing.api.transport.ShareWithTeamTO;
 import io.miragon.bpmrepo.core.sharing.api.transport.SharedRepositoryTO;
+import io.miragon.bpmrepo.core.sharing.api.transport.SharedTeamTO;
 import io.miragon.bpmrepo.core.sharing.domain.facade.ShareFacade;
 import io.miragon.bpmrepo.core.sharing.domain.model.ShareWithRepository;
 import io.miragon.bpmrepo.core.sharing.domain.model.ShareWithTeam;
@@ -198,4 +199,11 @@ public class ShareController {
         return ResponseEntity.ok().body(this.shareFacade.getSharedRepositories(artifactId));
     }
 
+
+    @GetMapping("/relations/team/{artifactId}")
+    @Operation(summary = "Get all teams that can access a specific artifact (Admin permissions required")
+    public ResponseEntity<List<SharedTeamTO>> getSharedTeams(@PathVariable @NotBlank final String artifactId) {
+        log.debug("Returning all teams that cann accesss artifact {}", artifactId);
+        return ResponseEntity.ok().body(this.shareFacade.getSharedTeams(artifactId));
+    }
 }

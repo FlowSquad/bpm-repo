@@ -15,6 +15,9 @@ import io.miragon.bpmrepo.core.repository.infrastructure.entity.RepositoryEntity
 import io.miragon.bpmrepo.core.shared.enums.RoleEnum;
 import io.miragon.bpmrepo.core.shared.exception.NameConflictException;
 import io.miragon.bpmrepo.core.shared.exception.ObjectNotFoundException;
+import io.miragon.bpmrepo.core.team.domain.facade.RepoTeamAssignmentFacade;
+import io.miragon.bpmrepo.core.team.domain.model.RepoTeamAssignment;
+import io.miragon.bpmrepo.core.team.domain.service.TeamAuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -34,6 +37,8 @@ public class RepositoryFacade {
     private final ArtifactMilestoneService artifactMilestoneService;
     private final StarredService starredService;
     private final RepositoryMapper mapper;
+    private final RepoTeamAssignmentFacade repoTeamAssignmentFacade;
+    private final TeamAuthService teamAuthService;
 
     public Repository createRepository(final NewRepository newRepository, final String userId) {
         log.debug("Checking if name is available");
@@ -97,4 +102,13 @@ public class RepositoryFacade {
     }
 
 
+    public List<Repository> getAllAssignedRepositories(final String teamId) {
+        log.debug("Checking permissions");
+        this.teamAuthService.checkIfTeamOperationIsAllowed(teamId, RoleEnum.VIEWER);
+
+        final List<RepoTeamAssignment> assignments = this.repoTeamAssignmentFacade.getAllAssignmentsByTeamId(teamId);
+        final List<String> repoIds = assignments.stream().map(RepoTeamAssignment::getRepositoryId).collect(Collectors.toList());
+        //Don't call the authService as this only checks for direct relations to a repository, but these dont exist
+        return this.repositoryService.getRepositories(repoIds);
+    }
 }
