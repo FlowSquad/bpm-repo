@@ -1,7 +1,6 @@
 package io.miragon.bpmrepo.core.user.domain.service;
 
 import io.miragon.bpmrepo.core.security.UserContext;
-import io.miragon.bpmrepo.core.shared.exception.AccessRightException;
 import io.miragon.bpmrepo.core.shared.exception.NameConflictException;
 import io.miragon.bpmrepo.core.user.api.transport.UserUpdateTO;
 import io.miragon.bpmrepo.core.user.domain.mapper.UserMapper;
@@ -31,13 +30,8 @@ public class UserService {
         return this.saveToDb(user);
     }
 
-    public User updateUser(final UserUpdateTO userUpdateTO) {
-        log.debug("Persisting user update");
-        this.verifyUserIsChangingOwnProfile(userUpdateTO.getUserId());
-        return this.updateOrAdoptProperties(userUpdateTO);
-    }
 
-    private User updateOrAdoptProperties(final UserUpdateTO userUpdateTO) {
+    public User updateOrAdoptProperties(final UserUpdateTO userUpdateTO) {
         final User user = this.getCurrentUser();
         if (userUpdateTO.getUsername() != null && !userUpdateTO.getUsername().equals(user.getUsername())) {
             this.checkIfUsernameIsAvailable(userUpdateTO.getUsername());
@@ -46,14 +40,8 @@ public class UserService {
         return this.saveToDb(user);
     }
 
-    private void verifyUserIsChangingOwnProfile(final String userId) {
-        final String currentUserId = this.getUserIdOfCurrentUser();
-        if (!currentUserId.equals(userId)) {
-            throw new AccessRightException("You can only change your own profile");
-        }
-    }
 
-    public String getUserIdByUsername(final String username) {
+    private String getUserIdByUsername(final String username) {
         log.debug("Querying User by Username");
         return this.userJpaRepository.findByUsername(username)
                 .map(UserEntity::getId)
@@ -66,7 +54,7 @@ public class UserService {
         return this.getUserIdByUsername(username);
     }
 
-    public void checkIfUsernameIsAvailable(final String username) {
+    private void checkIfUsernameIsAvailable(final String username) {
         if (this.userJpaRepository.existsUserEntityByUsername(username)) {
             throw new NameConflictException("exception.usernameInUse");
         }
@@ -93,6 +81,7 @@ public class UserService {
                 .map(this.mapper::mapToInfo)
                 .collect(Collectors.toList());
     }
+
 
     public User saveToDb(final User user) {
         final UserEntity savedUser = this.userJpaRepository.save(this.mapper.mapToEntity(user));

@@ -1,5 +1,6 @@
 package io.miragon.bpmrepo.core.user.api.transport;
 
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -11,8 +12,8 @@ import javax.validation.constraints.Size;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Containing information about an user")
-public class UserInfoTO {
+@Schema(description = "Containing Id, Name and EntityType of either a User or Team")
+public class UserOrTeamTO {
 
     @NotBlank
     @Size(min = 3, max = 50)
@@ -20,5 +21,8 @@ public class UserInfoTO {
 
     @NotBlank
     private String id;
+
+    @NotBlank
+    private boolean isTeam;
 
 }
