@@ -5,11 +5,15 @@
 
 ### Added
 
+- Added a changelog
+
 ### Changed
 
 ### Removed
 
 ### Merged pull requests
+
+- added changelog.md [\#19](https://github.com/FlowSquad/bpm-repo/pull/19) ([lmoesle](https://github.com/lmoesle))
 
 
 ## 0.0.22 - 2022-02-15
