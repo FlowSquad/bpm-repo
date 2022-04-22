@@ -22,6 +22,9 @@ public class ArtifactTypeTO {
     @NotBlank
     private String svgIcon;
 
-    @NotBlank
     private String url;
+
+    private boolean editable = false;
+
+    private boolean deployable = false;
 }
