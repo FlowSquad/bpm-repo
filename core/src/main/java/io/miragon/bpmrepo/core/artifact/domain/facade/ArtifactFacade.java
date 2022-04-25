@@ -13,6 +13,7 @@ import io.miragon.bpmrepo.core.repository.domain.service.AuthService;
 import io.miragon.bpmrepo.core.repository.domain.service.RepositoryService;
 import io.miragon.bpmrepo.core.shared.enums.RoleEnum;
 import io.miragon.bpmrepo.core.shared.exception.ObjectNotFoundException;
+import io.miragon.bpmrepo.core.user.domain.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 public class ArtifactFacade {
     private final AuthService authService;
     private final LockService lockService;
+    private final UserService userService;
 
     private final ArtifactMilestoneFacade artifactMilestoneFacade;
 
@@ -61,9 +63,16 @@ public class ArtifactFacade {
         // e.g. element-templates
         final Optional<ArtifactTypeTO> type = this.artifactTypesPlugin.getArtifactTypes().stream().filter(t -> t.getName().equalsIgnoreCase(artifactUpdate.getFileType())).findAny();
         if (artifactUpdate.getFile() != null && !type.orElseThrow().isEditable()) {
+            // lock artifact before save
+            final String currentUsersName = this.userService.getCurrentUser().getUsername();
+            this.lockArtifact(artifact.getId(), currentUsersName);
+
             final ArtifactMilestone artifactMilestone = this.artifactMilestoneService.getLatestMilestone(artifact.getId());
             final ArtifactMilestoneUpdate milestone = new ArtifactMilestoneUpdate(artifactMilestone.getId(), "", artifactUpdate.getFile());
             this.artifactMilestoneFacade.updateMilestone(milestone);
+
+            // and unlock artifact after save
+            this.unlockArtifact(artifact.getId());
         }
 
         return artifact;
