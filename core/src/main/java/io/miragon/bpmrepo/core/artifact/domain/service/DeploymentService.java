@@ -33,7 +33,7 @@ public class DeploymentService {
     public ArtifactMilestone deploy(final ArtifactMilestone milestone, final NewDeployment newDeployment, final Artifact artifact, final String username) {
         // if artifact type is not deployable raise an exception
         final Optional<ArtifactTypeTO> artifactType = this.artifactTypesPlugin.getArtifactTypes()
-                .stream().filter(type -> type.getName().equals(artifact.getFileType()) && type.isDeployable()).findAny();
+                .stream().filter(type -> type.getName().equalsIgnoreCase(artifact.getFileType()) && type.isDeployable()).findAny();
         if (artifactType.isEmpty()) {
             final String errorMsg = String.format("Artifacts of type %s are not deployable", artifact.getFileType());
             log.warn(errorMsg);
