@@ -24,6 +24,7 @@ public class ArtifactTypeTO {
 
     private String url;
 
+    // does a suitable editor exist for the artifact type
     private boolean editable = false;
 
     private boolean deployable = false;

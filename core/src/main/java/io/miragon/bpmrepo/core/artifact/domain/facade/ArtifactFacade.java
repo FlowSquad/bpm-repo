@@ -59,8 +59,7 @@ public class ArtifactFacade {
         this.authService.checkIfOperationIsAllowed(artifact.getRepositoryId(), RoleEnum.MEMBER);
         artifact = this.artifactService.updateArtifact(artifact, artifactUpdate);
 
-        // update latest milestone if file is present and not editable
-        // e.g. element-templates
+        // update latest milestone if file is present and not editable (e.g. element-templates)
         final Optional<ArtifactTypeTO> type = this.artifactTypesPlugin.getArtifactTypes().stream().filter(t -> t.getName().equalsIgnoreCase(artifactUpdate.getFileType())).findAny();
         if (artifactUpdate.getFile() != null && !type.orElseThrow().isEditable()) {
             // lock artifact before save
