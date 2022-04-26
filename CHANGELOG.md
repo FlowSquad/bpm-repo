@@ -19,7 +19,7 @@
 - Added a changelog
 - Introduce new artifact type element-template
 - Added configuration options editable and deployable for artifact types
-- Enable updating non-editable artifacts by file upload
+- Enable updating artifacts by file upload
 - Disable deployment of non-deployable artifacts
 
 ### Changed
