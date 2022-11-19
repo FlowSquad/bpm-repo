@@ -8,6 +8,7 @@ import io.miragon.bpmrepo.core.artifact.domain.model.NewDeployment;
 import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactMilestoneService;
 import io.miragon.bpmrepo.core.artifact.domain.service.ArtifactService;
 import io.miragon.bpmrepo.core.artifact.domain.service.DeploymentService;
+import io.miragon.bpmrepo.core.artifact.domain.service.DeploymentStatusService;
 import io.miragon.bpmrepo.core.shared.exception.ObjectNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,8 @@ class DeploymentServiceTest {
 
     @Autowired
     private DeploymentService deploymentService;
+    @Autowired
+    private DeploymentStatusService deploymentStatusService;
     @Autowired
     private ArtifactService artifactService;
     @Autowired
@@ -76,7 +79,7 @@ class DeploymentServiceTest {
 
             // update deployment status
             final String statusMessage = "Deployment was successful";
-            deployment = this.deploymentService.updateDeploymentStatus(
+            deployment = this.deploymentStatusService.updateDeploymentStatus(
                     deployment.getId(),
                     DeploymentStatus.SUCCESS,
                     statusMessage
@@ -88,7 +91,7 @@ class DeploymentServiceTest {
 
     @Test
     void updateDeploymentStatusRaisesObjectNotFoundExceptionIfDeploymentDoesNotExist() {
-        Assertions.assertThrows(ObjectNotFoundException.class, () -> this.deploymentService.updateDeploymentStatus(
+        Assertions.assertThrows(ObjectNotFoundException.class, () -> this.deploymentStatusService.updateDeploymentStatus(
                 "not-existing-id",
                 DeploymentStatus.SUCCESS,
                 null
