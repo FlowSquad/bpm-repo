@@ -129,7 +129,7 @@ public class RepositoryFacade {
                 final ArtifactMilestone artifactMilestone = this.artifactMilestoneService.getLatestMilestone(artifact.getId());
                 log.debug("zipping {}", artifact.getName());
                 //create an empty file(ZipEntry) and add it to the zipfile
-                final ZipEntry zipEntry = new ZipEntry(artifact.getName() + "." + artifact.getFileType());
+                final ZipEntry zipEntry = new ZipEntry(artifact.getName() + this.getFileExtension(artifact.getFileType()));
                 zipOut.putNextEntry(zipEntry);
                 //fill the file with the Byte-content of the artifacts latest milestone
                 zipOut.write(artifactMilestone.getFile().getBytes(), 0, artifactMilestone.getFile().getBytes().length);
@@ -141,6 +141,13 @@ public class RepositoryFacade {
             log.error("failed to zip artifacts; " + e.getMessage(), e);
             throw new RuntimeException("failed to zip artifacts");
         }
+    }
+
+    private String getFileExtension(final String fileType) {
+        if (fileType.equalsIgnoreCase("ELEMENT_TEMPLATE") || fileType.equalsIgnoreCase("CONFIGURATION")) {
+            return ".json";
+        }
+        return "." + fileType.toLowerCase();
     }
 
 }
