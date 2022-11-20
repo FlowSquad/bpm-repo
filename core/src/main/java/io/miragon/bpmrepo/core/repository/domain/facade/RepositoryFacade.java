@@ -76,7 +76,7 @@ public class RepositoryFacade {
         this.authService.checkIfOperationIsAllowed(repositoryId, RoleEnum.OWNER);
         this.artifactMilestoneService.deleteAllByRepositoryId(repositoryId);
         final List<Artifact> artifacts = this.artifactService.getArtifactsByRepo(repositoryId);
-        if (artifacts.size() > 0) {
+        if (!artifacts.isEmpty()) {
             this.starredService.deleteAllByArtifactIds(artifacts.stream().map(Artifact::getId).collect(Collectors.toList()));
         }
         this.artifactService.deleteAllByRepositoryId(repositoryId);
