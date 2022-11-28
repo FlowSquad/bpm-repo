@@ -2,7 +2,7 @@ name: release
 
 on:
   push:
-    branches: [ main ]
+#    branches: [ main ]
 
 jobs:
   release:
@@ -26,5 +26,5 @@ jobs:
           ORG_GRADLE_PROJECT_SNAPSHOT: false
           ORG_GRADLE_PROJECT_SIGNINGKEY: ${{secrets.PGP_PRIVATE_KEY}}
           ORG_GRADLE_PROJECT_SIGNINGPASSWORD: ${{secrets.PGP_PRIVATE_KEY_SECRET}}
-          ORG_GRADLE_PROJECT_MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-          ORG_GRADLE_PROJECT_MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.NEXUS_USERNAME }}
+          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.NEXUS_PASSWORD }}
