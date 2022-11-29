@@ -21,7 +21,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Publish
-        run: ./gradlew publish
+        run: ./gradlew publishToSonatype
         env:
           ORG_GRADLE_PROJECT_SNAPSHOT: false
           ORG_GRADLE_PROJECT_signingKey: ${{secrets.PGP_PRIVATE_KEY}}
