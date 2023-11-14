@@ -257,18 +257,6 @@
             <version>${apache.commons.validator}</version>
         </dependency>
 
-        <!-- Internal Libs -->
-        <dependency>
-            <groupId>de.muenchen.allgemein</groupId>
-            <artifactId>muenchen-allgemein-graceful-shutdown</artifactId>
-            <version>2.2.10-3-JDK11</version>
-        </dependency>
-        <dependency>
-            <groupId>de.muenchen.allgemein</groupId>
-            <artifactId>muenchen-allgemein-nfc-converter</artifactId>
-            <version>2.2.10-3-JDK11</version>
-        </dependency>
-
     </dependencies>
 
     <build>

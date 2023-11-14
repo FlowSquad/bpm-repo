@@ -26,7 +26,7 @@ spring:
         format_sql: true
 
 # Define the keycloak development realm here
-realm: P82
+realm: ${SSO_REALM}
 
 security:
   # possible values: none, all, changing (With changing, only changing requests such as POST, PUT, DELETE are logged)
@@ -34,8 +34,8 @@ security:
   oauth2:
     resource:
       jwk:
-        key-set-uri:
-      user-info-uri:
+        key-set-uri: ${SSO_ISSUER_URL}/protocol/openid-connect/certs
+      user-info-uri: ${SSO_ISSUER_URL}/protocol/openid-connect/userinfo
       prefer-token-info: false
     client:
       client-id: bpm-server
